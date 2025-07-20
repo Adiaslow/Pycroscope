@@ -123,29 +123,7 @@ jobs:
 
       - name: Run integration tests
         run: |
-          python -c "
-          import pycroscope
-          from pycroscope import enable_profiling, ProfileConfig, CollectorType
-          import time
-
-          print('🔬 Running Integration Test')
-          config = ProfileConfig()
-          config.enable_collector(CollectorType.LINE)
-          config.enable_collector(CollectorType.MEMORY)
-
-          profiler = enable_profiling(config)
-
-          # Simple test workload
-          data = [i**2 for i in range(1000)]
-          result = sum(data)
-
-          time.sleep(0.1)
-          session = profiler.end_session()
-          profiler.disable()
-
-          assert session is not None, 'Session should be created'
-          assert len(session.execution_events) > 0, 'Events should be collected'
-          print(f'✅ Integration test passed! Events: {len(session.execution_events)}')
+          python tests/integration_test.py
 
   benchmark:
     name: Performance Benchmarks
@@ -168,71 +146,7 @@ jobs:
 
       - name: Run performance benchmarks
         run: |
-          python -c "
-          import time
-          import pycroscope
-          from pycroscope import enable_profiling, ProfileConfig, CollectorType
-
-          print('📊 Performance Benchmark - Development Profiler')
-
-          # More realistic workload for development profiling
-          def test_workload():
-              '''Realistic function for development profiling.'''
-              data = []
-              for i in range(1000):  # Smaller, more realistic loop
-                  value = i * 2 + 1
-                  if value % 3 == 0:
-                      data.append(value ** 0.5)
-                  else:
-                      data.append(value)
-              return sum(data)
-
-          # Benchmark with reduced profiling scope
-          config = ProfileConfig()
-          config.enable_collector(CollectorType.LINE)
-          # Note: Memory collector adds significant overhead for tight loops
-
-          # Baseline measurement (multiple runs for stability)
-          baseline_times = []
-          for _ in range(3):
-              start = time.perf_counter()
-              result1 = test_workload()
-              baseline_times.append(time.perf_counter() - start)
-          baseline_time = min(baseline_times)  # Best of 3
-
-          # Profiled measurement
-          profiler = enable_profiling(config)
-          start = time.perf_counter()
-          result2 = test_workload()
-          profiled_time = time.perf_counter() - start
-          session = profiler.end_session()
-          profiler.disable()
-
-          # Calculate overhead
-          overhead = ((profiled_time - baseline_time) / baseline_time) * 100
-
-          print(f'Baseline (best of 3): {baseline_time:.4f}s')
-          print(f'Profiled: {profiled_time:.4f}s') 
-          print(f'Overhead: {overhead:.1f}%')
-          print(f'Events collected: {len(session.execution_events) if session else 0}')
-
-          # Development profiler threshold - higher than production profilers
-          # This is acceptable for development-time optimization analysis
-          max_overhead = 5000  # 50x slower is acceptable for dev profiling
-
-          if overhead < max_overhead:
-              print(f'✅ Performance benchmark passed! (Under {max_overhead/100:.0f}x overhead)')
-          else:
-              print(f'⚠️  High overhead detected: {overhead:.1f}%')
-              print('This is a development-time profiler - some overhead is expected.')
-              print('Consider using sampling or fewer collectors for large workloads.')
-              # Don\'t fail the build for development profiler overhead
-
-          # Validate functionality instead of just performance
-          assert session is not None, 'Session should be created'
-          if session:
-              assert len(session.execution_events) > 0, 'Events should be collected'
-              print(f'✅ Functionality validated - collected {len(session.execution_events)} events')
+          python tests/performance_benchmark.py
 
   security:
     name: Security Scan
@@ -280,35 +194,7 @@ jobs:
 
       - name: Check docstring coverage
         run: |
-          python -c "
-          import ast
-          import os
-
-          def check_docstrings(directory):
-              missing_docs = []
-              for root, dirs, files in os.walk(directory):
-                  for file in files:
-                      if file.endswith('.py'):
-                          filepath = os.path.join(root, file)
-                          with open(filepath, 'r') as f:
-                              try:
-                                  tree = ast.parse(f.read(), filepath)
-                                  for node in ast.walk(tree):
-                                      if isinstance(node, (ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)):
-                                          if not ast.get_docstring(node):
-                                              missing_docs.append(f'{filepath}:{node.lineno} - {node.name}')
-                              except:
-                                  pass
-              return missing_docs
-
-          missing = check_docstrings('pycroscope/')
-          if missing:
-              print('Missing docstrings:')
-              for item in missing[:10]:  # Show first 10
-                  print(f'  {item}')
-              print(f'Total missing: {len(missing)}')
-          else:
-              print('✅ All functions and classes have docstrings!')
+          python tests/documentation_check.py
 
   release-check:
     name: Release Readiness
