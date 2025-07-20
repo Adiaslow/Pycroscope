@@ -182,11 +182,11 @@ Pycroscope follows clean architecture principles with mathematical elegance:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Public API                               │
-│              Simple "enable_profiling()" entry               │
+│                     Public API                              │
+│              Simple "enable_profiling()" entry              │
 ├─────────────────────────────────────────────────────────────┤
-│                   ProfilerSuite                            │
-│           Central orchestrator with lifecycle mgmt         │
+│                   ProfilerSuite                             │
+│           Central orchestrator with lifecycle mgmt          │
 ├─────────────────────────────────────────────────────────────┤
 │  Collectors    │  Analysis     │  Storage      │    CLI     │
 │  (8 complete)  │  (6+ engines) │  (File/Mem)   │ (9 cmds)   │
@@ -201,7 +201,7 @@ Pycroscope follows clean architecture principles with mathematical elegance:
 │  • Exception   │               │               │            │
 ├─────────────────────────────────────────────────────────────┤
 │                Core Infrastructure                          │
-│     Interfaces • Models • Config • Registry                │
+│     Interfaces • Models • Config • Registry                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
