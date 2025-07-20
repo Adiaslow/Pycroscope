@@ -170,7 +170,7 @@ Professional command-line interface:
 Production-grade quality assurance:
 
 - **118 Tests**: Comprehensive test suite with 100% success rate
-- **Multiple Coverage**: Line, branch, and integration test coverage
+- **27% Coverage**: Current coverage with plan to expand (focused on core components)
 - **CI/CD Pipeline**: GitHub Actions with multi-OS, multi-Python testing
 - **Code Quality**: Black, isort, mypy, flake8, bandit integration
 - **Pre-commit Hooks**: Automated quality checks
@@ -182,11 +182,11 @@ Pycroscope follows clean architecture principles with mathematical elegance:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                     Public API                              │
-│              Simple "enable_profiling()" entry              │
+│                     Public API                               │
+│              Simple "enable_profiling()" entry               │
 ├─────────────────────────────────────────────────────────────┤
-│                   ProfilerSuite                             │
-│           Central orchestrator with lifecycle mgmt          │
+│                   ProfilerSuite                            │
+│           Central orchestrator with lifecycle mgmt         │
 ├─────────────────────────────────────────────────────────────┤
 │  Collectors    │  Analysis     │  Storage      │    CLI     │
 │  (8 complete)  │  (6+ engines) │  (File/Mem)   │ (9 cmds)   │
@@ -201,7 +201,7 @@ Pycroscope follows clean architecture principles with mathematical elegance:
 │  • Exception   │               │               │            │
 ├─────────────────────────────────────────────────────────────┤
 │                Core Infrastructure                          │
-│     Interfaces • Models • Config • Registry                 │
+│     Interfaces • Models • Config • Registry                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -416,6 +416,14 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - ✅ **Professional CLI**: Complete command-line interface with 9 commands
 - ✅ **Quality Assurance**: 100% test success rate with comprehensive CI/CD
 - ✅ **Production Standards**: Clean architecture, extensive documentation, contributor-friendly
+
+### Performance Characteristics
+
+- **Low Overhead**: Efficient sampling and buffering minimize impact
+- **Scalable**: Handles large codebases with configurable resource limits
+- **Reliable**: Comprehensive error handling and graceful degradation
+- **Cross-Platform**: Tested on Windows, macOS, and Linux
+- **Multi-Version**: Supports Python 3.8 through 3.12
 
 ---
 

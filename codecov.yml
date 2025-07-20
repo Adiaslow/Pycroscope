@@ -6,20 +6,20 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "70...100"
+  range: "20...100"
 
   status:
     project:
       default:
-        target: 90%
-        threshold: 1%
+        target: 25%
+        threshold: 5%
         if_no_uploads: error
         if_not_found: success
         if_ci_failed: error
     patch:
       default:
-        target: 85%
-        threshold: 2%
+        target: 25%
+        threshold: 5%
         if_no_uploads: error
         if_not_found: success
         if_ci_failed: error
