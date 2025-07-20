@@ -1,7 +1,6 @@
 # Pycroscope: Development Optimization Framework
 
 [![Tests](https://github.com/Adiaslow/pycroscope/actions/workflows/tests.yml/badge.svg)](https://github.com/Adiaslow/pycroscope/actions/workflows/tests.yml)
-[![Coverage](https://codecov.io/gh/Adiaslow/pycroscope/branch/main/graph/badge.svg)](https://codecov.io/gh/Adiaslow/pycroscope)
 [![Python Versions](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://github.com/Adiaslow/pycroscope)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
