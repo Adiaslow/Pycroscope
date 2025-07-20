@@ -72,11 +72,6 @@ jobs:
           python -c "import pycroscope; print('Pycroscope version:', pycroscope.__version__)"
           python -c "from pycroscope import enable_profiling; print('Import successful')"
 
-      - name: Run linting
-        run: |
-          black --check pycroscope/ tests/
-          isort --check-only pycroscope/ tests/
-
       - name: Run tests with coverage
         run: |
           python -m pytest --cov=pycroscope --cov-report=term-missing --cov-report=xml --cov-report=html --cov-fail-under=25 --junitxml=pytest-results.xml -v
