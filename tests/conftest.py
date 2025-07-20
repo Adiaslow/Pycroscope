@@ -8,34 +8,38 @@ for all test modules.
 import os
 import sys
 import tempfile
-import pytest
-from pathlib import Path
 from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-from unittest.mock import Mock, MagicMock
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+from unittest.mock import MagicMock, Mock
 
-# Add pycroscope to path for testing
-sys.path.insert(0, str(Path(__file__).parent.parent))
+import pytest
 
 from pycroscope.core.config import (
-    ProfileConfig,
-    CollectorConfig,
     AnalysisConfig,
+    AnalysisType,
+    CollectorConfig,
+    CollectorType,
+    ProfileConfig,
     StorageConfig,
+    StorageType,
 )
-from pycroscope.core.config import CollectorType, AnalysisType, StorageType
 from pycroscope.core.models import (
-    ProfileSession,
-    ExecutionEvent,
-    MemorySnapshot,
     CallTree,
     EnvironmentInfo,
     ExecutionContext,
-    SourceLocation,
+    ExecutionEvent,
     FrameInfo,
+    MemorySnapshot,
+    ProfileSession,
+    SourceLocation,
 )
 from pycroscope.storage.file_store import FileDataStore
 from pycroscope.storage.memory_store import MemoryDataStore
+
+# Add pycroscope to path for testing - disabled for editable install
+# sys.path.insert(0, str(Path(__file__).parent.parent))
+
 
 
 @pytest.fixture(scope="session")
@@ -299,7 +303,7 @@ def cleanup_registry():
 def capture_output():
     """Capture stdout and stderr for CLI testing."""
     import io
-    from contextlib import redirect_stdout, redirect_stderr
+    from contextlib import redirect_stderr, redirect_stdout
 
     stdout_capture = io.StringIO()
     stderr_capture = io.StringIO()

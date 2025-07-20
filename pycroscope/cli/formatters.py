@@ -7,9 +7,9 @@ tables, JSON, and YAML for different consumption needs.
 
 import json
 import sys
-from typing import Any, Dict, List, Optional, Union
 from datetime import datetime
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Union
 
 import yaml
 

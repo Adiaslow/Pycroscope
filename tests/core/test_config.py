@@ -5,22 +5,23 @@ Tests ProfileConfig, CollectorConfig, AnalysisConfig, StorageConfig,
 and related configuration classes.
 """
 
-import pytest
-from pathlib import Path
-import tempfile
-import yaml
 import json
+import tempfile
+from pathlib import Path
+
+import pytest
+import yaml
 
 from pycroscope.core.config import (
-    ProfileConfig,
-    CollectorConfig,
     AnalysisConfig,
-    StorageConfig,
-    VisualizationConfig,
-    CollectorType,
     AnalysisType,
-    StorageType,
+    CollectorConfig,
+    CollectorType,
     ConfigLoader,
+    ProfileConfig,
+    StorageConfig,
+    StorageType,
+    VisualizationConfig,
 )
 
 

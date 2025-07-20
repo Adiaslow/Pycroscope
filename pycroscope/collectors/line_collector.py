@@ -7,9 +7,10 @@ providing detailed insight into where time is spent in the application.
 
 import sys
 import time
-from typing import Any, Dict, Iterator, Optional, Set, List
-from .base import BaseCollector
+from typing import Any, Dict, Iterator, List, Optional, Set
+
 from ..core.config import CollectorConfig
+from .base import BaseCollector
 
 
 class LineCollector(BaseCollector):

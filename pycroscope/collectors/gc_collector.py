@@ -7,14 +7,14 @@ performance issues and optimization opportunities.
 
 import gc
 import sys
-import time
 import threading
+import time
 import weakref
-from typing import Any, Dict, Iterator, List, Optional, Tuple, Set
 from collections import defaultdict
+from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
+from ..core.models import EventType, ExecutionEvent, FrameInfo, SourceLocation
 from .base import BaseCollector
-from ..core.models import ExecutionEvent, FrameInfo, SourceLocation, EventType
 
 
 class GCCollector(BaseCollector):

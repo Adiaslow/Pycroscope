@@ -5,21 +5,21 @@ Identifies sophisticated performance patterns and anti-patterns across
 multi-dimensional profiling data from all collectors.
 """
 
-import re
 import math
+import re
 import statistics
-from collections import defaultdict, Counter, deque
-from typing import Dict, List, Optional, Set, Any, Tuple, Pattern
+from collections import Counter, defaultdict, deque
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional, Pattern, Set, Tuple
 
 from ..core.models import (
-    ProfileSession,
-    ExecutionEvent,
     DetectedPattern,
-    OptimizationRecommendation,
-    SourceLocation,
     EventType,
+    ExecutionEvent,
+    OptimizationRecommendation,
+    ProfileSession,
+    SourceLocation,
 )
 
 
@@ -111,12 +111,13 @@ class AdvancedPatternDetector(BaseAnalyzer):
             Analysis results with detected patterns
         """
         # Import here to avoid circular imports
+        from datetime import datetime
+
         from ..core.models import (
             AnalysisResult,
-            StaticAnalysisResult,
             DynamicAnalysisResult,
+            StaticAnalysisResult,
         )
-        from datetime import datetime
 
         patterns = self.detect_patterns(profile_data)
 

@@ -5,17 +5,17 @@ Handles conversion of ProfileSession objects to and from persistent formats
 with support for compression, versioning, and data integrity.
 """
 
-import json
-import pickle
 import gzip
 import hashlib
+import json
+import pickle
+from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
-from dataclasses import asdict
 
-from ..core.models import ProfileSession, ExecutionEvent, MemorySnapshot, CallTree
 from ..core.config import ProfileConfig
+from ..core.models import CallTree, ExecutionEvent, MemorySnapshot, ProfileSession
 
 
 class SerializationError(Exception):
@@ -236,13 +236,13 @@ class SessionSerializer:
     def _dict_to_session(self, data: Dict[str, Any]) -> ProfileSession:
         """Convert dictionary back to ProfileSession."""
         from ..core.models import (
-            ProfileSession,
-            ExecutionEvent,
-            MemorySnapshot,
-            EnvironmentInfo,
-            ExecutionContext,
             AnalysisResult,
             CallTree,
+            EnvironmentInfo,
+            ExecutionContext,
+            ExecutionEvent,
+            MemorySnapshot,
+            ProfileSession,
         )
 
         # Reconstruct timestamp
@@ -337,14 +337,17 @@ class SessionSerializer:
 
     def _dict_to_config(self, data: Dict[str, Any]) -> ProfileConfig:
         """Convert dictionary to ProfileConfig."""
-        from ..core.config import (
-            ProfileConfig,
-            CollectorConfig,
-            AnalysisConfig,
-            StorageConfig,
-        )
-        from ..core.config import CollectorType, AnalysisType, StorageType
         from pathlib import Path
+
+        from ..core.config import (
+            AnalysisConfig,
+            AnalysisType,
+            CollectorConfig,
+            CollectorType,
+            ProfileConfig,
+            StorageConfig,
+            StorageType,
+        )
 
         config = ProfileConfig()
         config.target_package = data.get("target_package")
@@ -478,7 +481,7 @@ class SessionSerializer:
 
     def _dict_to_event(self, data: Dict[str, Any]) -> ExecutionEvent:
         """Convert dictionary to ExecutionEvent."""
-        from ..core.models import ExecutionEvent, FrameInfo, SourceLocation, EventType
+        from ..core.models import EventType, ExecutionEvent, FrameInfo, SourceLocation
 
         # Reconstruct event type
         event_type = EventType(data["event_type"])

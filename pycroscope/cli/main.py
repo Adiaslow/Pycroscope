@@ -5,24 +5,24 @@ Provides command-line interface for profiling operations with comprehensive
 argument parsing and subcommand dispatch.
 """
 
-import sys
 import argparse
-from typing import List, Optional
+import sys
 from pathlib import Path
+from typing import List, Optional
 
+from ..core.config import ConfigLoader, ProfileConfig
 from .commands import (
-    ProfileCommand,
-    ListCommand,
-    CompareCommand,
-    StatusCommand,
-    ExportCommand,
     AnalyzeCommand,
-    DeleteCommand,
     CleanupCommand,
+    CompareCommand,
     ConfigCommand,
+    DeleteCommand,
+    ExportCommand,
+    ListCommand,
+    ProfileCommand,
+    StatusCommand,
 )
 from .formatters import ResultFormatter
-from ..core.config import ProfileConfig, ConfigLoader
 
 
 def create_parser() -> argparse.ArgumentParser:

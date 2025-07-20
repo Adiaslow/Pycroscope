@@ -8,20 +8,20 @@ execution data to identify potential optimization opportunities.
 import ast
 import inspect
 import os
-from pathlib import Path
-from typing import Dict, List, Optional, Set, Any
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set
 
-from .base_analyzer import BaseAnalyzer
+from ..core.config import AnalysisConfig
 from ..core.models import (
-    ProfileSession,
     AnalysisResult,
-    StaticAnalysisResult,
     DetectedPattern,
     OptimizationRecommendation,
+    ProfileSession,
     SourceLocation,
+    StaticAnalysisResult,
 )
-from ..core.config import AnalysisConfig
+from .base_analyzer import BaseAnalyzer
 
 
 class StaticAnalyzer(BaseAnalyzer):
@@ -77,9 +77,11 @@ class StaticAnalyzer(BaseAnalyzer):
                 try:
                     # Analyze file if it exists
                     if os.path.exists(source_location.filename):
-                        file_patterns, file_recommendations, file_metrics = (
-                            self._analyze_source_file(source_location.filename)
-                        )
+                        (
+                            file_patterns,
+                            file_recommendations,
+                            file_metrics,
+                        ) = self._analyze_source_file(source_location.filename)
                         patterns.extend(file_patterns)
                         recommendations.extend(file_recommendations)
                         complexity_metrics[source_location.filename] = file_metrics

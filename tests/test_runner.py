@@ -5,9 +5,9 @@ Test runner for Pycroscope testing framework.
 Provides convenient test execution with coverage reporting and filtering.
 """
 
-import sys
-import subprocess
 import argparse
+import subprocess
+import sys
 from pathlib import Path
 
 

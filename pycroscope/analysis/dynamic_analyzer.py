@@ -6,22 +6,22 @@ memory issues, and dynamic optimization opportunities.
 """
 
 import statistics
-from collections import defaultdict, Counter
+from collections import Counter, defaultdict
 from datetime import datetime
-from typing import Dict, List, Optional, Set, Any, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from .base_analyzer import BaseAnalyzer
+from ..core.config import AnalysisConfig
 from ..core.models import (
-    ProfileSession,
     AnalysisResult,
-    DynamicAnalysisResult,
     CallNode,
     DetectedPattern,
-    OptimizationRecommendation,
-    SourceLocation,
+    DynamicAnalysisResult,
     MetricType,
+    OptimizationRecommendation,
+    ProfileSession,
+    SourceLocation,
 )
-from ..core.config import AnalysisConfig
+from .base_analyzer import BaseAnalyzer
 
 
 class DynamicAnalyzer(BaseAnalyzer):

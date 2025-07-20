@@ -7,24 +7,25 @@ of functions and detect potential performance scaling issues.
 
 import math
 import statistics
-import numpy as np
 from collections import defaultdict, namedtuple
-from typing import Dict, List, Optional, Tuple, Set, Any
 from dataclasses import dataclass
 from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+import numpy as np
 from scipy import stats
 from scipy.optimize import curve_fit
 
-from .base_analyzer import BaseAnalyzer
 from ..core.models import (
-    ProfileSession,
     AnalysisResult,
     DetectedPattern,
+    DynamicAnalysisResult,
     OptimizationRecommendation,
+    ProfileSession,
     SourceLocation,
     StaticAnalysisResult,
-    DynamicAnalysisResult,
 )
+from .base_analyzer import BaseAnalyzer
 
 
 class ComplexityClass(Enum):

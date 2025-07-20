@@ -5,33 +5,33 @@ The ProfilerSuite serves as the central coordinator for all profiling activities
 managing collector lifecycle, session coordination, and providing the primary API.
 """
 
+import atexit
+import signal
+import sys
 import threading
 import time
 import weakref
 from contextlib import contextmanager
 from datetime import datetime
-from typing import Dict, List, Optional, Set, Any, Iterator, Type
-import atexit
-import signal
-import sys
+from typing import Any, Dict, Iterator, List, Optional, Set, Type
 
-from .interfaces import Collector, Analyzer, DataStore, Visualizer, Lifecycle
+from .config import CollectorType, ProfileConfig
+from .interfaces import Analyzer, Collector, DataStore, Lifecycle, Visualizer
 from .models import (
-    ProfileSession,
-    ExecutionEvent,
     AnalysisResult,
-    EnvironmentInfo,
-    ExecutionContext,
-    Dashboard,
-    create_session_id,
-    EventType,
-    FrameInfo,
-    SourceLocation,
-    MemorySnapshot,
-    CallTree,
     CallNode,
+    CallTree,
+    Dashboard,
+    EnvironmentInfo,
+    EventType,
+    ExecutionContext,
+    ExecutionEvent,
+    FrameInfo,
+    MemorySnapshot,
+    ProfileSession,
+    SourceLocation,
+    create_session_id,
 )
-from .config import ProfileConfig, CollectorType
 from .registry import ComponentRegistry
 
 
@@ -138,25 +138,25 @@ class ProfilerSuite(Lifecycle):
 
     def _register_default_components(self) -> None:
         """Register default component implementations."""
+        from ..analysis.complexity_detector import AlgorithmComplexityDetector
+        from ..analysis.correlation_analyzer import CrossCorrelationAnalyzer
+        from ..analysis.dynamic_analyzer import DynamicAnalyzer
+        from ..analysis.optimization_engine import OptimizationRecommendationEngine
+        from ..analysis.pattern_detector import AdvancedPatternDetector
+        from ..analysis.static_analyzer import StaticAnalyzer
         from ..collectors import (
+            CallCollector,
+            CPUCollector,
+            ExceptionCollector,
+            GCCollector,
+            ImportCollector,
+            IOCollector,
             LineCollector,
             MemoryCollector,
-            CallCollector,
-            ExceptionCollector,
-            ImportCollector,
-            GCCollector,
-            IOCollector,
-            CPUCollector,
         )
-        from ..analysis.static_analyzer import StaticAnalyzer
-        from ..analysis.dynamic_analyzer import DynamicAnalyzer
-        from ..analysis.pattern_detector import AdvancedPatternDetector
-        from ..analysis.correlation_analyzer import CrossCorrelationAnalyzer
-        from ..analysis.complexity_detector import AlgorithmComplexityDetector
-        from ..analysis.optimization_engine import OptimizationRecommendationEngine
         from ..storage.file_store import FileDataStore
         from ..storage.memory_store import MemoryDataStore
-        from .config import CollectorType, AnalysisType, StorageType
+        from .config import AnalysisType, CollectorType, StorageType
 
         # Register collectors
         self._registry.register_collector(CollectorType.LINE, LineCollector)
@@ -701,7 +701,7 @@ class ProfilerSuite(Lifecycle):
 
     def _build_call_tree(self, events: List[ExecutionEvent]) -> Optional[CallTree]:
         """Build call tree from execution events."""
-        from ..core.models import CallTree, CallNode
+        from ..core.models import CallNode, CallTree
 
         # Simple call tree building - group by function calls
         call_events = [
@@ -757,8 +757,9 @@ class ProfilerSuite(Lifecycle):
 
     def _collect_environment_info(self) -> EnvironmentInfo:
         """Collect current environment information."""
-        import platform
         import os
+        import platform
+
         import psutil
 
         return EnvironmentInfo(

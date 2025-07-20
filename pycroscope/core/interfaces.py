@@ -6,8 +6,8 @@ ensuring clean separation of concerns and adherence to SOLID principles.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Iterator
 from dataclasses import dataclass
+from typing import Any, Dict, Iterator, List, Optional
 
 
 class Collector(ABC):

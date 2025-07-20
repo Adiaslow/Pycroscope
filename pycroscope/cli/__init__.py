@@ -24,19 +24,19 @@ Advanced Features:
 - Storage cleanup and maintenance
 """
 
-from .main import main, cli_entry_point
 from .commands import (
-    ProfileCommand,
-    ListCommand,
-    CompareCommand,
-    StatusCommand,
-    ExportCommand,
     AnalyzeCommand,
-    DeleteCommand,
     CleanupCommand,
+    CompareCommand,
     ConfigCommand,
+    DeleteCommand,
+    ExportCommand,
+    ListCommand,
+    ProfileCommand,
+    StatusCommand,
 )
 from .formatters import ResultFormatter, TableFormatter
+from .main import cli_entry_point, main
 
 __all__ = [
     "main",

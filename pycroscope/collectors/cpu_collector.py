@@ -5,21 +5,21 @@ Monitors CPU usage and instruction-level execution patterns to identify
 computational bottlenecks and optimization opportunities.
 """
 
-import sys
-import time
-import threading
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
-from collections import defaultdict, deque
 import dis
+import sys
+import threading
+import time
 import traceback
+from collections import defaultdict, deque
+from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
 try:
     import psutil
 except ImportError:
     psutil = None
 
+from ..core.models import EventType, ExecutionEvent, FrameInfo, SourceLocation
 from .base import BaseCollector
-from ..core.models import ExecutionEvent, FrameInfo, SourceLocation, EventType
 
 
 class CPUCollector(BaseCollector):

@@ -4,21 +4,22 @@ Unit tests for CLI commands.
 Tests command creation, argument parsing, and basic execution logic.
 """
 
-import pytest
 from argparse import ArgumentParser, Namespace
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from pycroscope.cli.commands import (
-    BaseCommand,
-    ProfileCommand,
-    ListCommand,
-    CompareCommand,
-    StatusCommand,
-    ExportCommand,
     AnalyzeCommand,
-    DeleteCommand,
+    BaseCommand,
     CleanupCommand,
+    CompareCommand,
     ConfigCommand,
+    DeleteCommand,
+    ExportCommand,
+    ListCommand,
+    ProfileCommand,
+    StatusCommand,
 )
 from pycroscope.cli.formatters import ResultFormatter
 from pycroscope.core.config import ProfileConfig

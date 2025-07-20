@@ -8,10 +8,10 @@ results and track performance changes over time.
 import statistics
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
 from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
 
-from ..core.models import ProfileSession, DetectedPattern, OptimizationRecommendation
+from ..core.models import DetectedPattern, OptimizationRecommendation, ProfileSession
 
 
 class ComparisonType(Enum):

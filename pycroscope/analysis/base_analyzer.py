@@ -5,18 +5,19 @@ All concrete analyzers inherit from BaseAnalyzer to ensure consistent
 behavior and provide shared utilities for analysis operations.
 """
 
-import time
 import threading
+import time
 from abc import abstractmethod
 from typing import Any, Dict, List, Optional, Set
+
+from ..core.config import AnalysisConfig
 from ..core.interfaces import Analyzer, Configurable, Lifecycle
 from ..core.models import (
-    ProfileSession,
     AnalysisResult,
     DetectedPattern,
     OptimizationRecommendation,
+    ProfileSession,
 )
-from ..core.config import AnalysisConfig
 
 
 class BaseAnalyzer(Analyzer, Configurable, Lifecycle):
@@ -212,8 +213,9 @@ class BaseAnalyzer(Analyzer, Configurable, Lifecycle):
         Returns:
             Analysis result indicating error
         """
-        from ..core.models import StaticAnalysisResult, DynamicAnalysisResult
         from datetime import datetime
+
+        from ..core.models import DynamicAnalysisResult, StaticAnalysisResult
 
         return AnalysisResult(
             session_id=profile_data.session_id,

@@ -7,22 +7,22 @@ sophisticated performance patterns that aren't visible from single collectors.
 
 import math
 import statistics
-from collections import defaultdict, Counter
-from typing import Dict, List, Optional, Set, Any, Tuple, NamedTuple
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from datetime import datetime
+from typing import Any, Dict, List, NamedTuple, Optional, Set, Tuple
 
-from .base_analyzer import BaseAnalyzer
 from ..core.models import (
-    ProfileSession,
     AnalysisResult,
     DetectedPattern,
-    OptimizationRecommendation,
-    SourceLocation,
-    EventType,
-    StaticAnalysisResult,
     DynamicAnalysisResult,
+    EventType,
+    OptimizationRecommendation,
+    ProfileSession,
+    SourceLocation,
+    StaticAnalysisResult,
 )
+from .base_analyzer import BaseAnalyzer
 
 
 @dataclass

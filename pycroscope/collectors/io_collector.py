@@ -5,18 +5,18 @@ Monitors file and network I/O operations to identify performance
 bottlenecks in data access and transfer operations.
 """
 
-import os
-import sys
-import time
-import socket
-import threading
-from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
-from pathlib import Path
-from collections import defaultdict
 import functools
+import os
+import socket
+import sys
+import threading
+import time
+from collections import defaultdict
+from pathlib import Path
+from typing import Any, Dict, Iterator, List, Optional, Set, Tuple
 
+from ..core.models import EventType, ExecutionEvent, FrameInfo, SourceLocation
 from .base import BaseCollector
-from ..core.models import ExecutionEvent, FrameInfo, SourceLocation, EventType
 
 
 class IOCollector(BaseCollector):

@@ -7,11 +7,11 @@ useful for testing and scenarios where persistence is not required.
 
 import threading
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
 
-from ..core.interfaces import DataStore, Configurable
-from ..core.models import ProfileSession
 from ..core.config import StorageConfig
+from ..core.interfaces import Configurable, DataStore
+from ..core.models import ProfileSession
 
 
 class MemoryDataStore(DataStore, Configurable):

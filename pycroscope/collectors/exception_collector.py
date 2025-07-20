@@ -6,14 +6,14 @@ performance costs associated with exception-based control flow.
 """
 
 import sys
+import threading
 import time
 import traceback
-import threading
-from typing import Any, Dict, Iterator, List, Optional
 from datetime import datetime
+from typing import Any, Dict, Iterator, List, Optional
 
-from .base import BaseCollector
 from ..core.models import ExecutionEvent, FrameInfo, SourceLocation
+from .base import BaseCollector
 
 
 class ExceptionCollector(BaseCollector):

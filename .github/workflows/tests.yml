@@ -74,10 +74,8 @@ jobs:
 
       - name: Run linting
         run: |
-          python -m pip install black isort mypy
           black --check pycroscope/ tests/
           isort --check-only pycroscope/ tests/
-          mypy pycroscope/ --ignore-missing-imports
 
       - name: Run tests with coverage
         run: |

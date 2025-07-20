@@ -5,18 +5,18 @@ Provides persistent storage of profiling sessions using the file system
 with automatic cleanup, indexing, and efficient retrieval.
 """
 
+import json
 import os
-import time
 import threading
+import time
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-import json
 
-from ..core.interfaces import DataStore, Configurable
-from ..core.models import ProfileSession
 from ..core.config import StorageConfig
-from .session_serializer import SessionSerializer, SerializationError
+from ..core.interfaces import Configurable, DataStore
+from ..core.models import ProfileSession
+from .session_serializer import SerializationError, SessionSerializer
 
 
 class FileDataStore(DataStore, Configurable):

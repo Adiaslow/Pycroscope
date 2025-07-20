@@ -10,9 +10,10 @@ import sys
 import threading
 import time
 import tracemalloc
-from typing import Any, Dict, Iterator, Optional, List, Tuple
-from .base import BaseCollector
+from typing import Any, Dict, Iterator, List, Optional, Tuple
+
 from ..core.config import CollectorConfig
+from .base import BaseCollector
 
 
 class MemoryCollector(BaseCollector):

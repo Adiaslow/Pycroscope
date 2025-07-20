@@ -6,11 +6,12 @@ providing insight into program flow and call patterns.
 """
 
 import sys
-import time
 import threading
-from typing import Any, Dict, Iterator, Optional, List, Set
-from .base import BaseCollector
+import time
+from typing import Any, Dict, Iterator, List, Optional, Set
+
 from ..core.config import CollectorConfig
+from .base import BaseCollector
 
 
 class CallCollector(BaseCollector):
@@ -212,7 +213,6 @@ class CallCollector(BaseCollector):
                 call_record["function_name"] == function_name
                 and call_record["filename"] == filename
             ):
-
                 # Remove from stack
                 self._call_stack.pop()
 

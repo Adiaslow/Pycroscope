@@ -5,11 +5,11 @@ Defines immutable data structures that represent profiling sessions,
 execution events, analysis results, and optimization recommendations.
 """
 
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Set, Union
 from enum import Enum
-import uuid
+from typing import Any, Dict, List, Optional, Set, Union
 
 
 class EventType(Enum):

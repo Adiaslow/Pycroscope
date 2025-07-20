@@ -7,17 +7,18 @@ comprehensive insights into profiling data.
 
 import threading
 from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional
+
+from ..core.config import AnalysisConfig, AnalysisType
 from ..core.interfaces import Analyzer
 from ..core.models import (
-    ProfileSession,
     AnalysisResult,
-    StaticAnalysisResult,
-    DynamicAnalysisResult,
     DetectedPattern,
+    DynamicAnalysisResult,
     OptimizationRecommendation,
+    ProfileSession,
+    StaticAnalysisResult,
 )
-from ..core.config import AnalysisConfig, AnalysisType
 from .base_analyzer import BaseAnalyzer
 
 

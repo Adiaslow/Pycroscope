@@ -4,15 +4,16 @@ Unit tests for FileDataStore.
 Tests file-based session storage, indexing, cleanup, and metadata management.
 """
 
-import pytest
 import json
 import tempfile
-from pathlib import Path
 from datetime import datetime, timedelta
+from pathlib import Path
 
-from pycroscope.storage.file_store import FileDataStore
+import pytest
+
 from pycroscope.core.config import StorageConfig, StorageType
 from pycroscope.core.models import ProfileSession
+from pycroscope.storage.file_store import FileDataStore
 from pycroscope.storage.session_serializer import SerializationError
 
 
@@ -77,12 +78,13 @@ class TestFileDataStore:
             file_store.delete_session(session_id)
 
         # Create a simple session that definitely serializes properly
+        from datetime import datetime, timedelta
+
         from pycroscope.core.models import (
-            ProfileSession,
             EnvironmentInfo,
             ExecutionContext,
+            ProfileSession,
         )
-        from datetime import datetime, timedelta
 
         env_info = EnvironmentInfo(
             python_version="3.9.7",
@@ -131,8 +133,9 @@ class TestFileDataStore:
     def test_list_sessions(self, file_store, sample_config, test_data_generator):
         """Test listing stored sessions."""
         # Create shared session components
-        from pycroscope.core.models import EnvironmentInfo, ExecutionContext
         from datetime import datetime, timedelta
+
+        from pycroscope.core.models import EnvironmentInfo, ExecutionContext
 
         env_info = EnvironmentInfo(
             python_version="3.9.7",
@@ -201,12 +204,13 @@ class TestFileDataStore:
     def test_delete_session(self, file_store, sample_config):
         """Test deleting a stored session."""
         # Create a simple session that definitely serializes properly
+        from datetime import datetime, timedelta
+
         from pycroscope.core.models import (
-            ProfileSession,
             EnvironmentInfo,
             ExecutionContext,
+            ProfileSession,
         )
-        from datetime import datetime, timedelta
 
         env_info = EnvironmentInfo(
             python_version="3.9.7",
@@ -309,8 +313,9 @@ class TestFileDataStore:
     def test_session_limit_enforcement(self, file_store, sample_config):
         """Test that session limit is enforced."""
         # Create required session components
-        from pycroscope.core.models import EnvironmentInfo, ExecutionContext
         from datetime import datetime, timedelta
+
+        from pycroscope.core.models import EnvironmentInfo, ExecutionContext
 
         env_info = EnvironmentInfo(
             python_version="3.9.7",
@@ -353,12 +358,13 @@ class TestFileDataStore:
     def test_index_recovery(self, file_store, sample_config):
         """Test index recovery from corrupted index file."""
         # Create a simple session that definitely serializes properly
+        from datetime import datetime, timedelta
+
         from pycroscope.core.models import (
-            ProfileSession,
             EnvironmentInfo,
             ExecutionContext,
+            ProfileSession,
         )
-        from datetime import datetime, timedelta
 
         env_info = EnvironmentInfo(
             python_version="3.9.7",
@@ -429,8 +435,9 @@ class TestFileDataStore:
         errors = []
 
         # Create shared session components for threads to use
-        from pycroscope.core.models import EnvironmentInfo, ExecutionContext
         from datetime import datetime, timedelta
+
+        from pycroscope.core.models import EnvironmentInfo, ExecutionContext
 
         env_info = EnvironmentInfo(
             python_version="3.9.7",
@@ -485,12 +492,13 @@ class TestFileDataStore:
     def test_access_time_update(self, file_store, sample_config):
         """Test that access time is updated on load."""
         # Create a simple session that definitely serializes properly
+        from datetime import datetime, timedelta
+
         from pycroscope.core.models import (
-            ProfileSession,
             EnvironmentInfo,
             ExecutionContext,
+            ProfileSession,
         )
-        from datetime import datetime, timedelta
 
         env_info = EnvironmentInfo(
             python_version="3.9.7",

@@ -5,27 +5,28 @@ Tests all immutable data structures including ProfileSession,
 ExecutionEvent, AnalysisResult, and related classes.
 """
 
-import pytest
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import pytest
+
+from pycroscope.core.config import ProfileConfig
 from pycroscope.core.models import (
-    ProfileSession,
-    ExecutionEvent,
-    MemorySnapshot,
+    AnalysisResult,
     CallNode,
     CallTree,
-    EnvironmentInfo,
-    ExecutionContext,
-    SourceLocation,
-    FrameInfo,
     DetectedPattern,
-    OptimizationRecommendation,
-    AnalysisResult,
+    EnvironmentInfo,
     EventType,
+    ExecutionContext,
+    ExecutionEvent,
+    FrameInfo,
+    MemorySnapshot,
     MetricType,
+    OptimizationRecommendation,
+    ProfileSession,
+    SourceLocation,
 )
-from pycroscope.core.config import ProfileConfig
 
 
 class TestSourceLocation:

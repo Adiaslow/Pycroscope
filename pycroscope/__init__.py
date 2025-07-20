@@ -5,13 +5,14 @@ A comprehensive Python profiling system designed for development-time package op
 Provides complete performance analysis through multi-dimensional data collection.
 """
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 __author__ = "Pycroscope Contributors"
+
+from .core.config import CollectorConfig, CollectorType, ProfileConfig
+from .core.models import AnalysisResult, ProfileSession
 
 # Core public API - "One Way, Many Options"
 from .core.profiler_suite import ProfilerSuite
-from .core.config import ProfileConfig, CollectorConfig, CollectorType
-from .core.models import ProfileSession, AnalysisResult
 
 
 # Main convenience function for simple usage

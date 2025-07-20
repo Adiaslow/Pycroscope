@@ -5,12 +5,13 @@ Provides structured configuration with validation, defaults, and type safety.
 Supports both programmatic configuration and file-based configuration.
 """
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Union
-from pathlib import Path
 import json
-import yaml
+from dataclasses import dataclass, field
 from enum import Enum
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Union
+
+import yaml
 
 
 class CollectorType(Enum):

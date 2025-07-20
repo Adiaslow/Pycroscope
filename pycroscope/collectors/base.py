@@ -10,8 +10,9 @@ import time
 from abc import abstractmethod
 from collections import deque
 from typing import Any, Dict, Iterator, List, Optional
-from ..core.interfaces import Collector, Configurable, Lifecycle
+
 from ..core.config import CollectorConfig
+from ..core.interfaces import Collector, Configurable, Lifecycle
 
 
 class BaseCollector(Collector, Configurable, Lifecycle):

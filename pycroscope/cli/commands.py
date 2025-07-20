@@ -6,25 +6,25 @@ session management, comparison, and data export.
 """
 
 import os
-import sys
 import subprocess
+import sys
 import tempfile
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 from argparse import ArgumentParser, Namespace
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-from .formatters import ResultFormatter
-from ..core.config import ProfileConfig, AnalysisType
+from ..analysis.dynamic_analyzer import DynamicAnalyzer
+from ..analysis.engine import AnalysisEngine
+from ..analysis.static_analyzer import StaticAnalyzer
+from ..core.config import AnalysisType, ProfileConfig
 from ..core.profiler_suite import ProfilerSuite
 from ..core.registry import ComponentRegistry
 from ..storage.file_store import FileDataStore
 from ..storage.memory_store import MemoryDataStore
 from ..storage.session_comparer import SessionComparer, quick_compare_sessions
-from ..analysis.engine import AnalysisEngine
-from ..analysis.static_analyzer import StaticAnalyzer
-from ..analysis.dynamic_analyzer import DynamicAnalyzer
+from .formatters import ResultFormatter
 
 
 class BaseCommand(ABC):
@@ -562,13 +562,13 @@ class AnalyzeCommand(BaseCommand):
 
             # Setup analysis engine with selected analyzers
             from ..analysis import (
-                AnalysisEngine,
-                StaticAnalyzer,
-                DynamicAnalyzer,
                 AdvancedPatternDetector,
-                CrossCorrelationAnalyzer,
                 AlgorithmComplexityDetector,
+                AnalysisEngine,
+                CrossCorrelationAnalyzer,
+                DynamicAnalyzer,
                 OptimizationRecommendationEngine,
+                StaticAnalyzer,
             )
             from ..core.config import AnalysisConfig, AnalysisType
 

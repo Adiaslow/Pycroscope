@@ -5,15 +5,15 @@ Monitors module import operations to identify expensive imports
 that could impact application startup time and overall performance.
 """
 
-import sys
-import time
-import threading
 import importlib.util
-from typing import Any, Dict, Iterator, List, Optional, Set
+import sys
+import threading
+import time
 from pathlib import Path
+from typing import Any, Dict, Iterator, List, Optional, Set
 
+from ..core.models import EventType, ExecutionEvent, FrameInfo, SourceLocation
 from .base import BaseCollector
-from ..core.models import ExecutionEvent, FrameInfo, SourceLocation, EventType
 
 
 class ImportCollector(BaseCollector):

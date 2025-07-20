@@ -5,9 +5,10 @@ Provides a centralized location for registering and retrieving component
 implementations, enabling loose coupling and extensibility.
 """
 
-from typing import Dict, List, Type, Any, Optional, TypeVar, cast
-from .interfaces import Collector, Analyzer, DataStore, Visualizer, Registry
-from .config import CollectorType, AnalysisType, StorageType
+from typing import Any, Dict, List, Optional, Type, TypeVar, cast
+
+from .config import AnalysisType, CollectorType, StorageType
+from .interfaces import Analyzer, Collector, DataStore, Registry, Visualizer
 
 T = TypeVar("T")
 

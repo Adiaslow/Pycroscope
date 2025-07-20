@@ -6,22 +6,22 @@ detected patterns from all analyzers and collectors.
 """
 
 import re
-from collections import defaultdict, Counter
-from typing import Dict, List, Optional, Set, Any, Tuple
+from collections import Counter, defaultdict
 from dataclasses import dataclass
-from enum import Enum
 from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Set, Tuple
 
-from .base_analyzer import BaseAnalyzer
 from ..core.models import (
-    ProfileSession,
     AnalysisResult,
     DetectedPattern,
+    DynamicAnalysisResult,
     OptimizationRecommendation,
+    ProfileSession,
     SourceLocation,
     StaticAnalysisResult,
-    DynamicAnalysisResult,
 )
+from .base_analyzer import BaseAnalyzer
 
 
 class OptimizationCategory(Enum):
