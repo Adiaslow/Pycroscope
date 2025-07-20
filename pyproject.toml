@@ -9,7 +9,7 @@ description = "Advanced Python profiling and optimization framework"
 readme = "README.md"
 license = {file = "LICENSE"}
 authors = [
-    {name = "Pycroscope Team"}
+    {name = "Adam Murray"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
