@@ -31,7 +31,7 @@ def check_docstrings(directory):
 
 def main():
     """Run documentation check."""
-    print("📚 Checking docstring coverage...")
+    print("Checking docstring coverage...")
 
     missing = check_docstrings("pycroscope/")
     if missing:
@@ -40,7 +40,7 @@ def main():
             print(f"  {item}")
         print(f"Total missing: {len(missing)}")
     else:
-        print("✅ All functions and classes have docstrings!")
+        print("[PASS] All functions and classes have docstrings!")
 
 
 if __name__ == "__main__":

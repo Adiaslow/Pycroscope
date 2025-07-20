@@ -8,7 +8,7 @@ from pycroscope import enable_profiling, ProfileConfig, CollectorType
 
 def main():
     """Run integration test."""
-    print("🔬 Running Integration Test")
+    print("Running Integration Test")
 
     config = ProfileConfig()
     config.enable_collector(CollectorType.LINE)
@@ -26,7 +26,7 @@ def main():
 
     assert session is not None, "Session should be created"
     assert len(session.execution_events) > 0, "Events should be collected"
-    print(f"✅ Integration test passed! Events: {len(session.execution_events)}")
+    print(f"[PASS] Integration test passed! Events: {len(session.execution_events)}")
 
 
 if __name__ == "__main__":

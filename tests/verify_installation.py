@@ -16,9 +16,9 @@ def main():
     try:
         profiler = enable_profiling()
         profiler.disable()
-        print("✅ Basic functionality verified")
+        print("[PASS] Basic functionality verified")
     except Exception as e:
-        print(f"❌ Functionality test failed: {e}")
+        print(f"[FAIL] Functionality test failed: {e}")
         raise
 
 

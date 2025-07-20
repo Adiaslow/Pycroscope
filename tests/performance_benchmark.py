@@ -8,7 +8,7 @@ from pycroscope import enable_profiling, ProfileConfig, CollectorType
 
 def main():
     """Run performance benchmark."""
-    print("📊 Performance Benchmark - Development Profiler")
+    print("Performance Benchmark - Development Profiler")
 
     # More realistic workload for development profiling
     def test_workload():
@@ -57,10 +57,10 @@ def main():
 
     if overhead < max_overhead:
         print(
-            f"✅ Performance benchmark passed! (Under {max_overhead/100:.0f}x overhead)"
+            f"[PASS] Performance benchmark passed! (Under {max_overhead/100:.0f}x overhead)"
         )
     else:
-        print(f"⚠️  High overhead detected: {overhead:.1f}%")
+        print(f"[WARN] High overhead detected: {overhead:.1f}%")
         print("This is a development-time profiler - some overhead is expected.")
         print("Consider using sampling or fewer collectors for large workloads.")
         # Don't fail the build for development profiler overhead
@@ -70,7 +70,7 @@ def main():
     if session:
         assert len(session.execution_events) > 0, "Events should be collected"
         print(
-            f"✅ Functionality validated - collected {len(session.execution_events)} events"
+            f"[PASS] Functionality validated - collected {len(session.execution_events)} events"
         )
 
 
