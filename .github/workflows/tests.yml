@@ -158,7 +158,6 @@ jobs:
           assert session is not None, 'Session should be created'
           assert len(session.execution_events) > 0, 'Events should be collected'
           print(f'✅ Integration test passed! Events: {len(session.execution_events)}')
-          "
 
   benchmark:
     name: Performance Benchmarks
@@ -246,7 +245,6 @@ jobs:
           if session:
               assert len(session.execution_events) > 0, 'Events should be collected'
               print(f'✅ Functionality validated - collected {len(session.execution_events)} events')
-          "
 
   security:
     name: Security Scan
@@ -323,7 +321,6 @@ jobs:
               print(f'Total missing: {len(missing)}')
           else:
               print('✅ All functions and classes have docstrings!')
-          "
 
   release-check:
     name: Release Readiness
