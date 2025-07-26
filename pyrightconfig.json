@@ -1,0 +1,27 @@
+{
+  "include": [
+    "src",
+    "tests"
+  ],
+  "extraPaths": [
+    "src"
+  ],
+  "pythonVersion": "3.8",
+  "typeCheckingMode": "basic",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": false,
+  "reportOptionalMemberAccess": false,
+  "reportOptionalSubscript": false,
+  "reportOptionalCall": false,
+  "reportOptionalIterable": false,
+  "reportOptionalContextManager": false,
+  "reportOptionalOperand": false,
+  "reportUnboundVariable": true,
+  "reportGeneralTypeIssues": true,
+  "executionEnvironments": [
+    {
+      "root": "tests",
+      "extraPaths": ["src"]
+    }
+  ]
+} 

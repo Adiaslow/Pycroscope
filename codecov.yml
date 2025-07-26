@@ -6,19 +6,19 @@ codecov:
 coverage:
   precision: 2
   round: down
-  range: "20...100"
+  range: "50...100"
 
   status:
     project:
       default:
-        target: 25%
-        threshold: 5%
+        target: 50%
+        threshold: 2%
         if_no_uploads: error
         if_not_found: success
         if_ci_failed: error
     patch:
       default:
-        target: 25%
+        target: 50%
         threshold: 5%
         if_no_uploads: error
         if_not_found: success
@@ -26,8 +26,7 @@ coverage:
 
   ignore:
     - "tests/*"
-    - "examples/*"
-    - "docs/*"
+    - "docs/examples/*"
     - "setup.py"
     - "*/test_*.py"
     - "*/__init__.py"

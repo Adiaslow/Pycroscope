@@ -1,432 +1,241 @@
-# Pycroscope: Development Optimization Framework
+# Pycroscope 2.0
 
-[![Tests](https://github.com/Adiaslow/pycroscope/actions/workflows/tests.yml/badge.svg)](https://github.com/Adiaslow/pycroscope/actions/workflows/tests.yml)
-[![Python Versions](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://github.com/Adiaslow/pycroscope)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Tests](https://github.com/Adiaslow/pycroscope/workflows/Tests%20and%20Coverage/badge.svg)](https://github.com/Adiaslow/pycroscope/actions)
+[![codecov](https://codecov.io/gh/Adiaslow/pycroscope/branch/main/graph/badge.svg)](https://codecov.io/gh/Adiaslow/pycroscope)
+![Python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-**Production-Ready Python Profiling Framework**
+**Python performance analysis and visualization using established profiling tools**
 
-A comprehensive Python profiling system designed for development-time package optimization. Pycroscope provides complete performance analysis through multi-dimensional data collection, advanced pattern detection, and actionable optimization recommendations.
+Pycroscope 2.0 is a complete rewrite that focuses on **analysis and visualization** rather than reinventing profiling infrastructure. Instead of custom profilers, we leverage battle-tested profiling packages to provide comprehensive performance analysis.
 
 ## 🎯 Design Philosophy
 
-**Zero-Constraint Data Collection**: With no production overhead limitations, Pycroscope prioritizes data completeness over efficiency, providing the most comprehensive view of your application's performance characteristics.
-
-**Multi-Pass Analysis**: Development-time profiling allows thorough analysis through multiple specialized passes, from static code analysis to dynamic execution profiling and optimization opportunity detection.
-
-**"One Way, Many Options"**: Clean, unified interfaces with extensive configuration options. Each component exposes exactly one way to be used, with rich behavior variations through structured configuration.
-
-## ✨ Key Features
-
-- **🔍 Complete Multi-Dimensional Profiling**: Line-level execution, memory allocation, call trees, I/O operations, CPU usage, garbage collection, imports, and exception handling
-- **📊 Advanced Analysis Engine**: 6+ specialized analyzers with pattern detection, complexity analysis, correlation analysis, and optimization recommendations
-- **💾 Robust Storage System**: File-based and in-memory storage with session comparison, compression, and integrity checks
-- **⚡ Comprehensive CLI**: 9 commands for profiling, analysis, session management, comparison, export, and configuration
-- **🎛️ Flexible Configuration**: Granular control over collectors, sampling rates, analysis options, and output formats
-- **🔧 Development-Focused**: Designed for optimization during development, not production monitoring
-- **🏗️ Extensible Architecture**: Plugin-based collectors and analyzers with clean interfaces
-- **🧪 Production-Ready**: 100% test coverage, comprehensive CI/CD, and robust error handling
+- **"One Way, Many Options"**: Clean, unified API with extensive configuration
+- **No Special Cases**: Architecture naturally handles any use case, including profiling Pycroscope itself
+- **Conflict-Free**: Thread isolation and conflict detection prevent interference with other profiling
+- **Principled Foundation**: Built on Pydantic V2, established profiling tools, and clean abstractions
 
 ## 🚀 Quick Start
 
-### Installation (Development)
+### Installation
 
 ```bash
-# Clone and install for development
-git clone https://github.com/your-org/pycroscope.git
-cd pycroscope
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -e ".[dev,test]"
+pip install pycroscope
 ```
 
 ### Basic Usage
 
-The simplest way to start profiling:
+```python
+import pycroscope
+
+# Simple decorator usage
+@pycroscope.profile()
+def my_function():
+    # Your code here
+    data = [i ** 2 for i in range(1000)]
+    return sum(data)
+
+result = my_function()
+```
 
 ```python
-from pycroscope import enable_profiling
+# Context manager usage
+with pycroscope.profile() as session:
+    # Your code here
+    my_expensive_operation()
 
-# Enable profiling with default configuration
-profiler = enable_profiling()
-
-try:
-    # Your code to profile
-    result = expensive_computation()
-    data = process_large_dataset()
-
-finally:
-    # End session and get complete results
-    session = profiler.end_session()
-    profiler.disable()
-
-    if session:
-        print(f"Events collected: {len(session.execution_events)}")
-        print(f"Memory snapshots: {len(session.memory_snapshots)}")
-        print(f"Call tree: {'Present' if session.call_tree else 'None'}")
-        print(f"Source locations: {len(session.source_mapping)}")
+print(f"Profiling completed in {session.duration:.3f}s")
+print(f"Profilers used: {', '.join(session.get_completed_profilers())}")
 ```
 
-### Context Manager Usage
-
-For automatic session management:
+### Advanced Configuration
 
 ```python
-from pycroscope import enable_profiling, ProfileConfig, CollectorType
+from pycroscope import ProfileConfig, ProfilerSuite
 
-config = ProfileConfig()
-config.enable_collector(CollectorType.LINE)
-config.enable_collector(CollectorType.MEMORY)
-config.enable_collector(CollectorType.CALL)
-config.target_package = "my_package"
+# Custom configuration
+config = ProfileConfig(
+    line_profiling=True,        # line_profiler integration
+    memory_profiling=True,      # memory_profiler integration
+    call_profiling=True,        # cProfile integration
+    sampling_profiling=True,    # py-spy integration (Unix only)
+    output_dir="./profiling_results",
+    create_visualizations=True
+)
 
-with enable_profiling(config) as profiler:
-    # Code to profile runs here
-    my_function()
-    # Session automatically ends when exiting context
+# For minimal overhead (e.g., profiling Pycroscope itself)
+minimal_config = config.with_minimal_overhead()
+
+# Use the profiler suite
+suite = ProfilerSuite(config)
+with suite.profile() as session:
+    # Your code here
+    pass
 ```
-
-### CLI Usage
-
-Complete command-line interface:
-
-```bash
-# Profile a Python script
-pycroscope profile my_script.py --collectors=line,memory,call
-
-# List stored sessions
-pycroscope list --package=my_package
-
-# Analyze a session with all analyzers
-pycroscope analyze session_id --analyzers=static,dynamic,pattern,correlation
-
-# Compare two sessions
-pycroscope compare session1 session2 --output=json
-
-# Export session data
-pycroscope export session_id --format=json --output=analysis.json
-
-# Show system status
-pycroscope status
-
-# Clean up old sessions
-pycroscope cleanup --older-than=7days
-```
-
-## 📋 Complete Component Status
-
-### ✅ Data Collectors (8/8 Complete)
-
-All collectors are **fully implemented** and production-ready:
-
-- **LineCollector**: Line-by-line execution profiling with timing and frequency analysis
-- **MemoryCollector**: Memory allocation tracking, leak detection, and GC integration
-- **CallCollector**: Function call trees, relationships, and performance analysis
-- **CPUCollector**: CPU usage monitoring, instruction-level profiling, and hotspot detection
-- **IOCollector**: File and network I/O operations with performance tracking
-- **GCCollector**: Garbage collection monitoring and memory management analysis
-- **ImportCollector**: Module import timing and dependency chain analysis
-- **ExceptionCollector**: Exception handling performance and pattern analysis
-
-### ✅ Analysis Engine (6+ Analyzers Complete)
-
-Advanced multi-pass analysis system:
-
-- **StaticAnalyzer**: Code structure and complexity analysis
-- **DynamicAnalyzer**: Runtime behavior and execution pattern analysis
-- **AdvancedPatternDetector**: Performance anti-pattern detection
-- **CrossCorrelationAnalyzer**: Multi-dimensional correlation analysis
-- **AlgorithmComplexityDetector**: Empirical algorithm complexity detection
-- **OptimizationRecommendationEngine**: Actionable optimization suggestions
-
-### ✅ Storage System (Complete)
-
-Robust data persistence with enterprise features:
-
-- **FileDataStore**: Persistent session storage with JSON/Pickle serialization
-- **MemoryDataStore**: In-memory storage for testing and temporary use
-- **SessionComparer**: Advanced session comparison with statistical analysis
-- **Compression Support**: Gzip compression with integrity verification
-- **Index Management**: Fast session lookup and metadata management
-- **Cleanup Operations**: Automatic old session management
-
-### ✅ CLI Interface (9/9 Commands Complete)
-
-Professional command-line interface:
-
-- **profile**: Execute profiling with comprehensive configuration
-- **analyze**: Run analysis engines on stored sessions
-- **list**: List and filter sessions with rich metadata
-- **compare**: Compare sessions with detailed performance analysis
-- **delete**: Remove sessions with confirmation and dry-run
-- **cleanup**: Manage storage with age-based and count-based cleanup
-- **status**: System status, configuration, and health monitoring
-- **config**: Configuration management and validation
-- **export**: Data export in multiple formats (JSON, YAML, CSV)
-
-### ✅ Testing & Quality (Complete)
-
-Production-grade quality assurance:
-
-- **118 Tests**: Comprehensive test suite with 100% success rate
-- **27% Coverage**: Current coverage with plan to expand (focused on core components)
-- **CI/CD Pipeline**: GitHub Actions with multi-OS, multi-Python testing
-- **Code Quality**: Black, isort, mypy, flake8, bandit integration
-- **Pre-commit Hooks**: Automated quality checks
-- **Documentation**: Complete docstring coverage
 
 ## 🏗️ Architecture
 
-Pycroscope follows clean architecture principles with mathematical elegance:
+Pycroscope 2.0 is built around established profiling tools:
 
+### Core Profilers
+
+- **CallProfiler**: Wraps Python's built-in `cProfile` for function call analysis
+- **LineProfiler**: Integrates `line_profiler` for line-by-line timing
+- **MemoryProfiler**: Uses `memory_profiler` and `psutil` for memory tracking
+- **SamplingProfiler**: Leverages `py-spy` for low-overhead sampling (Unix only)
+
+### Key Components
+
+- **ProfileConfig**: Pydantic-based configuration with validation and type safety
+- **ProfileSession**: Manages profiling results and session lifecycle
+- **ProfilerSuite**: Orchestrates multiple profilers without conflicts
+- **Conflict Detection**: Prevents interference between profiling tools
+
+## 📊 Profiling Tools Integration
+
+| Tool              | Purpose             | Overhead   | Platform  |
+| ----------------- | ------------------- | ---------- | --------- |
+| `cProfile`        | Function calls      | Low        | All       |
+| `line_profiler`   | Line-by-line timing | Medium     | All       |
+| `memory_profiler` | Memory usage        | Low-Medium | All       |
+| `py-spy`          | Sampling profiler   | Very Low   | Unix only |
+
+## 🛠️ Command Line Interface
+
+```bash
+# Profile a Python script
+pycroscope profile my_script.py --line --memory --call
+
+# Use minimal overhead
+pycroscope profile my_script.py --minimal
+
+# List saved sessions
+pycroscope list-sessions
+
+# Run a demo (Pycroscope profiling itself!)
+pycroscope demo
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Public API                              │
-│              Simple "enable_profiling()" entry              │
-├─────────────────────────────────────────────────────────────┤
-│                   ProfilerSuite                             │
-│           Central orchestrator with lifecycle mgmt          │
-├─────────────────────────────────────────────────────────────┤
-│  Collectors    │  Analysis     │  Storage      │    CLI     │
-│  (8 complete)  │  (6+ engines) │  (File/Mem)   │ (9 cmds)   │
-│                │               │               │            │
-│  • Line        │  • Static     │  • Sessions   │ • profile  │
-│  • Memory      │  • Dynamic    │  • Compare    │ • analyze  │
-│  • Call        │  • Pattern    │  • Serialize  │ • list     │
-│  • CPU         │  • Correlate  │  • Index      │ • compare  │
-│  • I/O         │  • Complexity │  • Cleanup    │ • export   │
-│  • GC          │  • Optimize   │               │ • ...      │
-│  • Import      │               │               │            │
-│  • Exception   │               │               │            │
-├─────────────────────────────────────────────────────────────┤
-│                Core Infrastructure                          │
-│     Interfaces • Models • Config • Registry                 │
-└─────────────────────────────────────────────────────────────┘
-```
 
-## 📊 Advanced Usage Examples
+## 🔄 Dogfooding: Profiling Pycroscope Itself
 
-### Complete Configuration
+The architecture is designed so that Pycroscope can naturally profile itself without special cases:
 
 ```python
-from pycroscope import ProfileConfig, CollectorType, AnalysisType, StorageType
+import pycroscope
 
-# Create comprehensive configuration
-config = ProfileConfig()
+# This works without any special handling!
+@pycroscope.profile()
+def analyze_profiling_data(session_data):
+    # Pycroscope analyzing its own profiling results
+    return perform_analysis(session_data)
 
-# Enable all collectors with custom settings
-for collector_type in CollectorType:
-    config.enable_collector(collector_type)
+# Or use minimal overhead for sensitive scenarios
+config = pycroscope.ProfileConfig().with_minimal_overhead()
+suite = pycroscope.ProfilerSuite(config)
 
-config.collectors[CollectorType.LINE].sampling_rate = 0.1
-config.collectors[CollectorType.MEMORY].buffer_size = 10000
-config.collectors[CollectorType.CPU].max_stack_depth = 50
-
-# Configure analysis
-config.analysis.enabled_analyzers = {
-    AnalysisType.STATIC,
-    AnalysisType.DYNAMIC,
-    AnalysisType.PATTERN,
-    AnalysisType.CORRELATION,
-    AnalysisType.COMPLEXITY,
-    AnalysisType.OPTIMIZATION
-}
-
-# Configure storage
-config.storage.storage_type = StorageType.FILE
-config.storage.compression_enabled = True
-config.storage.max_sessions = 100
-
-# Enable detailed output
-config.verbose = True
-config.debug_mode = True
-
-# Use configuration
-profiler = enable_profiling(config)
-```
-
-### Session Analysis Workflow
-
-```python
-from pycroscope.analysis import AnalysisEngine
-from pycroscope.storage import FileDataStore
-
-# Load a stored session
-store = FileDataStore()
-session = store.load_session("session_12345")
-
-# Run complete analysis
-engine = AnalysisEngine()
-analysis = engine.analyze(session)
-
-# Access results
-print(f"Overall performance grade: {analysis.performance_grade}")
-print(f"Critical issues found: {len(analysis.critical_issues)}")
-print(f"High-impact recommendations: {len(analysis.high_impact_recommendations)}")
-
-# Export analysis
-store.export_analysis(analysis, "performance_report.json")
-```
-
-### Session Comparison
-
-```python
-from pycroscope.storage import SessionComparer
-
-# Compare optimization results
-comparer = SessionComparer()
-comparison = comparer.compare_sessions("baseline_session", "optimized_session")
-
-print(f"Performance improvement: {comparison.performance_improvement:.2%}")
-print(f"Memory reduction: {comparison.memory_improvement:.2%}")
-print(f"Execution time change: {comparison.execution_time_change:.2f}ms")
-
-# Detailed analysis
-for insight in comparison.insights:
-    print(f"- {insight}")
+with suite.profile():
+    # Profile Pycroscope's internal operations
+    pycroscope_internal_function()
 ```
 
 ## 🧪 Testing
 
-Run the comprehensive test suite:
-
 ```bash
-# Run all tests with coverage
-python -m pytest --cov=pycroscope --cov-report=html
+# Run basic functionality tests
+python -m pytest tests/test_basic_functionality.py -v
 
-# Run specific test categories
-python -m pytest tests/core/          # Core infrastructure tests
-python -m pytest tests/collectors/    # Collector tests
-python -m pytest tests/analysis/      # Analysis engine tests
-python -m pytest tests/storage/       # Storage system tests
-python -m pytest tests/cli/           # CLI interface tests
-
-# Run with verbose output
-python -m pytest -v
-
-# Generate coverage report
-python -m pytest --cov=pycroscope --cov-report=term-missing
+# Run integration test directly
+python tests/test_basic_functionality.py
 ```
 
-## 🛠️ Development Setup
+## 📋 Dependencies
 
-### Full Development Environment
+### Required
 
-```bash
-# Clone repository
-git clone https://github.com/your-org/pycroscope.git
-cd pycroscope
+- `pydantic>=2.5.0` - Configuration and validation
+- `psutil>=5.9.0` - System and process utilities
+- `click>=8.0.0` - Command line interface
+- `rich>=13.0.0` - Beautiful terminal output
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+### Profiling Tools
 
-# Install with all dependencies
-pip install -e ".[dev,test]"
+- `line-profiler>=4.0.0` - Line-by-line profiling
+- `memory-profiler>=0.61.0` - Memory usage profiling
+- `pympler>=0.9` - Advanced memory analysis
+- `py-spy>=0.3.0` - Sampling profiler (Unix only)
 
-# Install pre-commit hooks
-pre-commit install
+### Analysis & Visualization
 
-# Verify installation
-python -c "import pycroscope; print('✅ Installation successful')"
-python -m pytest tests/ --tb=short
+- `matplotlib>=3.5.0` - Plotting and visualization
+- `seaborn>=0.11.0` - Statistical data visualization
+- `pandas>=1.3.0` - Data analysis and manipulation
+- `numpy>=1.21.0` - Numerical computing
+
+## 🎨 Key Features
+
+### ✅ What's Implemented
+
+- **Core Infrastructure**: Complete profiling orchestration system
+- **Multiple Profilers**: Integration with 4 established profiling tools
+- **Configuration System**: Pydantic-based validation and type safety
+- **Session Management**: Complete profiling session lifecycle
+- **Conflict Detection**: Thread isolation and conflict prevention
+- **CLI Interface**: Command-line tools for basic profiling tasks
+- **Comprehensive Testing**: Test suite covering core functionality
+
+### 🚧 Coming Next
+
+- **Analysis Engine**: Advanced pattern detection and performance analysis
+- **Visualization System**: Interactive charts and flame graphs
+- **Report Generation**: HTML and PDF report generation
+- **Web Interface**: Browser-based profiling dashboard
+- **Comparison Tools**: Session-to-session performance comparison
+
+## 🔄 Migration from 1.x
+
+Pycroscope 2.0 is a complete rewrite with a cleaner API:
+
+```python
+# Old way (1.x)
+from pycroscope import enable_profiling
+profiler = enable_profiling(config)
+
+# New way (2.0)
+import pycroscope
+with pycroscope.profile() as session:
+    # Your code
+    pass
 ```
 
-### Code Quality Checks
+## 🏆 Design Principles Achieved
 
-```bash
-# Format code
-black pycroscope/ tests/
-isort pycroscope/ tests/
-
-# Type checking
-mypy pycroscope/
-
-# Linting
-flake8 pycroscope/ tests/
-
-# Security scanning
-bandit -r pycroscope/
-
-# Run all quality checks
-pre-commit run --all-files
-```
-
-## 📂 Project Structure
-
-```
-pycroscope/
-├── __init__.py              # Public API exports
-├── core/                    # ✅ Core infrastructure (Complete)
-│   ├── interfaces.py        #     Abstract base classes
-│   ├── models.py           #     Immutable data models
-│   ├── config.py           #     Configuration system
-│   ├── profiler_suite.py   #     Main orchestrator
-│   └── registry.py         #     Component registry
-├── collectors/              # ✅ Data collectors (8/8 Complete)
-│   ├── base.py             #     Base collector framework
-│   ├── line_collector.py   #     Line-level profiling
-│   ├── memory_collector.py #     Memory allocation tracking
-│   ├── call_collector.py   #     Call tree building
-│   ├── cpu_collector.py    #     CPU usage monitoring
-│   ├── io_collector.py     #     I/O operation tracking
-│   ├── gc_collector.py     #     Garbage collection monitoring
-│   ├── import_collector.py #     Module import timing
-│   └── exception_collector.py #  Exception handling analysis
-├── analysis/                # ✅ Analysis engines (6+ Complete)
-│   ├── base_analyzer.py    #     Base analyzer framework
-│   ├── engine.py           #     Multi-pass orchestration
-│   ├── static_analyzer.py  #     Static code analysis
-│   ├── dynamic_analyzer.py #     Runtime behavior analysis
-│   ├── pattern_detector.py #     Performance pattern detection
-│   ├── correlation_analyzer.py # Cross-dimensional correlation
-│   ├── complexity_detector.py #  Algorithm complexity detection
-│   └── optimization_engine.py #  Optimization recommendations
-├── storage/                 # ✅ Data persistence (Complete)
-│   ├── file_store.py       #     File-based storage
-│   ├── memory_store.py     #     In-memory storage
-│   ├── session_serializer.py #   Serialization engine
-│   └── session_comparer.py #     Session comparison
-├── cli/                     # ✅ Command interface (9/9 Complete)
-│   ├── main.py             #     CLI entry point
-│   ├── commands.py         #     Command implementations
-│   └── formatters.py       #     Output formatting
-└── tests/                   # ✅ Test suite (118 tests, 100% success)
-    ├── core/               #     Core component tests
-    ├── collectors/         #     Collector tests
-    ├── analysis/           #     Analysis engine tests
-    ├── storage/            #     Storage system tests
-    ├── cli/                #     CLI interface tests
-    └── conftest.py         #     Test configuration
-```
+1. **No Try/Except Import Blocks**: All dependencies are properly declared
+2. **No Function-Level Imports**: Clean module-level imports throughout
+3. **No Special Cases for Dogfooding**: Architecture naturally handles self-profiling
+4. **Conflict-Free Design**: Multiple profiling sessions can coexist safely
+5. **Principled Architecture**: Built on established patterns and clean abstractions
 
 ## 📄 License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see LICENSE file for details.
 
-## 🎯 Current Status: Production Ready
+## 👨‍💻 Author
 
-**Pycroscope is feature-complete and production-ready** with:
+**Adam Murray** ([@Adiaslow](https://github.com/Adiaslow))
 
-- ✅ **Complete Infrastructure**: All core components implemented and tested
-- ✅ **Full Data Collection**: 8 specialized collectors for comprehensive profiling
-- ✅ **Advanced Analysis**: 6+ analysis engines with sophisticated insights
-- ✅ **Robust Storage**: Enterprise-grade data persistence and comparison
-- ✅ **Professional CLI**: Complete command-line interface with 9 commands
-- ✅ **Quality Assurance**: 100% test success rate with comprehensive CI/CD
-- ✅ **Production Standards**: Clean architecture, extensive documentation, contributor-friendly
+Pycroscope is designed and maintained with a focus on clean architecture, principled design patterns, and robust testing practices.
 
-### Performance Characteristics
+## 🤝 Contributing
 
-- **Low Overhead**: Efficient sampling and buffering minimize impact
-- **Scalable**: Handles large codebases with configurable resource limits
-- **Reliable**: Comprehensive error handling and graceful degradation
-- **Cross-Platform**: Tested on Windows, macOS, and Linux
-- **Multi-Version**: Supports Python 3.8 through 3.12
+This is a demonstration of clean architecture principles applied to Python profiling. The codebase serves as an example of:
+
+- Leveraging existing tools rather than reinventing them
+- Clean API design with "One Way, Many Options"
+- Conflict-free profiling orchestration
+- Type-safe configuration with Pydantic V2
+- Comprehensive testing and validation
 
 ---
 
-**Pycroscope** - _Illuminate your code's performance with microscopic precision_
-
-_A production-ready profiling framework built with architectural excellence and comprehensive functionality._
+**Pycroscope 2.0: Focus on analysis, leverage established tools, maintain architectural elegance.**
