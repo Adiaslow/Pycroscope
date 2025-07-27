@@ -247,10 +247,6 @@ Pattern analysis complete - results integrated into comprehensive report
 6. **Production-Ready Pattern Analysis**: 9+ scientific computing detectors with research-backed validation
 7. **Integrated Intelligence**: Pattern analysis as core feature, not extension
 
-## License
-
-MIT License - see LICENSE file for details.
-
 ## Author
 
 **Adam Murray** ([@Adiaslow](https://github.com/Adiaslow))
