@@ -120,7 +120,6 @@ class MemoryFocusedStrategy(ProfilingStrategy):
             "line_profiling": False,
             "memory_profiling": True,
             "call_profiling": False,
-            "sampling_profiling": False,
             "memory_precision": config.get("memory_precision", 3),
         }
 
@@ -181,7 +180,6 @@ class PerformanceMemoryStrategy(ProfilingStrategy):
         return {
             **config,
             "line_profiling": False,
-            "sampling_profiling": False,
             "max_call_depth": 30,
             "memory_precision": 3,
         }
@@ -213,7 +211,6 @@ class CallOnlyStrategy(ProfilingStrategy):
             "line_profiling": False,
             "memory_profiling": False,
             "call_profiling": True,
-            "sampling_profiling": False,
         }
 
     def validate_environment(self) -> bool:

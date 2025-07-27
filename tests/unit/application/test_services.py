@@ -85,12 +85,11 @@ class TestConfigurationService:
         """Test that create_config is a static method."""
         # Act - can call without instance
         profile_config = ConfigurationService.create_config(
-            output_dir=temp_dir, call_profiling=False, sampling_profiling=True
+            output_dir=temp_dir, call_profiling=False
         )
 
         # Assert
         assert profile_config.call_profiling is False
-        assert profile_config.sampling_profiling is True
 
     @pytest.mark.unit
     @pytest.mark.application
@@ -99,10 +98,10 @@ class TestConfigurationService:
         # Act & Assert
         with pytest.raises(ValidationError) as exc_info:
             ConfigurationService.create_config(
-                output_dir=temp_dir, sampling_interval=5.0  # Exceeds limit
+                output_dir=temp_dir, memory_precision=7  # Exceeds limit
             )
 
-        assert "sampling_interval" in str(exc_info.value)
+        assert "memory_precision" in str(exc_info.value)
 
     @pytest.mark.unit
     @pytest.mark.application
@@ -112,13 +111,12 @@ class TestConfigurationService:
         with pytest.raises(ValidationError) as exc_info:
             config_service.create_config(
                 output_dir=temp_dir,
-                sampling_interval=5.0,  # Invalid
                 memory_precision=10,  # Invalid
                 max_call_depth=0,  # Invalid
             )
 
         error_message = str(exc_info.value)
-        assert "sampling_interval" in error_message
+        assert "memory_precision" in error_message
         assert "memory_precision" in error_message
         assert "max_call_depth" in error_message
 

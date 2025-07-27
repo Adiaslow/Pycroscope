@@ -105,9 +105,6 @@ class TextFormatter(BaseFormatter):
         lines.append(
             f"  Memory Profiling: {'✓' if config.get('memory_profiling') else '✗'}"
         )
-        lines.append(
-            f"  Sampling Profiling: {'✓' if config.get('sampling_profiling') else '✗'}"
-        )
 
         if config.get("session_name"):
             lines.append(f"  Session Name: {config['session_name']}")
@@ -275,9 +272,6 @@ class MarkdownFormatter(BaseFormatter):
         )
         lines.append(
             f"- **Memory Profiling:** {'✅' if config.get('memory_profiling') else '❌'}"
-        )
-        lines.append(
-            f"- **Sampling Profiling:** {'✅' if config.get('sampling_profiling') else '❌'}"
         )
 
         if config.get("session_name"):

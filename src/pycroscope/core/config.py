@@ -1,29 +1,24 @@
 """
-ProfileConfig: Configuration management for profiling sessions.
+Configuration model for Pycroscope profiling and analysis.
 
-Centralizes all profiling configuration with validation and defaults,
-including profiling Pycroscope itself without conflicts or special cases.
+Uses Pydantic V2 for robust validation and type safety.
+Integrates pattern analysis as a core feature alongside profiling.
 """
 
 from pathlib import Path
-from typing import Optional, List, Dict, Any, Union
-import tempfile
-
-from pydantic import BaseModel, Field, field_validator, model_validator
-
-from .exceptions import ConfigurationError
+from pydantic import BaseModel, Field, field_validator
+from typing import Optional, Dict, Any, List
 
 
 class ProfileConfig(BaseModel):
     """
-    Configuration for a profiling session.
+    Configuration for profiling and pattern analysis sessions.
 
-    Provides centralized configuration management with validation
-    and support for different profiling scenarios including
-    profiling Pycroscope itself.
+    Combines profiling configuration with integrated pattern analysis
+    for comprehensive performance and code quality assessment.
     """
 
-    # Core profiling options
+    # Profiling configuration
     line_profiling: bool = Field(
         default=True, description="Enable line-by-line profiling"
     )
@@ -33,38 +28,94 @@ class ProfileConfig(BaseModel):
     call_profiling: bool = Field(
         default=True, description="Enable function call profiling"
     )
-    sampling_profiling: bool = Field(
-        default=False, description="Enable sampling profiler"
-    )
 
     # Output configuration
-    output_dir: Path = Field(description="Directory for output files")
+    output_dir: Optional[Path] = Field(
+        default=None, description="Directory to save profiling and analysis results"
+    )
     session_name: Optional[str] = Field(
-        default=None, description="Name for this profiling session"
+        default=None, max_length=100, description="Name for this profiling session"
     )
     save_raw_data: bool = Field(
         default=True, description="Save raw profiling data to files"
     )
 
-    # Profiler-specific settings
+    # Sampling and precision
     sampling_interval: float = Field(
-        default=0.1, ge=0.001, le=1.0, description="Sampling interval in seconds"
+        default=0.01, gt=0.0, description="Sampling interval in seconds"
     )
     memory_precision: int = Field(
-        default=1, ge=1, le=6, description="Memory measurement precision"
+        default=3, ge=1, le=10, description="Memory measurement precision"
     )
     max_call_depth: int = Field(
-        default=20, ge=1, le=1000, description="Maximum call stack depth to profile"
+        default=50, gt=0, description="Maximum call stack depth to profile"
     )
 
-    # Processing options
+    # Analysis and reporting
     generate_reports: bool = Field(
-        default=True, description="Generate analysis reports"
+        default=True, description="Generate comprehensive analysis reports"
     )
     create_visualizations: bool = Field(
-        default=True, description="Create visualization charts"
+        default=True, description="Create charts and visualizations"
     )
-    analyze_patterns: bool = Field(default=True, description="Perform pattern analysis")
+
+    # Pattern Analysis Configuration (Core Feature)
+    analyze_patterns: bool = Field(
+        default=True, description="Enable performance anti-pattern analysis"
+    )
+
+    # Pattern Detection Settings
+    pattern_complexity_threshold: int = Field(
+        default=10,
+        gt=0,
+        description="Cyclomatic complexity threshold for pattern detection",
+    )
+    pattern_maintainability_threshold: float = Field(
+        default=20.0, gt=0.0, description="Maintainability index threshold"
+    )
+    pattern_severity_threshold: str = Field(
+        default="medium",
+        description="Minimum severity threshold for reporting patterns",
+    )
+    pattern_confidence_threshold: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Minimum confidence threshold for pattern reporting",
+    )
+
+    # Pattern Analysis Focus
+    detect_nested_loops: bool = Field(
+        default=True, description="Detect nested loop anti-patterns"
+    )
+    detect_dead_code: bool = Field(
+        default=True, description="Detect unused code and imports"
+    )
+    detect_complexity_issues: bool = Field(
+        default=True, description="Detect high complexity functions"
+    )
+    detect_maintainability_issues: bool = Field(
+        default=True, description="Detect maintainability problems"
+    )
+
+    # Function Analysis Thresholds
+    max_function_lines: int = Field(
+        default=50, gt=0, description="Maximum recommended function length"
+    )
+    max_function_parameters: int = Field(
+        default=5, gt=0, description="Maximum recommended function parameters"
+    )
+
+    # Pattern-Profiling Integration
+    correlate_patterns_with_profiling: bool = Field(
+        default=True, description="Correlate detected patterns with profiling hotspots"
+    )
+    prioritize_hotspot_patterns: bool = Field(
+        default=True, description="Prioritize patterns found in performance hotspots"
+    )
+    hotspot_correlation_threshold: float = Field(
+        default=0.1, ge=0.0, le=1.0, description="Threshold for hotspot correlation"
+    )
 
     # Isolation and safety
     profiler_prefix: str = Field(
@@ -114,6 +165,17 @@ class ProfileConfig(BaseModel):
             raise ValueError("profiler_prefix must be at most 20 characters")
         return v
 
+    @field_validator("pattern_severity_threshold")
+    @classmethod
+    def validate_pattern_severity_threshold(cls, v: str) -> str:
+        """Validate pattern severity threshold."""
+        valid_severities = ["low", "medium", "high", "critical"]
+        if v not in valid_severities:
+            raise ValueError(
+                f"Pattern severity threshold must be one of {valid_severities}"
+            )
+        return v
+
     @property
     def enabled_profilers(self) -> List[str]:
         """Get list of enabled profiler types."""
@@ -124,9 +186,31 @@ class ProfileConfig(BaseModel):
             profilers.append("memory")
         if self.call_profiling:
             profilers.append("call")
-        if self.sampling_profiling:
-            profilers.append("sampling")
+
         return profilers
+
+    @property
+    def enabled_pattern_types(self) -> List[str]:
+        """Get list of enabled pattern detection types."""
+        patterns = []
+        if self.analyze_patterns:
+            if self.detect_nested_loops:
+                patterns.extend(["nested_loops", "quadratic_complexity"])
+            if self.detect_dead_code:
+                patterns.extend(["dead_code", "unused_imports"])
+            if self.detect_complexity_issues:
+                patterns.extend(
+                    ["high_cyclomatic_complexity", "recursive_without_memoization"]
+                )
+            if self.detect_maintainability_issues:
+                patterns.extend(
+                    [
+                        "low_maintainability_index",
+                        "long_function",
+                        "too_many_parameters",
+                    ]
+                )
+        return patterns
 
     def with_minimal_overhead(self) -> "ProfileConfig":
         """
@@ -140,12 +224,48 @@ class ProfileConfig(BaseModel):
                 "line_profiling": False,
                 "memory_profiling": False,
                 "call_profiling": True,  # Keep only essential call profiling
-                "sampling_profiling": False,
                 "generate_reports": False,
                 "create_visualizations": False,
-                "analyze_patterns": False,
+                "analyze_patterns": False,  # Disable pattern analysis for minimal overhead
                 "memory_precision": 1,
                 "max_call_depth": 10,
+            }
+        )
+
+    def with_performance_focus(self) -> "ProfileConfig":
+        """
+        Create configuration focused on performance analysis.
+
+        Emphasizes pattern detection for algorithmic complexity and performance hotspots.
+        """
+        return self.model_copy(
+            update={
+                "analyze_patterns": True,
+                "detect_nested_loops": True,
+                "detect_complexity_issues": True,
+                "detect_dead_code": False,
+                "detect_maintainability_issues": False,
+                "correlate_patterns_with_profiling": True,
+                "prioritize_hotspot_patterns": True,
+                "pattern_severity_threshold": "medium",
+            }
+        )
+
+    def with_maintainability_focus(self) -> "ProfileConfig":
+        """
+        Create configuration focused on code maintainability.
+
+        Emphasizes pattern detection for code quality and maintainability issues.
+        """
+        return self.model_copy(
+            update={
+                "analyze_patterns": True,
+                "detect_nested_loops": False,
+                "detect_complexity_issues": True,
+                "detect_dead_code": True,
+                "detect_maintainability_issues": True,
+                "correlate_patterns_with_profiling": False,
+                "pattern_severity_threshold": "low",
             }
         )
 
@@ -160,11 +280,14 @@ class ProfileConfig(BaseModel):
             New configuration with thread isolation enabled
 
         Raises:
-            ConfigurationError: If prefix is None
+            ValueError: If prefix is None or empty
         """
-        if prefix is None:
-            raise ConfigurationError("Thread isolation requires a profiler prefix")
+        if not prefix:
+            raise ValueError("Thread isolation requires a non-empty prefix")
 
         return self.model_copy(
-            update={"use_thread_isolation": True, "profiler_prefix": prefix}
+            update={
+                "use_thread_isolation": True,
+                "profiler_prefix": prefix,
+            }
         )

@@ -47,10 +47,6 @@ def config():
             self._data["line_profiling"] = enabled
             return self
 
-        def with_sampling_profiling(self, enabled):
-            self._data["sampling_profiling"] = enabled
-            return self
-
         def with_output_dir(self, output_dir):
             self._data["output_dir"] = output_dir
             return self
@@ -281,7 +277,6 @@ class TestProfilerOrchestra:
             line_profiling=False,
             memory_profiling=False,
             call_profiling=False,
-            sampling_profiling=False,
             output_dir=temp_dir,
         )
         session = ProfileSession.create(config)

@@ -16,7 +16,7 @@ class ProfilerPlotter(ABC):
     """
     Abstract base class for profiler-specific visualization.
 
-    Each profiler type (call, line, memory, sampling) implements this interface
+    Each profiler type (call, line, memory) implements this interface
     to provide industry-standard visualization capabilities.
     """
 

@@ -31,7 +31,6 @@ class ConfigBuilder:
             "line_profiling": False,
             "memory_profiling": False,
             "call_profiling": True,
-            "sampling_profiling": False,
             "output_dir": None,
             "session_name": "test_session",
         }
@@ -51,11 +50,6 @@ class ConfigBuilder:
         self._data["call_profiling"] = enabled
         return self
 
-    def with_sampling_profiling(self, enabled: bool = True) -> "ConfigBuilder":
-        """Enable/disable sampling profiling."""
-        self._data["sampling_profiling"] = enabled
-        return self
-
     def with_output_dir(self, output_dir: Path) -> "ConfigBuilder":
         """Set output directory."""
         self._data["output_dir"] = output_dir
@@ -69,11 +63,6 @@ class ConfigBuilder:
     def with_memory_precision(self, precision: int) -> "ConfigBuilder":
         """Set memory precision."""
         self._data["memory_precision"] = precision
-        return self
-
-    def with_sampling_interval(self, interval: float) -> "ConfigBuilder":
-        """Set sampling interval."""
-        self._data["sampling_interval"] = interval
         return self
 
     def with_max_call_depth(self, depth: int) -> "ConfigBuilder":
@@ -118,7 +107,6 @@ class ConfigBuilder:
                 "line_profiling": False,
                 "memory_profiling": False,
                 "call_profiling": True,
-                "sampling_profiling": False,
                 "generate_reports": False,
                 "create_visualizations": False,
                 "analyze_patterns": False,
@@ -133,7 +121,7 @@ class ConfigBuilder:
                 "line_profiling": True,
                 "memory_profiling": True,
                 "call_profiling": True,
-                "sampling_profiling": False,  # Skip for tests
+                # Skip for tests
                 "generate_reports": True,
                 "create_visualizations": True,
                 "analyze_patterns": True,

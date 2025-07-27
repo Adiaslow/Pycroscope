@@ -33,7 +33,7 @@ class TestProfileConfigCreation:
         assert profile_config.line_profiling is True  # Default
         assert profile_config.memory_profiling is True  # Default
         assert profile_config.call_profiling is True  # Default
-        assert profile_config.sampling_profiling is False  # Default
+        # Sampling profiler removed
 
     @pytest.mark.unit
     @pytest.mark.core
@@ -44,7 +44,6 @@ class TestProfileConfigCreation:
             line_profiling=False,
             memory_profiling=True,
             call_profiling=False,
-            sampling_profiling=True,
             output_dir=temp_dir,
             session_name="test_session",
         )
@@ -53,7 +52,7 @@ class TestProfileConfigCreation:
         assert profile_config.line_profiling is False
         assert profile_config.memory_profiling is True
         assert profile_config.call_profiling is False
-        assert profile_config.sampling_profiling is True
+        # Sampling profiler removed
         assert profile_config.session_name == "test_session"
 
     @pytest.mark.unit
@@ -64,14 +63,13 @@ class TestProfileConfigCreation:
         profile_config = ProfileConfig(
             output_dir=temp_dir,
             memory_precision=6,
-            sampling_interval=0.001,
             max_call_depth=200,
             use_thread_isolation=False,
         )
 
         # Assert
         assert profile_config.memory_precision == 6
-        assert profile_config.sampling_interval == 0.001
+        # Sampling interval removed - was: assert profile_config.sampling_interval == 0.001
         assert profile_config.max_call_depth == 200
         assert profile_config.use_thread_isolation is False
 
@@ -92,12 +90,13 @@ class TestProfileConfigValidation:
     @pytest.mark.unit
     @pytest.mark.core
     def test_invalid_sampling_interval(self, temp_dir):
-        """Test validation of sampling interval bounds."""
-        # Arrange, Act & Assert
+        """Test validation functionality (sampling interval removed)."""
+        # Sampling profiler was removed - test another validation
         with pytest.raises(ValidationError) as exc_info:
-            ProfileConfig(output_dir=temp_dir, sampling_interval=2.0)
+            ProfileConfig(output_dir=temp_dir, memory_precision=10)  # Exceeds max
 
-        assert "sampling_interval" in str(exc_info.value)
+        error_message = str(exc_info.value)
+        assert "memory_precision" in error_message
 
     @pytest.mark.unit
     @pytest.mark.core
@@ -171,7 +170,6 @@ class TestProfileConfigMethods:
             line_profiling=True,
             memory_profiling=True,
             call_profiling=True,
-            sampling_profiling=True,
             output_dir=temp_dir,
             generate_reports=True,
             create_visualizations=True,
@@ -184,7 +182,7 @@ class TestProfileConfigMethods:
         assert minimal_config.line_profiling is False
         assert minimal_config.memory_profiling is False
         assert minimal_config.call_profiling is True  # Only essential profiling
-        assert minimal_config.sampling_profiling is False
+        # Sampling profiler removed
         assert minimal_config.generate_reports is False
         assert minimal_config.create_visualizations is False
         assert minimal_config.output_dir == temp_dir  # Preserved
@@ -264,7 +262,6 @@ class TestProfileConfigBuilderPattern:
             .with_memory_profiling(True)
             .with_call_profiling(False)
             .with_memory_precision(4)
-            .with_sampling_interval(0.005)
             .with_output_dir(temp_dir)
             .build()
         )
@@ -273,7 +270,7 @@ class TestProfileConfigBuilderPattern:
         assert profile_config.memory_profiling is True
         assert profile_config.call_profiling is False
         assert profile_config.memory_precision == 4
-        assert profile_config.sampling_interval == 0.005
+        # Sampling interval removed - was: assert profile_config.sampling_interval == 0.005
 
 
 class TestProfileConfigSerialization:
@@ -339,13 +336,12 @@ class TestProfileConfigEdgeCases:
         profile_config = ProfileConfig(
             output_dir=temp_dir,
             memory_precision=1,
-            sampling_interval=0.001,
             max_call_depth=1,
         )
 
         # Assert
         assert profile_config.memory_precision == 1
-        assert profile_config.sampling_interval == 0.001
+        # Sampling interval removed - was: assert profile_config.sampling_interval == 0.001
         assert profile_config.max_call_depth == 1
 
     @pytest.mark.unit
@@ -356,11 +352,10 @@ class TestProfileConfigEdgeCases:
         profile_config = ProfileConfig(
             output_dir=temp_dir,
             memory_precision=6,
-            sampling_interval=1.0,
             max_call_depth=1000,
         )
 
         # Assert
         assert profile_config.memory_precision == 6
-        assert profile_config.sampling_interval == 1.0
+        # Sampling interval removed
         assert profile_config.max_call_depth == 1000

@@ -150,7 +150,7 @@ class ProfileSession:
         output_dir.mkdir(parents=True, exist_ok=True)
 
         # Use clean filename without session ID
-        session_file = output_dir / "session.json"
+        session_file = output_dir / "profiling_data.json"
 
         session_data = {
             "session_id": self.session_id,

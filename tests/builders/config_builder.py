@@ -40,11 +40,6 @@ class ConfigBuilder:
         self._config_data["call_profiling"] = enabled
         return self
 
-    def with_sampling_profiling(self, enabled: bool = True) -> "ConfigBuilder":
-        """Configure sampling profiling."""
-        self._config_data["sampling_profiling"] = enabled
-        return self
-
     def with_output_dir(self, output_dir: Path) -> "ConfigBuilder":
         """Set output directory."""
         self._config_data["output_dir"] = output_dir
@@ -60,17 +55,6 @@ class ConfigBuilder:
     def with_session_name(self, name: str) -> "ConfigBuilder":
         """Set session name."""
         self._config_data["session_name"] = name
-        return self
-
-    def with_sampling_interval(self, interval: float) -> "ConfigBuilder":
-        """Set sampling interval."""
-        if not (
-            Limits.MIN_SAMPLING_INTERVAL <= interval <= Limits.MAX_SAMPLING_INTERVAL
-        ):
-            raise ValueError(
-                f"Sampling interval must be between {Limits.MIN_SAMPLING_INTERVAL} and {Limits.MAX_SAMPLING_INTERVAL}"
-            )
-        self._config_data["sampling_interval"] = interval
         return self
 
     def with_memory_precision(self, precision: int) -> "ConfigBuilder":
@@ -139,8 +123,6 @@ class ConfigBuilder:
                 "line_profiling": False,
                 "memory_profiling": False,
                 "call_profiling": True,
-                "sampling_profiling": False,
-                "sampling_interval": 0.1,
                 "memory_precision": 1,
                 "max_call_depth": 20,
                 "generate_reports": False,
@@ -157,8 +139,6 @@ class ConfigBuilder:
                 "line_profiling": Defaults.LINE_PROFILING,
                 "memory_profiling": Defaults.MEMORY_PROFILING,
                 "call_profiling": Defaults.CALL_PROFILING,
-                "sampling_profiling": Defaults.SAMPLING_PROFILING,
-                "sampling_interval": Defaults.SAMPLING_INTERVAL,
                 "memory_precision": Defaults.MEMORY_PRECISION,
                 "max_call_depth": Defaults.MAX_CALL_DEPTH,
                 "generate_reports": Defaults.GENERATE_REPORTS,

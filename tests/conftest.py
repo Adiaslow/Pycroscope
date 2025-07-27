@@ -67,7 +67,6 @@ def minimal_config(temp_dir):
         line_profiling=False,
         memory_profiling=False,
         call_profiling=True,
-        sampling_profiling=False,
         output_dir=temp_dir,
         session_name="test_session",
     )
@@ -80,12 +79,11 @@ def full_config(temp_dir):
         line_profiling=True,
         memory_profiling=True,
         call_profiling=True,
-        sampling_profiling=False,  # Skip for tests to avoid external dependencies
+        # Skip for tests to avoid external dependencies
         output_dir=temp_dir,
         session_name="full_test_session",
         memory_precision=3,
         max_call_depth=100,
-        sampling_interval=0.01,
         generate_reports=True,
         create_visualizations=True,
         analyze_patterns=True,

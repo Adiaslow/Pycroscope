@@ -103,7 +103,6 @@ class OutputManager:
                 "line_profiling": self.session.config.line_profiling,
                 "memory_profiling": self.session.config.memory_profiling,
                 "call_profiling": self.session.config.call_profiling,
-                "sampling_profiling": self.session.config.sampling_profiling,
             },
         }
 

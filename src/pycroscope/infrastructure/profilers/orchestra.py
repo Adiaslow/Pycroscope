@@ -9,6 +9,7 @@ from typing import Dict, Any, List, Set, Optional
 from datetime import datetime
 import threading
 import time
+from pathlib import Path
 
 from ...core.config import ProfileConfig
 from ...core.session import ProfileSession, ProfileResult
@@ -86,9 +87,7 @@ class ProfilerOrchestra:
                 print("   ⚠️  All requested profilers conflict with active tracer")
                 print("   📊 Proceeding with non-trace profilers only")
                 # At minimum, try memory profiler as it doesn't use sys.settrace()
-                safe_profilers = [
-                    p for p in ["memory", "sampling"] if p in enabled_profilers
-                ]
+                safe_profilers = [p for p in ["memory"] if p in enabled_profilers]
 
             if safe_profilers:
                 print(f"   ✅ Using safe profilers: {', '.join(safe_profilers)}")
@@ -229,11 +228,19 @@ class ProfilerOrchestra:
         return results
 
     def _generate_outputs(self) -> None:
-        """Generate reports and visualizations if enabled."""
+        """Generate reports, visualizations, and pattern analysis if enabled."""
+
+        # Run pattern analysis first if enabled
+        analysis_results = None
+        if self.session.config.analyze_patterns:
+            analysis_results = self._run_pattern_analysis()
+
         if self.session.config.generate_reports:
             report_generator = ReportGenerator(self.session)
-            report_path = report_generator.generate_comprehensive_report()
-            print(f"📄 Generated profiling report: {report_path}")
+            report_path = report_generator.generate_comprehensive_report(
+                pattern_analysis_results=analysis_results
+            )
+            print(f"📄 Generated comprehensive report: {report_path}")
 
         if self.session.config.create_visualizations:
             chart_generator = ChartGenerator(self.session)
@@ -244,6 +251,183 @@ class ProfilerOrchestra:
                     print(f"   • {chart_name}: {chart_path}")
             else:
                 print("📊 No charts generated (no compatible profiling data)")
+
+    def _run_pattern_analysis(self) -> Optional[Dict[str, Any]]:
+        """Run pattern analysis on the profiled code."""
+        from ...analysis.config import AnalysisConfig
+        from ...analysis.orchestrator import create_analysis_orchestrator
+        from ...analysis.interfaces import PatternType
+
+        # Convert ProfileConfig to AnalysisConfig
+        enabled_patterns = []
+        pattern_map = {
+            "nested_loops": PatternType.NESTED_LOOPS,
+            "quadratic_complexity": PatternType.QUADRATIC_COMPLEXITY,
+            "dead_code": PatternType.DEAD_CODE,
+            "unused_imports": PatternType.UNUSED_IMPORTS,
+            "high_cyclomatic_complexity": PatternType.HIGH_CYCLOMATIC_COMPLEXITY,
+            "recursive_without_memoization": PatternType.RECURSIVE_WITHOUT_MEMOIZATION,
+            "low_maintainability_index": PatternType.LOW_MAINTAINABILITY_INDEX,
+            "long_function": PatternType.LONG_FUNCTION,
+            "too_many_parameters": PatternType.TOO_MANY_PARAMETERS,
+        }
+
+        for pattern_name in self.session.config.enabled_pattern_types:
+            if pattern_name in pattern_map:
+                enabled_patterns.append(pattern_map[pattern_name])
+
+        if not enabled_patterns:
+            return None
+
+        # Create analysis configuration from profile configuration
+        analysis_config = AnalysisConfig(
+            enabled=True,
+            enabled_patterns=enabled_patterns,
+            severity_threshold=self.session.config.pattern_severity_threshold,
+            confidence_threshold=self.session.config.pattern_confidence_threshold,
+            correlate_with_profiling=self.session.config.correlate_patterns_with_profiling,
+            complexity_threshold=self.session.config.pattern_complexity_threshold,
+            maintainability_threshold=self.session.config.pattern_maintainability_threshold,
+            max_function_lines=self.session.config.max_function_lines,
+            max_function_parameters=self.session.config.max_function_parameters,
+            prioritize_hotspots=self.session.config.prioritize_hotspot_patterns,
+            hotspot_correlation_threshold=self.session.config.hotspot_correlation_threshold,
+        )
+
+        # Create and run analysis orchestrator
+        analysis_orchestrator = create_analysis_orchestrator(
+            self.session, analysis_config
+        )
+
+        # Extract files that were actually profiled from session data
+        code_files = self._extract_profiled_files()
+        if not code_files:
+            print(
+                "📋 No user Python files found in profiling data for pattern analysis"
+            )
+            return None
+
+        print(f"🔍 Running pattern analysis on {len(code_files)} profiled files...")
+
+        # Run analysis
+        analysis_results = analysis_orchestrator.run_analysis(code_files)
+
+        if analysis_results:
+            # Generate analysis report
+            analysis_report = analysis_orchestrator.generate_report(analysis_results)
+
+            print(
+                f"🎯 Pattern analysis complete - results integrated into comprehensive report"
+            )
+
+            # Print summary
+            summary = analysis_report.get("summary", {})
+            total_patterns = summary.get("total_patterns_detected", 0)
+            if total_patterns > 0:
+                print(
+                    f"   ⚠️  Found {total_patterns} patterns across {summary.get('total_files_analyzed', 0)} files"
+                )
+
+                # Show pattern distribution
+                pattern_dist = summary.get("pattern_distribution", {})
+                if pattern_dist:
+                    top_patterns = sorted(
+                        pattern_dist.items(), key=lambda x: x[1], reverse=True
+                    )[:3]
+                    print(
+                        f"   🏷️  Top patterns: {', '.join(f'{k}({v})' for k, v in top_patterns)}"
+                    )
+
+                # Show top issues
+                top_issues = analysis_report.get("top_issues", [])
+                if top_issues:
+                    print(f"   🔥 Priority issues:")
+                    for i, issue in enumerate(top_issues[:3], 1):
+                        severity_emoji = {
+                            "low": "📝",
+                            "medium": "⚠️",
+                            "high": "🚨",
+                            "critical": "💥",
+                        }.get(issue["severity"], "⚠️")
+                        correlated = (
+                            " 🎯" if issue.get("performance_correlated") else ""
+                        )
+                        print(
+                            f"      {i}. {severity_emoji} {issue['pattern_type']}{correlated}"
+                        )
+            else:
+                print("   ✅ No significant patterns detected")
+
+            return analysis_report
+        else:
+            print("📋 Pattern analysis completed - no issues found")
+            return None
+
+    def _extract_profiled_files(self) -> List[Path]:
+        """Extract Python files that were actually profiled from session data."""
+        profiled_files = set()
+
+        # Extract files from line profiler data (most comprehensive source)
+        line_result = self.session.get_result("line")
+        if line_result and line_result.data:
+            line_data = line_result.data
+            # Line profiler data is aggregated data, need to look in line_stats
+            if isinstance(line_data, dict) and "line_stats" in line_data:
+                line_stats = line_data["line_stats"]
+                if isinstance(line_stats, dict):
+                    for filename_with_line in line_stats.keys():
+                        if isinstance(filename_with_line, str):
+                            # Extract filename by removing line number (format: "filename:line")
+                            filename = filename_with_line.split(":")[0]
+                            file_path = Path(filename)
+                            if self._is_user_file(file_path):
+                                profiled_files.add(file_path)
+
+        # Extract files from call profiler data as backup
+        call_result = self.session.get_result("call")
+        if call_result and call_result.data:
+            call_data = call_result.data
+            if isinstance(call_data, dict) and "calls" in call_data:
+                for call_info in call_data["calls"]:
+                    if "filename" in call_info:
+                        file_path = Path(call_info["filename"])
+                        if self._is_user_file(file_path):
+                            profiled_files.add(file_path)
+
+        # Filter to only existing files and convert to list
+        existing_files = []
+        for file_path in profiled_files:
+            if file_path.exists() and file_path.is_file():
+                existing_files.append(file_path)
+
+        return existing_files
+
+    def _is_user_file(self, file_path: Path) -> bool:
+        """Determine if a file path represents user code (not Pycroscope internals)."""
+        file_str = str(file_path)
+
+        # Must be a .py file
+        if file_path.suffix != ".py":
+            return False
+
+        # Exclude Pycroscope's own source code (specifically src/pycroscope directory)
+        if "/src/pycroscope/" in file_str or file_str.endswith("/src/pycroscope"):
+            return False
+
+        # Exclude standard library files
+        if "/lib/python" in file_str or "/site-packages/" in file_str:
+            return False
+
+        # Exclude virtual environment files
+        if "/venv/" in file_str or "/.venv/" in file_str:
+            return False
+
+        # Exclude common non-user directories
+        exclude_dirs = {"__pycache__", ".git", ".pytest_cache", "node_modules"}
+        if any(exclude_dir in file_path.parts for exclude_dir in exclude_dirs):
+            return False
+
+        return True
 
     def _cleanup_profilers(self) -> None:
         """Clean up profilers in case of errors."""

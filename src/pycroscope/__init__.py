@@ -5,13 +5,13 @@ A modern Python profiling framework that leverages battle-tested profiling packa
 to provide comprehensive performance analysis and beautiful visualizations.
 
 Instead of reinventing profiling infrastructure, Pycroscope focuses on:
-- Clean abstractions over existing profilers (cProfile, line_profiler, memory_profiler, py-spy)
+- Clean abstractions over existing profilers (cProfile, line_profiler, memory_profiler)
 - Advanced analysis and correlation of profiling data
 - Beautiful visualizations and reports
 - Unified API for multiple profiling approaches
 """
 
-__version__ = "2.0.0"
+__version__ = "1.0.0"
 __author__ = "Adam Murray"
 
 # Core public API - "One Way, Many Options"
@@ -23,7 +23,7 @@ from .infrastructure.profilers.orchestra import ProfilerOrchestra
 _profiling_service = ProfilingService()
 
 
-# Main convenience function for simple usage
+# Main convenience function for simple usage with integrated pattern analysis
 def profile(
     func=None,
     *,
@@ -37,13 +37,16 @@ def profile(
     **kwargs,
 ):
     """
-    Profile a function or code block with comprehensive analysis.
+    Profile a function or code block with comprehensive analysis and pattern detection.
+
+    Combines performance profiling with anti-pattern analysis for complete code assessment.
+    Pattern analysis runs by default and correlates findings with performance hotspots.
 
     Can be used as a decorator or context manager:
 
     @profile()
     def my_function():
-        # Code to profile
+        # Code to profile and analyze for patterns
         pass
 
     # Or as context manager:
@@ -56,15 +59,21 @@ def profile(
         line_profiling: Enable line-by-line profiling
         memory_profiling: Enable memory usage profiling
         call_profiling: Enable function call profiling
-
         output_dir: Directory to save results
         generate_reports: Generate comprehensive analysis reports
         create_visualizations: Create charts and visualizations
-        analyze_patterns: Perform pattern analysis on profiling data
-        **kwargs: Additional configuration options
+        analyze_patterns: Enable performance anti-pattern analysis (default: True)
+        **kwargs: Additional configuration options including pattern analysis settings
+
+    Pattern Analysis Options (via **kwargs):
+        detect_nested_loops: Detect nested loop anti-patterns (default: True)
+        detect_dead_code: Detect unused code and imports (default: True)
+        detect_complexity_issues: Detect high complexity functions (default: True)
+        pattern_severity_threshold: Minimum severity to report ("low", "medium", "high", "critical")
+        correlate_patterns_with_profiling: Correlate patterns with performance data (default: True)
 
     Returns:
-        ProfileSession: Session containing all profiling results
+        ProfileSession: Session containing all profiling and analysis results
     """
     config_kwargs = {
         "line_profiling": line_profiling,

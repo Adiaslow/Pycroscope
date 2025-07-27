@@ -10,12 +10,12 @@ import click
 from pathlib import Path
 
 from .core.config import ProfileConfig
-from .infrastructure.profilers.orchestra import ProfilerOrchestra
 from .core.session import ProfileSession
+from .infrastructure.profilers.orchestra import ProfilerOrchestra
 
 
 @click.group()
-@click.version_option(version="2.0.0")
+@click.version_option(version="1.0.0")
 def main():
     """Pycroscope: Python performance analysis using established profiling tools."""
     pass
@@ -26,34 +26,34 @@ def main():
 @click.option("--line/--no-line", default=True, help="Enable line profiling")
 @click.option("--memory/--no-memory", default=True, help="Enable memory profiling")
 @click.option("--call/--no-call", default=True, help="Enable call profiling")
-@click.option(
-    "--sampling/--no-sampling", default=False, help="Enable sampling profiling"
-)
 @click.option("--output-dir", type=click.Path(), help="Output directory for results")
 @click.option("--minimal", is_flag=True, help="Use minimal overhead configuration")
-def profile(script_path, line, memory, call, sampling, output_dir, minimal):
-    """Profile a Python script."""
+def profile(script_path, line, memory, call, output_dir, minimal):
+    """Profile a Python script with all profilers enabled by default."""
 
     # Create configuration
     config = ProfileConfig(
         line_profiling=line,
         memory_profiling=memory,
         call_profiling=call,
-        sampling_profiling=sampling,
-        output_dir=output_dir,
+        output_dir=output_dir or Path("./profiling_results"),
     )
 
-    # Use minimal overhead if requested
+    # Use minimal overhead if requested (disable some features)
     if minimal:
-        config = config.with_minimal_overhead()
+        config.line_profiling = False
+        config.create_visualizations = False
+        config.analyze_patterns = False
 
-    # Set up profiler orchestrator
-    orchestrator = ProfilerOrchestra(config)
+    # Create session and orchestrator
+    session = ProfileSession.create(config)
+    orchestrator = ProfilerOrchestra(session)
 
     # Run profiling
     click.echo(f"Profiling {script_path}...")
 
-    if orchestrator.start_profiling():
+    started_profilers = orchestrator.start_profiling()
+    if started_profilers:
         # Execute the script in the profiled environment
         script_path = Path(script_path)
 
@@ -64,14 +64,16 @@ def profile(script_path, line, memory, call, sampling, output_dir, minimal):
         exec(script_path.read_text(), {"__file__": str(script_path)})
 
         # Stop profiling and get results
-        session = orchestrator.stop_profiling()
+        results = orchestrator.stop_profiling()
+        session.complete()
 
         click.echo(f"Profiling complete! Session ID: {session.session_id}")
         click.echo(f"Duration: {session.duration:.3f}s")
-        click.echo(f"Profilers used: {', '.join(session.get_completed_profilers())}")
+        click.echo(f"Profilers used: {', '.join(results.keys())}")
 
         if config.save_raw_data:
-            click.echo(f"Results saved to: {config.output_dir}")
+            saved_path = session.save()
+            click.echo(f"Results saved to: {saved_path}")
 
 
 @main.command()
@@ -87,7 +89,7 @@ def list_sessions(sessions_dir):
         return
 
     sessions_dir = Path(sessions_dir)
-    session_files = list(sessions_dir.glob("session_*.json"))
+    session_files = list(sessions_dir.glob("profiling_data.json"))
 
     if not session_files:
         click.echo(f"No sessions found in {sessions_dir}")
@@ -96,69 +98,22 @@ def list_sessions(sessions_dir):
     click.echo(f"Found {len(session_files)} sessions in {sessions_dir}:")
 
     for session_file in sorted(session_files):
-        session = ProfileSession.load(session_file)
-        summary = session.summary()
+        try:
+            import json
 
-        click.echo(f"  {session_file.name}")
-        click.echo(f"    Status: {summary['status']}")
-        click.echo(f"    Duration: {summary['duration']:.3f}s")
-        click.echo(f"    Profilers: {', '.join(summary['completed_profilers'])}")
+            with open(session_file, "r") as f:
+                session_data = json.load(f)
 
-
-@main.command()
-@click.option(
-    "--output-dir", type=click.Path(), help="Output directory for demo results"
-)
-def demo(output_dir):
-    """Run a demo profiling session (Pycroscope profiling itself)."""
-
-    # Create configuration for demo
-    config = ProfileConfig(
-        line_profiling=True,
-        memory_profiling=True,
-        call_profiling=True,
-        sampling_profiling=False,  # Keep it simple for demo
-        output_dir=output_dir,
-        session_name="pycroscope_demo",
-    )
-
-    orchestrator = ProfilerOrchestra(config)
-
-    click.echo("Running Pycroscope demo (profiling itself)...")
-
-    with orchestrator.profile() as session:
-        # Demo workload: Pycroscope analyzing its own operations
-        click.echo("  Creating sample data structures...")
-        data = []
-        for i in range(1000):
-            data.append({"index": i, "value": i * 2, "text": f"item_{i}"})
-
-        click.echo("  Processing data...")
-        processed = []
-        for item in data:
-            if item["value"] % 10 == 0:
-                processed.append(
-                    {
-                        "original_index": item["index"],
-                        "computed_value": item["value"] ** 2,
-                        "label": item["text"].upper(),
-                    }
-                )
-
-        click.echo("  Performing calculations...")
-        total_value = sum(item["computed_value"] for item in processed)
-        average_value = total_value / len(processed) if processed else 0
-
-        click.echo(f"  Demo complete: {len(processed)} items processed")
-        click.echo(f"  Total value: {total_value}, Average: {average_value:.2f}")
-
-    click.echo(f"Demo profiling complete!")
-    click.echo(f"Session ID: {session.session_id}")
-    click.echo(f"Duration: {session.duration:.3f}s")
-    click.echo(f"Profilers used: {', '.join(session.get_completed_profilers())}")
-
-    if config.save_raw_data:
-        click.echo(f"Demo results saved to: {config.output_dir}")
+            click.echo(f"  {session_file.name}")
+            click.echo(f"    Status: {session_data.get('status', 'unknown')}")
+            duration = session_data.get("duration", 0)
+            if duration:
+                click.echo(f"    Duration: {duration:.3f}s")
+            profilers = list(session_data.get("results", {}).keys())
+            if profilers:
+                click.echo(f"    Profilers: {', '.join(profilers)}")
+        except Exception as e:
+            click.echo(f"  {session_file.name} - Error reading: {e}")
 
 
 if __name__ == "__main__":

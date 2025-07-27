@@ -39,6 +39,96 @@ def fibonacci_iterative(n: int) -> int:
     return b
 
 
+def inefficient_nested_search(data_list: List[int], targets: List[int]) -> List[int]:
+    """
+    Example of O(n²) complexity - will be detected by pattern analysis.
+    This shows a nested loop anti-pattern.
+    """
+    found_items = []
+
+    # Nested loops create O(n²) complexity - pattern analysis will detect this
+    for target in targets:
+        for item in data_list:
+            if item == target:
+                found_items.append(item)
+                break  # At least we break early
+
+    return found_items
+
+
+def overly_complex_function(param1, param2, param3, param4, param5, param6, param7):
+    """
+    Function with too many parameters and high cyclomatic complexity.
+    Pattern analysis will detect both issues.
+    """
+    result = 0
+
+    # High cyclomatic complexity - deeply nested conditions
+    if param1 > 0:
+        if param2 > 0:
+            if param3 > 0:
+                if param4 > 0:
+                    if param5 > 0:
+                        if param6 > 0:
+                            if param7 > 0:
+                                result = (
+                                    param1
+                                    + param2
+                                    + param3
+                                    + param4
+                                    + param5
+                                    + param6
+                                    + param7
+                                )
+                            else:
+                                result = (
+                                    param1 + param2 + param3 + param4 + param5 + param6
+                                )
+                        else:
+                            result = param1 + param2 + param3 + param4 + param5
+                    else:
+                        result = param1 + param2 + param3 + param4
+                else:
+                    result = param1 + param2 + param3
+            else:
+                result = param1 + param2
+        else:
+            result = param1
+
+    # More unnecessary complexity
+    for i in range(10):
+        for j in range(10):
+            if i + j == result % 10:
+                result += 1
+
+    return result
+
+
+def inefficient_data_operations(items: List[str]) -> List[str]:
+    """
+    Example of inefficient data structure usage.
+    Using list for membership testing instead of set.
+    """
+    # Inefficient: using list for membership testing (O(n) per lookup)
+    processed_items = []
+    unique_items = []
+
+    for item in items:
+        if item not in processed_items:  # O(n) operation - should use set
+            processed_items.append(item)
+            unique_items.append(f"processed_{item}")
+
+    return unique_items
+
+
+def unused_helper_function():
+    """
+    This function is never called - dead code that pattern analysis will detect.
+    """
+    unused_variable = "This will be flagged as unused"
+    return unused_variable
+
+
 def cpu_intensive_calculation() -> float:
     """CPU-bound task - good for sampling profiler hotspot detection."""
     print("🔥 Running CPU-intensive calculations...")
@@ -207,6 +297,61 @@ def data_processing_pipeline() -> Dict[str, float]:
     }
 
 
+def demonstrate_anti_patterns():
+    """Demonstrate various anti-patterns for detection."""
+    print("🎯 Running anti-pattern demonstrations...")
+
+    # Scientific computing anti-patterns
+    import numpy as np
+
+    # Pattern: inefficient array creation
+    bad_array = np.array(range(1000))  # Should use np.arange()
+
+    # Pattern: inefficient boolean array sum
+    test_array = np.random.random(1000)
+    count_result = (test_array > 0.5).sum()  # Should use np.count_nonzero()
+
+    # Pattern: suboptimal matrix operations
+    matrix_a = np.random.random((100, 50))
+    matrix_b = np.random.random((50, 100))
+    result_tensordot = np.tensordot(matrix_a, matrix_b, axes=(1, 0))  # Could use .dot()
+
+    # Pattern: unnecessary array copy
+    original_array = np.random.random(1000)
+    copied_array = original_array.copy()  # Might be unnecessary
+
+    # Existing anti-patterns
+    data = list(range(1000))
+
+    # Nested loops (O(n²) complexity)
+    result = inefficient_nested_search(data, [500, 750, 999])
+
+    # Overly complex function
+    complex_result = overly_complex_function(10, 20, 30, 40, 50, 60, 70)
+
+    # Inefficient data operations
+    string_data = [f"item_{i}" for i in range(100)]
+    processed_data = inefficient_data_operations(string_data)
+
+    # Demonstrate recursion without memoization
+    fib_recursive_result = fibonacci_recursive(30)
+    fib_iterative_result = fibonacci_iterative(30)
+
+    return {
+        "nested_search": result,
+        "complex_function": complex_result,
+        "data_operations": len(processed_data),
+        "fibonacci_recursive": fib_recursive_result,
+        "fibonacci_iterative": fib_iterative_result,
+        "fibonacci_match": fib_recursive_result == fib_iterative_result,
+        # Scientific computing results
+        "bad_array_size": len(bad_array),
+        "count_result": count_result,
+        "tensordot_shape": result_tensordot.shape,
+        "copied_array_size": len(copied_array),
+    }
+
+
 def mixed_workload() -> Dict[str, Any]:
     """Combined workload showing all patterns together."""
     print("🚀 Running mixed workload demonstration...")
@@ -243,6 +388,12 @@ def mixed_workload() -> Dict[str, Any]:
     results["processing_time"] = time.time() - start_time
     results["processing_stats"] = processing_result
 
+    # Anti-pattern demonstrations (new)
+    start_time = time.time()
+    antipattern_result = demonstrate_anti_patterns()
+    results["antipattern_time"] = time.time() - start_time
+    results["antipattern_stats"] = antipattern_result
+
     # Fibonacci comparison
     start_time = time.time()
     fib_recursive = fibonacci_recursive(25)  # Small enough to not take forever
@@ -263,6 +414,7 @@ if __name__ == "__main__":
     print("=" * 60)
     print("This script demonstrates various computational patterns.")
     print("Perfect for profiling with Pycroscope!")
+    print("Includes examples of common anti-patterns for analysis.")
     print("-" * 60)
 
     overall_start = time.time()
@@ -280,6 +432,7 @@ if __name__ == "__main__":
     print(f"📁 I/O work took: {final_results['io_time']:.3f}s")
     print(f"🌳 Function calls took: {final_results['call_time']:.3f}s")
     print(f"⚙️  Data processing took: {final_results['processing_time']:.3f}s")
+    print(f"🎯 Anti-pattern demos took: {final_results['antipattern_time']:.3f}s")
     print(f"🧮 Recursive fibonacci took: {final_results['fib_recursive_time']:.3f}s")
     print(f"🔢 Iterative fibonacci took: {final_results['fib_iterative_time']:.3f}s")
     print(f"✅ Memory objects created: {final_results['memory_objects_created']:,}")

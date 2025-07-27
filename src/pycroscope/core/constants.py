@@ -21,7 +21,6 @@ class ProfilerType(Enum):
     CALL = "call"
     LINE = "line"
     MEMORY = "memory"
-    SAMPLING = "sampling"
 
 
 class SessionStatus(Enum):
@@ -42,7 +41,6 @@ class ConfigKeys(Enum):
     LINE_PROFILING = "line_profiling"
     MEMORY_PROFILING = "memory_profiling"
     CALL_PROFILING = "call_profiling"
-    SAMPLING_PROFILING = "sampling_profiling"
 
     # Output configuration
     OUTPUT_DIR = "output_dir"
@@ -50,7 +48,7 @@ class ConfigKeys(Enum):
     SAVE_RAW_DATA = "save_raw_data"
 
     # Performance tuning
-    SAMPLING_INTERVAL = "sampling_interval"
+
     MEMORY_PRECISION = "memory_precision"
     MAX_CALL_DEPTH = "max_call_depth"
 
@@ -68,10 +66,9 @@ class Defaults:
     LINE_PROFILING: Final[bool] = True
     MEMORY_PROFILING: Final[bool] = True
     CALL_PROFILING: Final[bool] = True
-    SAMPLING_PROFILING: Final[bool] = False
 
     # Performance defaults
-    SAMPLING_INTERVAL: Final[float] = 0.01
+
     MEMORY_PRECISION: Final[int] = 3
     MAX_CALL_DEPTH: Final[int] = 50
 
@@ -91,9 +88,6 @@ class Defaults:
 # Limits and constraints
 class Limits:
     """System limits and constraints."""
-
-    MIN_SAMPLING_INTERVAL: Final[float] = 0.001
-    MAX_SAMPLING_INTERVAL: Final[float] = 1.0
 
     MIN_MEMORY_PRECISION: Final[int] = 1
     MAX_MEMORY_PRECISION: Final[int] = 6

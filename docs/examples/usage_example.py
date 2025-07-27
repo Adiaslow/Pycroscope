@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """
-Pycroscope 2.0 Usage Example
+Pycroscope 1.0 Usage Example
 
-This example shows how to use Pycroscope to profile real code.
+This example shows how to use Pycroscope to profile real code with integrated pattern analysis.
 Users can easily modify this template for their own profiling needs.
 
 QUICK START:
 1. Replace the sample workload import/execution with your own code
 2. Adjust profiling configuration as needed
 3. Run: python usage_example.py
-4. Check the 'profiling_results' directory for reports and charts
+4. Check the 'profiling_results' directory for reports, charts, and pattern analysis
+
+NEW IN 1.0: Pattern analysis runs automatically alongside profiling!
 """
 
 import sys
@@ -20,7 +22,7 @@ from pathlib import Path
 # Add src to path for development
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "src"))
 
-from pycroscope import profile
+import pycroscope
 
 
 def run_sample_workload():
@@ -52,59 +54,50 @@ def run_sample_workload():
 
 def main():
     """Main profiling workflow - users typically won't need to modify this."""
-    print("=" * 60)
-    print("🔬 PYCROSCOPE USAGE EXAMPLE")
-    print("=" * 60)
-    print("This example demonstrates how to profile code with Pycroscope.")
+    print("=" * 70)
+    print("🔬 PYCROSCOPE 1.0 USAGE EXAMPLE")
+    print("=" * 70)
+    print("This example demonstrates comprehensive profiling with pattern analysis.")
+    print("Pattern analysis runs automatically - no extra setup required!")
     print("See comments in the code for customization instructions.")
-    print("-" * 60)
+    print("-" * 70)
 
     # Configure output directory
-    output_dir = "profiling_results"
+    output_dir = Path("profiling_results")
 
     # PROFILING CONFIGURATION
+    # Pycroscope 1.0 includes pattern analysis by default!
     # Users can adjust these settings based on their needs:
-    profiling_config = {
-        # Enable/disable specific profilers
-        "line_profiling": True,  # Line-by-line execution timing
-        "call_profiling": True,  # Function call timing and hierarchy
-        "memory_profiling": True,  # Memory usage over time
-        "sampling_profiling": False,  # Sampling profiler removed
-        # Output configuration
-        "output_dir": output_dir,
-        "generate_reports": True,
-        "generate_charts": True,
-        # Profiler-specific settings
-        "line_profile_functions": [],  # Empty = profile all functions
-        "memory_interval": 0.1,  # Memory sampling interval in seconds
-        "sampling_interval": 0.01,  # CPU sampling interval in seconds
-    }
-
-    print("📊 Profiling Configuration:")
-    for key, value in profiling_config.items():
-        if isinstance(value, bool) and value:
-            print(f"   ✅ {key}: {value}")
-        elif isinstance(value, bool):
-            print(f"   ❌ {key}: {value}")
-        else:
-            print(f"   🔧 {key}: {value}")
+    print("📊 Profiling Configuration (Pattern Analysis Enabled by Default):")
+    print("   ✅ line_profiling: Detailed line-by-line execution timing")
+    print("   ✅ call_profiling: Function call timing and hierarchy")
+    print("   ✅ memory_profiling: Memory usage tracking over time")
+    print("   🎯 analyze_patterns: Anti-pattern detection (NEW!)")
+    print("   📊 generate_reports: Comprehensive reports with analysis")
+    print("   📈 create_visualizations: Charts and graphs")
     print()
 
     # CREATE OUTPUT DIRECTORY
-    output_path = Path(output_dir)
-    output_path.mkdir(exist_ok=True)
-    print(f"📁 Output directory: {output_path.absolute()}")
+    output_dir.mkdir(exist_ok=True)
+    print(f"📁 Output directory: {output_dir.absolute()}")
     print()
 
-    # RUN PROFILING
-    print("🚀 Starting profiling session...")
+    # RUN PROFILING WITH INTEGRATED PATTERN ANALYSIS
+    print("🚀 Starting comprehensive profiling session...")
+    print("   • Performance profiling: Measuring execution speed and memory")
+    print("   • Pattern analysis: Detecting code quality issues")
+    print("   • Hotspot correlation: Linking patterns to performance impact")
+    print()
+
     session_start = time.time()
 
     try:
-        # THE MAIN PROFILING CONTEXT
-        # This is where the magic happens!
-        with profile(**profiling_config) as session:
-            print("✨ Profilers are active - executing your code...")
+        # THE MAIN PROFILING - Pattern analysis happens automatically!
+        @pycroscope.profile(output_dir=output_dir)
+        def run_profiling_session():
+            print(
+                "✨ Profilers and pattern analysis are active - executing your code..."
+            )
             print()
 
             # EXECUTE YOUR CODE HERE
@@ -113,41 +106,41 @@ def main():
 
             print()
             print("✅ Code execution completed!")
+            return workload_results
+
+        # Run the profiling session
+        workload_results = run_profiling_session()
 
         session_time = time.time() - session_start
 
         # RESULTS SUMMARY
-        print("-" * 60)
+        print("-" * 70)
         print("📈 PROFILING RESULTS")
         print(f"⏱️  Total profiling time: {session_time:.3f} seconds")
-        print(f"📁 Session output directory: {session.config.output_dir}")
+        print(f"📁 Session output directory: {output_dir}")
         print()
 
-        # Verify generated outputs
-        output_dir_path = Path(session.config.output_dir)
-
-        # Get actual generated files from session - FAIL FAST if expected outputs are missing
-        all_files = list(output_dir_path.iterdir()) if output_dir_path.exists() else []
+        # Check generated outputs
+        all_files = list(output_dir.iterdir()) if output_dir.exists() else []
         generated_files = [f for f in all_files if f.is_file()]
 
-        # Check if we got the expected outputs based on configuration
-        expected_reports = profiling_config["generate_reports"]
-        expected_charts = profiling_config["generate_charts"]
-
-        if expected_reports and not generated_files:
-            raise RuntimeError(
-                "FAIL FAST: Reports were requested but no output files were generated"
-            )
-
-        if expected_charts and not generated_files:
-            raise RuntimeError(
-                "FAIL FAST: Charts were requested but no output files were generated"
-            )
-
-        # Show what was actually generated
-        print("📄 Generated Files:")
-        for generated_file in sorted(generated_files):
-            print(f"   📄 {generated_file.name}")
+        if not generated_files:
+            print("⚠️  Warning: No output files were generated")
+        else:
+            print("📄 Generated Files:")
+            for generated_file in sorted(generated_files):
+                if "pattern_analysis" in generated_file.name:
+                    print(f"   🎯 {generated_file.name} (Pattern Analysis)")
+                elif "integrated" in generated_file.name:
+                    print(f"   📊 {generated_file.name} (Combined Analysis)")
+                elif generated_file.suffix == ".json":
+                    print(f"   📋 {generated_file.name} (Data)")
+                elif generated_file.suffix == ".md":
+                    print(f"   📄 {generated_file.name} (Report)")
+                elif generated_file.suffix == ".png":
+                    print(f"   📈 {generated_file.name} (Chart)")
+                else:
+                    print(f"   📄 {generated_file.name}")
 
         print()
         print("🎯 Your Code Results:")
@@ -167,21 +160,99 @@ def main():
         else:
             print("   ⚠️  No results returned from workload")
 
+        # Show pattern analysis insights if available
+        pattern_report_path = output_dir / "pattern_analysis_report.json"
+        integrated_report_path = output_dir / "integrated_analysis_report.json"
+
+        if pattern_report_path.exists():
+            print()
+            print("🎯 PATTERN ANALYSIS INSIGHTS:")
+            try:
+                import json
+
+                with open(pattern_report_path, "r") as f:
+                    pattern_data = json.load(f)
+
+                summary = pattern_data.get("summary", {})
+                total_patterns = summary.get("total_patterns_detected", 0)
+
+                if total_patterns > 0:
+                    print(
+                        f"   ⚠️  Found {total_patterns} code patterns across {summary.get('total_files_analyzed', 0)} files"
+                    )
+
+                    # Show pattern distribution
+                    pattern_dist = summary.get("pattern_distribution", {})
+                    if pattern_dist:
+                        print("   🏷️  Pattern types detected:")
+                        for pattern_type, count in sorted(
+                            pattern_dist.items(), key=lambda x: x[1], reverse=True
+                        ):
+                            print(f"      • {pattern_type}: {count}")
+
+                    # Show top issues
+                    top_issues = pattern_data.get("top_issues", [])
+                    if top_issues:
+                        print("   🔥 Top priority issues:")
+                        for i, issue in enumerate(top_issues[:3], 1):
+                            severity_emoji = {
+                                "low": "📝",
+                                "medium": "⚠️",
+                                "high": "🚨",
+                                "critical": "💥",
+                            }.get(issue.get("severity", "medium"), "⚠️")
+                            correlated = (
+                                " 🎯" if issue.get("performance_correlated") else ""
+                            )
+                            print(
+                                f"      {i}. {severity_emoji} {issue.get('pattern_type', 'Unknown')}{correlated}"
+                            )
+
+                    # Show recommendations
+                    recommendations = pattern_data.get("recommendations", [])
+                    if recommendations:
+                        print("   💡 Key recommendations:")
+                        for i, rec in enumerate(recommendations[:2], 1):
+                            print(f"      {i}. {rec}")
+                else:
+                    print("   ✅ No significant code patterns detected - good job!")
+
+            except Exception as e:
+                print(f"   ⚠️  Could not parse pattern analysis results: {e}")
+
         print()
-        print("=" * 60)
-        print("🎉 PROFILING COMPLETE!")
+        print("=" * 70)
+        print("🎉 COMPREHENSIVE ANALYSIS COMPLETE!")
         print()
-        print("💡 NEXT STEPS:")
-        print(f"   1. Check the '{output_dir}' directory for detailed reports")
-        print("   2. Open the .png chart files to visualize performance")
-        print("   3. Review .txt reports for detailed profiling data")
-        print("   4. Replace sample_workload with your own code to profile")
+        print("💡 WHAT YOU GET WITH PYCROSCOPE 1.0:")
+        print("   🔥 Performance hotspot identification")
+        print("   📊 Detailed execution timing and memory usage")
+        print("   🎯 Anti-pattern detection (NEW!)")
+        print("   🔗 Correlation between patterns and performance issues")
+        print("   📈 Beautiful visualizations and comprehensive reports")
         print()
-        print("📚 CUSTOMIZATION:")
+        print("📁 NEXT STEPS:")
+        print(f"   1. Open the '{output_dir}' directory to explore results")
+        print("   2. Review pattern_analysis_report.json for code quality insights")
+        print("   3. Check integrated_analysis_report.json for combined findings")
+        print("   4. View .png chart files to visualize performance data")
+        print("   5. Replace sample_workload with your own code to profile")
+        print()
+        print("🎯 PATTERN ANALYSIS FEATURES:")
+        print("   • Detects nested loops and O(n²) complexity issues")
+        print("   • Identifies functions with high complexity or too many parameters")
+        print("   • Finds dead code and unused imports")
+        print("   • Highlights inefficient data structure usage")
+        print("   • Prioritizes issues found in performance hotspots")
+        print()
+        print("🛠️  CUSTOMIZATION:")
         print("   - Modify run_sample_workload() to execute your own code")
-        print("   - Adjust profiling_config to enable/disable profilers")
-        print("   - Change output_dir to your preferred location")
-        print("=" * 60)
+        print("   - Use @pycroscope.profile() decorator on specific functions")
+        print("   - Adjust pattern detection thresholds in ProfileConfig")
+        print(
+            "   - Focus analysis with .with_performance_focus() or .with_maintainability_focus()"
+        )
+        print("=" * 70)
 
         return True
 

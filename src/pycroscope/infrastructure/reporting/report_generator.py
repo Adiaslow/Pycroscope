@@ -34,12 +34,17 @@ class ReportGenerator:
         if not self.session.results:
             raise ValidationError("Cannot generate report for session with no results")
 
-    def generate_comprehensive_report(self, output_dir: Optional[Path] = None) -> Path:
+    def generate_comprehensive_report(
+        self,
+        output_dir: Optional[Path] = None,
+        pattern_analysis_results: Optional[Dict[str, Any]] = None,
+    ) -> Path:
         """
         Generate comprehensive markdown report from session data.
 
         Args:
             output_dir: Directory for output files (must be configured)
+            pattern_analysis_results: Optional pattern analysis results to include in report
 
         Returns:
             Path to generated markdown report
@@ -58,10 +63,14 @@ class ReportGenerator:
         # Use clean filename without session ID
         report_path = output_dir / "profiling_report.md"
 
-        self._write_comprehensive_markdown_report(report_path)
+        self._write_comprehensive_markdown_report(report_path, pattern_analysis_results)
         return report_path
 
-    def _write_comprehensive_markdown_report(self, report_path: Path) -> None:
+    def _write_comprehensive_markdown_report(
+        self,
+        report_path: Path,
+        pattern_analysis_results: Optional[Dict[str, Any]] = None,
+    ) -> None:
         """Write comprehensive markdown report to file."""
         with open(report_path, "w", encoding="utf-8") as file_handle:
             # Header
@@ -84,7 +93,15 @@ class ReportGenerator:
             file_handle.write(
                 f"- **Profilers Used:** {', '.join(completed_profilers)}\n"
             )
-            file_handle.write(f"- **Total Results:** {total_results}\n\n")
+            file_handle.write(f"- **Total Results:** {total_results}\n")
+
+            # Add pattern analysis summary to executive summary
+            if pattern_analysis_results:
+                summary = pattern_analysis_results.get("summary", {})
+                total_patterns = summary.get("total_patterns_detected", 0)
+                file_handle.write(f"- **Patterns Detected:** {total_patterns}\n")
+
+            file_handle.write("\n")
 
             # Configuration section
             file_handle.write("## ⚙️ Configuration\n\n")
@@ -105,6 +122,12 @@ class ReportGenerator:
                     self._write_profiler_analysis(
                         file_handle, profiler_name, result.data
                     )
+
+            # Pattern Analysis Section (NEW)
+            if pattern_analysis_results:
+                self._write_pattern_analysis_section(
+                    file_handle, pattern_analysis_results
+                )
 
             # Performance insights
             file_handle.write("## 🎯 Performance Insights\n\n")
@@ -370,6 +393,110 @@ class ReportGenerator:
             content.append("")
 
         return "\n".join(content)
+
+    def _write_pattern_analysis_section(
+        self, file_handle, pattern_analysis_results: Dict[str, Any]
+    ) -> None:
+        """Write pattern analysis section to the report."""
+        file_handle.write("## 🎯 Pattern Analysis Results\n\n")
+
+        summary = pattern_analysis_results.get("summary", {})
+        total_patterns = summary.get("total_patterns_detected", 0)
+        total_files = summary.get("total_files_analyzed", 0)
+
+        if total_patterns == 0:
+            file_handle.write(
+                "✅ **No code patterns detected** - Great code quality!\n\n"
+            )
+            return
+
+        file_handle.write(
+            f"🔍 **Analysis Summary:** {total_patterns} patterns detected across {total_files} files\n\n"
+        )
+
+        # Pattern distribution
+        pattern_dist = summary.get("pattern_distribution", {})
+        if pattern_dist:
+            file_handle.write("### 📊 Pattern Distribution\n\n")
+            file_handle.write("| Pattern Type | Count |\n")
+            file_handle.write("|--------------|-------|\n")
+            for pattern_type, count in sorted(
+                pattern_dist.items(), key=lambda x: x[1], reverse=True
+            ):
+                file_handle.write(
+                    f"| {pattern_type.replace('_', ' ').title()} | {count} |\n"
+                )
+            file_handle.write("\n")
+
+        # Severity distribution
+        severity_dist = summary.get("severity_distribution", {})
+        if severity_dist:
+            file_handle.write("### 🚨 Severity Breakdown\n\n")
+            file_handle.write("| Severity | Count |\n")
+            file_handle.write("|----------|-------|\n")
+            for severity, count in sorted(
+                severity_dist.items(),
+                key=lambda x: {"critical": 4, "high": 3, "medium": 2, "low": 1}.get(
+                    x[0], 0
+                ),
+                reverse=True,
+            ):
+                severity_emoji = {
+                    "critical": "💥",
+                    "high": "🚨",
+                    "medium": "⚠️",
+                    "low": "📝",
+                }.get(severity, "⚠️")
+                file_handle.write(
+                    f"| {severity_emoji} {severity.title()} | {count} |\n"
+                )
+            file_handle.write("\n")
+
+        # Top issues
+        top_issues = pattern_analysis_results.get("top_issues", [])
+        if top_issues:
+            file_handle.write("### 🔥 Priority Issues\n\n")
+            for i, issue in enumerate(top_issues[:10], 1):  # Show top 10
+                severity_emoji = {
+                    "critical": "💥",
+                    "high": "🚨",
+                    "medium": "⚠️",
+                    "low": "📝",
+                }.get(issue.get("severity", "medium"), "⚠️")
+                correlated = " 🎯" if issue.get("performance_correlated") else ""
+
+                file_handle.write(
+                    f"#### {i}. {severity_emoji} {issue.get('pattern_type', 'Unknown').replace('_', ' ').title()}{correlated}\n\n"
+                )
+                file_handle.write(f"- **File:** `{issue.get('file', 'Unknown')}`\n")
+                file_handle.write(
+                    f"- **Function:** `{issue.get('function', 'Unknown')}`\n"
+                )
+                file_handle.write(f"- **Line:** {issue.get('line', 'Unknown')}\n")
+                file_handle.write(
+                    f"- **Severity:** {issue.get('severity', 'Unknown').title()}\n"
+                )
+                file_handle.write(
+                    f"- **Description:** {issue.get('description', 'No description available')}\n"
+                )
+                file_handle.write(
+                    f"- **Suggestion:** {issue.get('suggestion', 'No suggestion available')}\n"
+                )
+
+                if issue.get("performance_correlated"):
+                    file_handle.write(
+                        "- **🎯 Performance Impact:** This pattern was found in a performance hotspot\n"
+                    )
+
+                file_handle.write("\n")
+
+        # Recommendations
+        recommendations = pattern_analysis_results.get("recommendations", [])
+        if recommendations:
+            file_handle.write("### 💡 Recommendations\n\n")
+            for i, recommendation in enumerate(recommendations, 1):
+                file_handle.write(f"{i}. {recommendation}\n")
+            file_handle.write("\n")
 
     def _generate_performance_insights(self) -> List[str]:
         """Generate performance insights from profiling data."""
