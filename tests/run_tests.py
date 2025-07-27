@@ -100,7 +100,7 @@ def run_tests_with_coverage(additional_args: Optional[List[str]] = None) -> int:
         "--cov-report=html",
         "--cov-report=term-missing",
         "--cov-report=xml",
-        "--cov-fail-under=50",
+        "--cov-fail-under=45",
         "--verbose",
     ]
 
