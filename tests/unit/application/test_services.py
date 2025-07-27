@@ -117,7 +117,7 @@ class TestConfigurationService:
 
         error_message = str(exc_info.value)
         assert "memory_precision" in error_message
-        assert "memory_precision" in error_message
+        assert "max_call_depth" in error_message
         assert "max_call_depth" in error_message
 
 

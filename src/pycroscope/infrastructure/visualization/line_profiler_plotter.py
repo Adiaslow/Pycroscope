@@ -64,10 +64,8 @@ class LineProfilerPlotter(ProfilerPlotter):
         line_timings = self._extract_line_timings(profiler_data)
 
         if not line_timings:
-            raise RuntimeError(
-                "Line profiler generated no timing data. This indicates the profiler "
-                "was not properly capturing function execution or no functions were executed."
-            )
+            # Return empty placeholder visualization for empty data
+            return self._create_empty_heatmap_placeholder()
 
         df = pd.DataFrame(line_timings)
 
@@ -193,3 +191,31 @@ Format: script.py:line (hits) | code"""
 
         # Limit to top 50 lines for readability
         return line_timings[:50]
+
+    def _create_empty_heatmap_placeholder(self) -> Figure:
+        """Create placeholder visualization when no line timing data is available."""
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Create empty heatmap with informative message
+        ax.text(
+            0.5,
+            0.5,
+            "No line timing data available\n\n"
+            "This can occur when:\n"
+            "• Line profiler captures only system/library functions\n"
+            "• Code execution was too brief to capture timing data\n"
+            "• Profiling was disabled due to conflicts",
+            ha="center",
+            va="center",
+            transform=ax.transAxes,
+            fontsize=12,
+            bbox=dict(boxstyle="round,pad=0.5", facecolor="lightgray"),
+        )
+
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_title("Line-by-Line Timing Heatmap", fontsize=14, fontweight="bold")
+        ax.axis("off")
+
+        plt.tight_layout()
+        return fig

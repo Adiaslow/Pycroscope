@@ -6,7 +6,7 @@ Integrates pattern analysis as a core feature alongside profiling.
 """
 
 from pathlib import Path
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, ValidationError
 from typing import Optional, Dict, Any, List
 
 
@@ -45,7 +45,7 @@ class ProfileConfig(BaseModel):
         default=0.01, gt=0.0, description="Sampling interval in seconds"
     )
     memory_precision: int = Field(
-        default=3, ge=1, le=10, description="Memory measurement precision"
+        default=3, ge=1, le=6, description="Memory measurement precision"
     )
     max_call_depth: int = Field(
         default=50, gt=0, description="Maximum call stack depth to profile"
@@ -154,7 +154,7 @@ class ProfileConfig(BaseModel):
     def validate_session_name(cls, v: Optional[str]) -> Optional[str]:
         """Validate session name length."""
         if v is not None and len(v) > 100:
-            raise ValueError("session_name must be at most 100 characters")
+            raise ValidationError("session_name must be at most 100 characters")
         return v
 
     @field_validator("profiler_prefix")
@@ -162,7 +162,7 @@ class ProfileConfig(BaseModel):
     def validate_profiler_prefix(cls, v: str) -> str:
         """Validate profiler prefix length."""
         if len(v) > 20:
-            raise ValueError("profiler_prefix must be at most 20 characters")
+            raise ValidationError("profiler_prefix must be at most 20 characters")
         return v
 
     @field_validator("pattern_severity_threshold")
@@ -171,7 +171,7 @@ class ProfileConfig(BaseModel):
         """Validate pattern severity threshold."""
         valid_severities = ["low", "medium", "high", "critical"]
         if v not in valid_severities:
-            raise ValueError(
+            raise ValidationError(
                 f"Pattern severity threshold must be one of {valid_severities}"
             )
         return v
@@ -280,10 +280,14 @@ class ProfileConfig(BaseModel):
             New configuration with thread isolation enabled
 
         Raises:
-            ValueError: If prefix is None or empty
+            ConfigurationError: If prefix is None or empty
         """
         if not prefix:
-            raise ValueError("Thread isolation requires a non-empty prefix")
+            from .exceptions import ConfigurationError
+
+            raise ConfigurationError(
+                "Thread isolation requires a non-empty prefix", config_key="prefix"
+            )
 
         return self.model_copy(
             update={

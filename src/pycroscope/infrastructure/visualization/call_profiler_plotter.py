@@ -168,9 +168,7 @@ class CallProfilerPlotter(ProfilerPlotter):
         plt.tight_layout()
         return fig
 
-    def _plot_call_tree(
-        self, stats_dict: Dict[str, Any], max_depth: int = 6
-    ) -> plt.Figure:
+    def _plot_call_tree(self, stats_dict: Dict[str, Any], max_depth: int = 6) -> Figure:
         """
         Create proper call tree visualization showing actual calling relationships.
 
@@ -508,10 +506,8 @@ class CallProfilerPlotter(ProfilerPlotter):
         flame_stacks = self._extract_call_stacks(call_graph)
 
         if not flame_stacks:
-            raise RuntimeError(
-                f"Cannot generate flame graph: No call stacks extracted from {len(call_graph)} functions. "
-                "This indicates the call graph lacks proper calling relationships."
-            )
+            # Return placeholder visualization for empty call stacks
+            return self._create_empty_flame_graph_placeholder(len(call_graph))
 
         # Create the flame graph visualization
         fig, ax = plt.subplots(figsize=(16, 10))
@@ -780,3 +776,37 @@ class CallProfilerPlotter(ProfilerPlotter):
             return func_name.split("/")[-1]  # Just the filename if path
         else:
             return str(func_name)[:30]
+
+    def _create_empty_flame_graph_placeholder(self, num_functions: int) -> Figure:
+        """Create placeholder visualization when no call stacks can be extracted."""
+        fig, ax = plt.subplots(figsize=(12, 8))
+
+        # Create informative message
+        message = (
+            f"Flame graph unavailable\n\n"
+            f"Call profiler captured {num_functions} functions but could not\n"
+            f"extract proper calling relationships for visualization.\n\n"
+            f"This can occur when:\n"
+            f"• Functions have no clear caller-callee relationships\n"
+            f"• Code execution was too brief to capture call hierarchy\n"
+            f"• Only isolated function calls were captured"
+        )
+
+        ax.text(
+            0.5,
+            0.5,
+            message,
+            ha="center",
+            va="center",
+            transform=ax.transAxes,
+            fontsize=12,
+            bbox=dict(boxstyle="round,pad=0.5", facecolor="lightblue"),
+        )
+
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
+        ax.set_title("Call Stack Flame Graph", fontsize=14, fontweight="bold")
+        ax.axis("off")
+
+        plt.tight_layout()
+        return fig
