@@ -265,13 +265,13 @@ class MarkdownFormatter(BaseFormatter):
         lines.append("")
         lines.append("### Configuration")
         lines.append(
-            f"- **Call Profiling:** {'✅' if config.get('call_profiling') else '❌'}"
+            f"- **Call Profiling:** {'[ON]' if config.get('call_profiling') else '[OFF]'}"
         )
         lines.append(
-            f"- **Line Profiling:** {'✅' if config.get('line_profiling') else '❌'}"
+            f"- **Line Profiling:** {'[ON]' if config.get('line_profiling') else '[OFF]'}"
         )
         lines.append(
-            f"- **Memory Profiling:** {'✅' if config.get('memory_profiling') else '❌'}"
+            f"- **Memory Profiling:** {'[ON]' if config.get('memory_profiling') else '[OFF]'}"
         )
 
         if config.get("session_name"):

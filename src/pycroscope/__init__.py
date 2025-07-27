@@ -16,6 +16,7 @@ __author__ = "Adam Murray"
 
 # Core public API - "One Way, Many Options"
 from .core import ProfileSession, ProfileConfig
+from .core.config import PatternType
 from .application.services import ProfilingService
 from .infrastructure.profilers.orchestra import ProfilerOrchestra
 
@@ -101,6 +102,7 @@ __all__ = [
     "profile",
     "ProfileSession",
     "ProfileConfig",
+    "PatternType",
     "ProfilingService",
     "ProfilerOrchestra",
 ]

@@ -406,7 +406,7 @@ class ReportGenerator:
 
         if total_patterns == 0:
             file_handle.write(
-                "✅ **No code patterns detected** - Great code quality!\n\n"
+                "[OK] **No code patterns detected** - Great code quality!\n\n"
             )
             return
 

@@ -8,6 +8,45 @@ Integrates pattern analysis as a core feature alongside profiling.
 from pathlib import Path
 from pydantic import BaseModel, Field, field_validator, ValidationError
 from typing import Optional, Dict, Any, List
+from enum import Enum
+
+
+class PatternType(Enum):
+    """Types of patterns that can be detected."""
+
+    # Performance Anti-Patterns
+    NESTED_LOOPS = "nested_loops"
+    INEFFICIENT_DATA_STRUCTURE = "inefficient_data_structure"
+    UNNECESSARY_COMPUTATION = "unnecessary_computation"
+    MEMORY_LEAK_PATTERN = "memory_leak_pattern"
+
+    # Algorithmic Complexity Issues
+    QUADRATIC_COMPLEXITY = "quadratic_complexity"
+    EXPONENTIAL_COMPLEXITY = "exponential_complexity"
+    RECURSIVE_WITHOUT_MEMOIZATION = "recursive_without_memoization"
+
+    # Code Quality Issues
+    DEAD_CODE = "dead_code"
+    UNUSED_IMPORTS = "unused_imports"
+    DUPLICATE_CODE = "duplicate_code"
+    HIGH_CYCLOMATIC_COMPLEXITY = "high_cyclomatic_complexity"
+
+    # Maintainability Issues
+    LOW_MAINTAINABILITY_INDEX = "low_maintainability_index"
+    LONG_FUNCTION = "long_function"
+    TOO_MANY_PARAMETERS = "too_many_parameters"
+
+    # Scientific Computing Anti-Patterns (Sequential CPU Focus)
+    MISSED_VECTORIZATION = "missed_vectorization"
+    INEFFICIENT_ARRAY_OPERATIONS = "inefficient_array_operations"
+    SUBOPTIMAL_MATRIX_OPERATIONS = "suboptimal_matrix_operations"
+    NON_CONTIGUOUS_MEMORY_ACCESS = "non_contiguous_memory_access"
+    UNNECESSARY_ARRAY_COPY = "unnecessary_array_copy"
+    INEFFICIENT_BROADCASTING = "inefficient_broadcasting"
+    SCALAR_ARRAY_OPERATIONS = "scalar_array_operations"
+    WRONG_DTYPE_USAGE = "wrong_dtype_usage"
+    INEFFICIENT_ARRAY_CONCATENATION = "inefficient_array_concatenation"
+    SUBOPTIMAL_LINEAR_ALGEBRA = "suboptimal_linear_algebra"
 
 
 class ProfileConfig(BaseModel):
@@ -65,14 +104,42 @@ class ProfileConfig(BaseModel):
     )
 
     # Pattern Detection Settings
-    pattern_complexity_threshold: int = Field(
-        default=10,
-        gt=0,
-        description="Cyclomatic complexity threshold for pattern detection",
+    enabled_patterns: List[PatternType] = Field(
+        default_factory=lambda: [
+            # Performance Anti-Patterns
+            PatternType.NESTED_LOOPS,
+            PatternType.INEFFICIENT_DATA_STRUCTURE,
+            PatternType.UNNECESSARY_COMPUTATION,
+            PatternType.MEMORY_LEAK_PATTERN,
+            # Algorithmic Complexity Issues
+            PatternType.QUADRATIC_COMPLEXITY,
+            PatternType.EXPONENTIAL_COMPLEXITY,
+            PatternType.RECURSIVE_WITHOUT_MEMOIZATION,
+            # Code Quality Issues
+            PatternType.DEAD_CODE,
+            PatternType.UNUSED_IMPORTS,
+            PatternType.DUPLICATE_CODE,
+            PatternType.HIGH_CYCLOMATIC_COMPLEXITY,
+            # Maintainability Issues
+            PatternType.LOW_MAINTAINABILITY_INDEX,
+            PatternType.LONG_FUNCTION,
+            PatternType.TOO_MANY_PARAMETERS,
+            # Scientific Computing Anti-Patterns
+            PatternType.MISSED_VECTORIZATION,
+            PatternType.INEFFICIENT_ARRAY_OPERATIONS,
+            PatternType.SUBOPTIMAL_MATRIX_OPERATIONS,
+            PatternType.NON_CONTIGUOUS_MEMORY_ACCESS,
+            PatternType.UNNECESSARY_ARRAY_COPY,
+            PatternType.INEFFICIENT_BROADCASTING,
+            PatternType.SCALAR_ARRAY_OPERATIONS,
+            PatternType.WRONG_DTYPE_USAGE,
+            PatternType.INEFFICIENT_ARRAY_CONCATENATION,
+            PatternType.SUBOPTIMAL_LINEAR_ALGEBRA,
+        ],
+        description="List of pattern types to detect (all patterns enabled by default)",
     )
-    pattern_maintainability_threshold: float = Field(
-        default=20.0, gt=0.0, description="Maintainability index threshold"
-    )
+
+    # Analysis Thresholds
     pattern_severity_threshold: str = Field(
         default="medium",
         description="Minimum severity threshold for reporting patterns",
@@ -83,22 +150,33 @@ class ProfileConfig(BaseModel):
         le=1.0,
         description="Minimum confidence threshold for pattern reporting",
     )
-
-    # Pattern Analysis Focus
-    detect_nested_loops: bool = Field(
-        default=True, description="Detect nested loop anti-patterns"
-    )
-    detect_dead_code: bool = Field(
-        default=True, description="Detect unused code and imports"
-    )
-    detect_complexity_issues: bool = Field(
-        default=True, description="Detect high complexity functions"
-    )
-    detect_maintainability_issues: bool = Field(
-        default=True, description="Detect maintainability problems"
+    max_results_per_file: int = Field(
+        default=50, gt=0, description="Maximum number of results per file"
     )
 
-    # Function Analysis Thresholds
+    # Analysis Behavior Settings
+    correlate_patterns_with_profiling: bool = Field(
+        default=True, description="Correlate detected patterns with profiling hotspots"
+    )
+    include_suggestions: bool = Field(
+        default=True, description="Include improvement suggestions in results"
+    )
+    prioritize_hotspot_patterns: bool = Field(
+        default=True, description="Prioritize patterns found in performance hotspots"
+    )
+    hotspot_correlation_threshold: float = Field(
+        default=0.1, ge=0.0, le=1.0, description="Threshold for hotspot correlation"
+    )
+
+    # Code Quality Thresholds
+    pattern_complexity_threshold: int = Field(
+        default=10,
+        gt=0,
+        description="Cyclomatic complexity threshold for pattern detection",
+    )
+    pattern_maintainability_threshold: float = Field(
+        default=20.0, gt=0.0, description="Maintainability index threshold"
+    )
     max_function_lines: int = Field(
         default=50, gt=0, description="Maximum recommended function length"
     )
@@ -106,15 +184,21 @@ class ProfileConfig(BaseModel):
         default=5, gt=0, description="Maximum recommended function parameters"
     )
 
-    # Pattern-Profiling Integration
-    correlate_patterns_with_profiling: bool = Field(
-        default=True, description="Correlate detected patterns with profiling hotspots"
+    # Dead Code Detection Settings
+    exclude_test_files: bool = Field(
+        default=True, description="Exclude test files from dead code detection"
     )
-    prioritize_hotspot_patterns: bool = Field(
-        default=True, description="Prioritize patterns found in performance hotspots"
+    test_file_patterns: List[str] = Field(
+        default_factory=lambda: ["*test*.py", "*_test.py", "test_*.py"],
+        description="Patterns for identifying test files",
     )
-    hotspot_correlation_threshold: float = Field(
-        default=0.1, ge=0.0, le=1.0, description="Threshold for hotspot correlation"
+
+    # Analysis Output Settings
+    generate_detailed_analysis_report: bool = Field(
+        default=True, description="Generate detailed analysis report"
+    )
+    save_intermediate_analysis_results: bool = Field(
+        default=False, description="Save intermediate analysis results for debugging"
     )
 
     # Isolation and safety
@@ -176,6 +260,14 @@ class ProfileConfig(BaseModel):
             )
         return v
 
+    @field_validator("enabled_patterns")
+    @classmethod
+    def validate_enabled_patterns(cls, v: List[PatternType]) -> List[PatternType]:
+        """Validate enabled patterns - all patterns are always included."""
+        # Always ensure all patterns are enabled
+        all_patterns = list(PatternType)
+        return all_patterns
+
     @property
     def enabled_profilers(self) -> List[str]:
         """Get list of enabled profiler types."""
@@ -192,25 +284,10 @@ class ProfileConfig(BaseModel):
     @property
     def enabled_pattern_types(self) -> List[str]:
         """Get list of enabled pattern detection types."""
-        patterns = []
-        if self.analyze_patterns:
-            if self.detect_nested_loops:
-                patterns.extend(["nested_loops", "quadratic_complexity"])
-            if self.detect_dead_code:
-                patterns.extend(["dead_code", "unused_imports"])
-            if self.detect_complexity_issues:
-                patterns.extend(
-                    ["high_cyclomatic_complexity", "recursive_without_memoization"]
-                )
-            if self.detect_maintainability_issues:
-                patterns.extend(
-                    [
-                        "low_maintainability_index",
-                        "long_function",
-                        "too_many_parameters",
-                    ]
-                )
-        return patterns
+        if not self.analyze_patterns:
+            return []
+
+        return [pattern.value for pattern in self.enabled_patterns]
 
     def with_minimal_overhead(self) -> "ProfileConfig":
         """
@@ -232,22 +309,36 @@ class ProfileConfig(BaseModel):
             }
         )
 
+    def is_pattern_enabled(self, pattern_type: PatternType) -> bool:
+        """Check if a specific pattern type is enabled."""
+        return pattern_type in self.enabled_patterns
+
+    def get_severity_weight(self, severity: str) -> int:
+        """Get numeric weight for severity level."""
+        weights = {"low": 1, "medium": 2, "high": 3, "critical": 4}
+        return weights.get(severity, 0)
+
+    def should_report_analysis_result(self, severity: str, confidence: float) -> bool:
+        """Check if an analysis result should be reported based on thresholds."""
+        severity_ok = self.get_severity_weight(severity) >= self.get_severity_weight(
+            self.pattern_severity_threshold
+        )
+        confidence_ok = confidence >= self.pattern_confidence_threshold
+        return severity_ok and confidence_ok
+
     def with_performance_focus(self) -> "ProfileConfig":
         """
         Create configuration focused on performance analysis.
 
-        Emphasizes pattern detection for algorithmic complexity and performance hotspots.
+        All patterns are enabled, but emphasizes performance correlation and medium severity.
         """
         return self.model_copy(
             update={
                 "analyze_patterns": True,
-                "detect_nested_loops": True,
-                "detect_complexity_issues": True,
-                "detect_dead_code": False,
-                "detect_maintainability_issues": False,
                 "correlate_patterns_with_profiling": True,
                 "prioritize_hotspot_patterns": True,
                 "pattern_severity_threshold": "medium",
+                "pattern_confidence_threshold": 0.8,
             }
         )
 
@@ -255,17 +346,50 @@ class ProfileConfig(BaseModel):
         """
         Create configuration focused on code maintainability.
 
-        Emphasizes pattern detection for code quality and maintainability issues.
+        All patterns are enabled, but emphasizes maintainability with lower severity threshold.
         """
         return self.model_copy(
             update={
                 "analyze_patterns": True,
-                "detect_nested_loops": False,
-                "detect_complexity_issues": True,
-                "detect_dead_code": True,
-                "detect_maintainability_issues": True,
                 "correlate_patterns_with_profiling": False,
                 "pattern_severity_threshold": "low",
+                "pattern_confidence_threshold": 0.6,
+                "generate_detailed_analysis_report": True,
+            }
+        )
+
+    def with_security_focus(self) -> "ProfileConfig":
+        """
+        Create configuration focused on security-related patterns.
+
+        All patterns are enabled, but emphasizes security with low severity threshold.
+        """
+        return self.model_copy(
+            update={
+                "analyze_patterns": True,
+                "correlate_patterns_with_profiling": True,
+                "pattern_severity_threshold": "low",
+                "pattern_confidence_threshold": 0.7,
+                "prioritize_hotspot_patterns": True,
+            }
+        )
+
+    def with_comprehensive_analysis(self) -> "ProfileConfig":
+        """
+        Create configuration for comprehensive analysis.
+
+        All patterns enabled with maximum sensitivity and detailed reporting.
+        """
+        return self.model_copy(
+            update={
+                "analyze_patterns": True,
+                "correlate_patterns_with_profiling": True,
+                "prioritize_hotspot_patterns": True,
+                "pattern_severity_threshold": "low",
+                "pattern_confidence_threshold": 0.5,
+                "generate_detailed_analysis_report": True,
+                "save_intermediate_analysis_results": True,
+                "include_suggestions": True,
             }
         )
 

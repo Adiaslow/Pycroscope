@@ -90,7 +90,7 @@ class ProfilerOrchestra:
                 safe_profilers = [p for p in ["memory"] if p in enabled_profilers]
 
             if safe_profilers:
-                print(f"   ✅ Using safe profilers: {', '.join(safe_profilers)}")
+                print(f"   [OK] Using safe profilers: {', '.join(safe_profilers)}")
                 return self._simultaneous_profiling(safe_profilers)
             else:
                 print(
@@ -356,7 +356,7 @@ class ProfilerOrchestra:
                             f"      {i}. {severity_emoji} {issue['pattern_type']}{correlated}"
                         )
             else:
-                print("   ✅ No significant patterns detected")
+                print("   [OK] No significant patterns detected")
 
             return analysis_report
         else:
