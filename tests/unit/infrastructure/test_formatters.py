@@ -161,9 +161,9 @@ class TestTextFormatter:
         assert "session-456" in result
         assert "running" in result
         assert "2.567" in result
-        assert "Call Profiling: ✓" in result
-        assert "Line Profiling: ✗" in result
-        assert "Memory Profiling: ✓" in result
+        assert "Call Profiling: [ON]" in result
+        assert "Line Profiling: [OFF]" in result
+        assert "Memory Profiling: [ON]" in result
         assert "my_session" in result
 
     @pytest.mark.unit

@@ -76,7 +76,7 @@ class ProfilerOrchestra:
             print("🔍 Detected active trace function - we're being profiled!")
             print(f"   Current tracer: {type(current_trace).__name__}")
             print(
-                "🎯 Graceful degradation: Disabling trace-based profilers to avoid conflicts"
+                "[GRACEFUL] Graceful degradation: Disabling trace-based profilers to avoid conflicts"
             )
 
             # Filter out conflicting profilers when we're being profiled
@@ -84,8 +84,10 @@ class ProfilerOrchestra:
             safe_profilers = [p for p in enabled_profilers if p not in trace_profilers]
 
             if not safe_profilers:
-                print("   ⚠️  All requested profilers conflict with active tracer")
-                print("   📊 Proceeding with non-trace profilers only")
+                print(
+                    "   [WARNING] All requested profilers conflict with active tracer"
+                )
+                print("   [INFO] Proceeding with non-trace profilers only")
                 # At minimum, try memory profiler as it doesn't use sys.settrace()
                 safe_profilers = [p for p in ["memory"] if p in enabled_profilers]
 
@@ -94,12 +96,14 @@ class ProfilerOrchestra:
                 return self._simultaneous_profiling(safe_profilers)
             else:
                 print(
-                    "   ❌ No safe profilers available - profiling disabled in nested context"
+                    "   [ERROR] No safe profilers available - profiling disabled in nested context"
                 )
                 return []
 
         # Use robust trace multiplexer to run all profilers simultaneously
-        print("🎯 Using robust trace multiplexer - all profilers run simultaneously")
+        print(
+            "[ROBUST] Using robust trace multiplexer - all profilers run simultaneously"
+        )
         return self._simultaneous_profiling(enabled_profilers)
 
     def _simultaneous_profiling(self, enabled_profilers: List[str]) -> List[str]:
@@ -113,7 +117,7 @@ class ProfilerOrchestra:
             factory = registry.get_factory_for_type(profiler_type)
             profiler = factory.create(self.session.config.model_dump())
 
-            print(f"✓ Started {profiler_type} profiler")
+            print(f"[OK] Started {profiler_type} profiler")
 
             # Start profiler - let any exceptions bubble up immediately
             profiler.start()
@@ -122,7 +126,7 @@ class ProfilerOrchestra:
             started_profilers.append(profiler_type)
 
         print(
-            f"🎯 Successfully started {len(started_profilers)} profilers: {', '.join(started_profilers)}"
+            f"[SUCCESS] Successfully started {len(started_profilers)} profilers: {', '.join(started_profilers)}"
         )
         return started_profilers
 
@@ -138,18 +142,18 @@ class ProfilerOrchestra:
         # Start compatible profilers first (they can run together)
         if compatible:
             started_compatible = self._simultaneous_profiling(compatible)
-            print(f"✓ Compatible profilers running: {', '.join(started_compatible)}")
+            print(f"[OK] Compatible profilers running: {', '.join(started_compatible)}")
 
         # Sequential profilers will be handled later in stop_profiling to avoid sys.settrace() conflicts
         # Store them for true sequential execution after compatible profilers finish
         self._sequential_profilers = sequential_profilers
         if sequential_profilers:
             print(
-                f"🎯 Sequential profilers queued: {', '.join(sequential_profilers)} (will run after compatible profilers)"
+                f"[QUEUE] Sequential profilers queued: {', '.join(sequential_profilers)} (will run after compatible profilers)"
             )
 
         all_profilers = (compatible if compatible else []) + sequential_profilers
-        print(f"🎯 All profilers active: {', '.join(all_profilers)}")
+        print(f"[ACTIVE] All profilers active: {', '.join(all_profilers)}")
 
         return all_profilers
 
@@ -240,17 +244,17 @@ class ProfilerOrchestra:
             report_path = report_generator.generate_comprehensive_report(
                 pattern_analysis_results=analysis_results
             )
-            print(f"📄 Generated comprehensive report: {report_path}")
+            print(f"[REPORT] Generated comprehensive report: {report_path}")
 
         if self.session.config.create_visualizations:
             chart_generator = ChartGenerator(self.session)
             charts = chart_generator.generate_all_charts()
             if charts:
-                print(f"📊 Generated {len(charts)} visualization charts:")
+                print(f"[CHARTS] Generated {len(charts)} visualization charts:")
                 for chart_name, chart_path in charts.items():
-                    print(f"   • {chart_name}: {chart_path}")
+                    print(f"   - {chart_name}: {chart_path}")
             else:
-                print("📊 No charts generated (no compatible profiling data)")
+                print("[CHARTS] No charts generated (no compatible profiling data)")
 
     def _run_pattern_analysis(self) -> Optional[Dict[str, Any]]:
         """Run pattern analysis on the profiled code."""
@@ -303,7 +307,7 @@ class ProfilerOrchestra:
         code_files = self._extract_profiled_files()
         if not code_files:
             print(
-                "📋 No user Python files found in profiling data for pattern analysis"
+                "[ANALYSIS] No user Python files found in profiling data for pattern analysis"
             )
             return None
 
@@ -317,7 +321,7 @@ class ProfilerOrchestra:
             analysis_report = analysis_orchestrator.generate_report(analysis_results)
 
             print(
-                f"🎯 Pattern analysis complete - results integrated into comprehensive report"
+                f"[ANALYSIS] Pattern analysis complete - results integrated into comprehensive report"
             )
 
             # Print summary
@@ -325,7 +329,7 @@ class ProfilerOrchestra:
             total_patterns = summary.get("total_patterns_detected", 0)
             if total_patterns > 0:
                 print(
-                    f"   ⚠️  Found {total_patterns} patterns across {summary.get('total_files_analyzed', 0)} files"
+                    f"   [WARNING] Found {total_patterns} patterns across {summary.get('total_files_analyzed', 0)} files"
                 )
 
                 # Show pattern distribution
@@ -344,13 +348,13 @@ class ProfilerOrchestra:
                     print(f"   🔥 Priority issues:")
                     for i, issue in enumerate(top_issues[:3], 1):
                         severity_emoji = {
-                            "low": "📝",
-                            "medium": "⚠️",
-                            "high": "🚨",
-                            "critical": "💥",
-                        }.get(issue["severity"], "⚠️")
+                            "low": "[LOW]",
+                            "medium": "[WARNING]",
+                            "high": "[HIGH]",
+                            "critical": "[CRITICAL]",
+                        }.get(issue["severity"], "[WARNING]")
                         correlated = (
-                            " 🎯" if issue.get("performance_correlated") else ""
+                            " [PERF]" if issue.get("performance_correlated") else ""
                         )
                         print(
                             f"      {i}. {severity_emoji} {issue['pattern_type']}{correlated}"
@@ -360,7 +364,7 @@ class ProfilerOrchestra:
 
             return analysis_report
         else:
-            print("📋 Pattern analysis completed - no issues found")
+            print("[ANALYSIS] Pattern analysis completed - no issues found")
             return None
 
     def _extract_profiled_files(self) -> List[Path]:

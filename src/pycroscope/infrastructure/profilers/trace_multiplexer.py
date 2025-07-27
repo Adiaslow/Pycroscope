@@ -27,7 +27,7 @@ class TraceMultiplexer:
 
     def register_profiler(self, name: str, trace_func: Callable):
         """Register a profiler's trace function."""
-        print(f"🔧 Trace multiplexer: Registering {name} profiler")
+        print(f"[TRACE] Trace multiplexer: Registering {name} profiler")
 
         # Handle duplicate registrations (e.g., nested Pycroscope)
         registration_key = f"{name}_{self._registration_count}"
@@ -37,7 +37,7 @@ class TraceMultiplexer:
         # Ensure multiplexer is active
         self._ensure_active()
 
-        print(f"   📊 Total registered profilers: {len(self._profilers)}")
+        print(f"   [INFO] Total registered profilers: {len(self._profilers)}")
 
     def unregister_profiler(self, name: str):
         """Unregister a profiler's trace function."""
@@ -47,7 +47,7 @@ class TraceMultiplexer:
         ]
         for key in to_remove:
             self._profilers.pop(key, None)
-            print(f"🔧 Trace multiplexer: Unregistered {key}")
+            print(f"[TRACE] Trace multiplexer: Unregistered {key}")
 
         # Deactivate if no profilers remain
         if not self._profilers:
@@ -61,20 +61,20 @@ class TraceMultiplexer:
             # If there's already a trace function and it's not ours, we have a conflict
             if current_trace is not None and current_trace != self._multiplexed_trace:
                 print(
-                    f"⚠️  Trace multiplexer: Detected existing trace function, taking control"
+                    f"[WARNING] Trace multiplexer: Detected existing trace function, taking control"
                 )
                 self._original_trace = current_trace
 
             sys.settrace(self._multiplexed_trace)
             self._is_multiplexer_active = True
-            print(f"✓ Trace multiplexer: Active and controlling sys.settrace()")
+            print(f"[OK] Trace multiplexer: Active and controlling sys.settrace()")
 
     def _deactivate(self):
         """Deactivate the multiplexer and restore original trace function."""
         if self._is_multiplexer_active:
             sys.settrace(self._original_trace)
             self._is_multiplexer_active = False
-            print(f"🔧 Trace multiplexer: Deactivated, restored original trace")
+            print(f"[TRACE] Trace multiplexer: Deactivated, restored original trace")
 
     def _multiplexed_trace(self, frame, event, arg):
         """Multiplexed trace function that calls all registered profilers."""

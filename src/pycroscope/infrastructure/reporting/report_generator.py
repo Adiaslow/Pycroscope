@@ -81,7 +81,7 @@ class ReportGenerator:
             file_handle.write(f"**Session ID:** `{self.session.session_id}`\n\n")
 
             # Executive Summary
-            file_handle.write("## 📊 Executive Summary\n\n")
+            file_handle.write("## Executive Summary\n\n")
 
             duration = self.session.duration or 0
             status = self.session.status.value
@@ -130,14 +130,14 @@ class ReportGenerator:
                 )
 
             # Performance insights
-            file_handle.write("## 🎯 Performance Insights\n\n")
+            file_handle.write("## Performance Insights\n\n")
             insights = self._generate_performance_insights()
             for insight in insights:
                 file_handle.write(f"- {insight}\n")
             file_handle.write("\n")
 
             # Technical details
-            file_handle.write("## 🔧 Technical Details\n\n")
+            file_handle.write("## Technical Details\n\n")
             file_handle.write("### Session Metadata\n\n")
             file_handle.write(f"- **Start Time:** {self.session.start_time}\n")
             file_handle.write(f"- **End Time:** {self.session.end_time}\n")
@@ -257,7 +257,7 @@ class ReportGenerator:
             file_handle.write(f"| Initial Memory | {initial_memory:.2f} MB |\n")
             file_handle.write(f"| Final Memory | {final_memory:.2f} MB |\n")
 
-        file_handle.write("\n### 📊 Memory Timeline Analysis\n\n")
+        file_handle.write("\n### Memory Timeline Analysis\n\n")
         if len(samples) >= 2:
             # Calculate memory growth rate
             duration = samples[-1]["timestamp"] - samples[0]["timestamp"]
@@ -289,7 +289,7 @@ class ReportGenerator:
 
         if "function_profiles" in line_data and line_data["function_profiles"]:
             function_profiles = line_data["function_profiles"]
-            content.append(f"### 🎯 Per-Function Line-by-Line Analysis")
+            content.append(f"### Per-Function Line-by-Line Analysis")
             content.append("")
             content.append(f"**Functions Profiled:** {len(function_profiles)}")
             content.append("")
@@ -381,7 +381,7 @@ class ReportGenerator:
         total_time = line_data.get("total_time", 0)
 
         if total_lines > 0:
-            content.append("### 📊 Line Profiling Summary")
+            content.append("### Line Profiling Summary")
             content.append("")
             content.append(f"- **Total Lines Profiled:** {total_lines:,}")
             content.append(f"- **Total Hits:** {total_hits:,}")
@@ -398,7 +398,7 @@ class ReportGenerator:
         self, file_handle, pattern_analysis_results: Dict[str, Any]
     ) -> None:
         """Write pattern analysis section to the report."""
-        file_handle.write("## 🎯 Pattern Analysis Results\n\n")
+        file_handle.write("## Pattern Analysis Results\n\n")
 
         summary = pattern_analysis_results.get("summary", {})
         total_patterns = summary.get("total_patterns_detected", 0)
@@ -417,7 +417,7 @@ class ReportGenerator:
         # Pattern distribution
         pattern_dist = summary.get("pattern_distribution", {})
         if pattern_dist:
-            file_handle.write("### 📊 Pattern Distribution\n\n")
+            file_handle.write("### Pattern Distribution\n\n")
             file_handle.write("| Pattern Type | Count |\n")
             file_handle.write("|--------------|-------|\n")
             for pattern_type, count in sorted(
@@ -458,12 +458,12 @@ class ReportGenerator:
             file_handle.write("### 🔥 Priority Issues\n\n")
             for i, issue in enumerate(top_issues[:10], 1):  # Show top 10
                 severity_emoji = {
-                    "critical": "💥",
-                    "high": "🚨",
-                    "medium": "⚠️",
-                    "low": "📝",
-                }.get(issue.get("severity", "medium"), "⚠️")
-                correlated = " 🎯" if issue.get("performance_correlated") else ""
+                    "critical": "[CRITICAL]",
+                    "high": "[HIGH]",
+                    "medium": "[WARNING]",
+                    "low": "[LOW]",
+                }.get(issue.get("severity", "medium"), "[WARNING]")
+                correlated = " [PERF]" if issue.get("performance_correlated") else ""
 
                 file_handle.write(
                     f"#### {i}. {severity_emoji} {issue.get('pattern_type', 'Unknown').replace('_', ' ').title()}{correlated}\n\n"
@@ -485,7 +485,7 @@ class ReportGenerator:
 
                 if issue.get("performance_correlated"):
                     file_handle.write(
-                        "- **🎯 Performance Impact:** This pattern was found in a performance hotspot\n"
+                        "- **Performance Impact:** This pattern was found in a performance hotspot\n"
                     )
 
                 file_handle.write("\n")

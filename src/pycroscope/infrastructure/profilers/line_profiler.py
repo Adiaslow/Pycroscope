@@ -91,7 +91,7 @@ class LineProfiler(BaseProfiler):
                                 self._profiler.add_function(func_obj)
                                 self._added_functions.add(func_id)
                                 print(
-                                    f"   📍 Auto-added function to line profiler: {filename}:{func_name}"
+                                    f"   [AUTO] Auto-added function to line profiler: {filename}:{func_name}"
                                 )
 
             # Don't call original trace function if it's our multiplexer (avoid infinite recursion)
@@ -113,9 +113,9 @@ class LineProfiler(BaseProfiler):
         # Enable line profiling
         self._profiler.enable_by_count()
 
-        print("✓ Line profiler enabled with automatic code tracing")
-        print("   📍 Will automatically profile all executed Python code")
-        print("   🤝 Using cooperative tracing (compatible with other profilers)")
+        print("[OK] Line profiler enabled with automatic code tracing")
+        print("   [INFO] Will automatically profile all executed Python code")
+        print("   [COOP] Using cooperative tracing (compatible with other profilers)")
 
     def stop(self) -> Dict[str, Any]:
         """Stop line profiling and return results."""
@@ -184,13 +184,13 @@ class LineProfiler(BaseProfiler):
             # In nested profiling scenarios, line profiler may intentionally capture nothing
             # This is expected behavior when profilers are disabled for safety
             print(
-                "⚠️ Line profiler captured no functions (normal in nested profiling scenarios)"
+                "[WARNING] Line profiler captured no functions (normal in nested profiling scenarios)"
             )
 
             # Check if this is likely a nested profiling scenario
             if self._original_trace_func is not None:
                 print(
-                    "   📍 Detected existing trace function - nested profiling scenario"
+                    "   [INFO] Detected existing trace function - nested profiling scenario"
                 )
                 # Return empty but valid results instead of failing
                 pass

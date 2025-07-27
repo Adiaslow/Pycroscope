@@ -98,8 +98,8 @@ class CallProfiler(BaseProfiler):
 
         # Register our custom call profiler with the multiplexer
         register_trace_function("call_profiler", call_profiler_trace)
-        print("✓ Custom call profiler enabled and integrated with trace multiplexer")
-        print("🤝 Using cooperative tracing (compatible with other profilers)")
+        print("[OK] Custom call profiler enabled and integrated with trace multiplexer")
+        print("[COOP] Using cooperative tracing (compatible with other profilers)")
 
         # Store the profiler trace function for use in stop()
         self._trace_function = call_profiler_trace
