@@ -73,7 +73,7 @@ class ProfilerOrchestra:
         current_trace = sys.gettrace()
 
         if current_trace is not None:
-            print("🔍 Detected active trace function - we're being profiled!")
+            print("Detected active trace function - we're being profiled!")
             print(f"   Current tracer: {type(current_trace).__name__}")
             print(
                 "[GRACEFUL] Graceful degradation: Disabling trace-based profilers to avoid conflicts"
@@ -311,7 +311,7 @@ class ProfilerOrchestra:
             )
             return None
 
-        print(f"🔍 Running pattern analysis on {len(code_files)} profiled files...")
+        print(f"Running pattern analysis on {len(code_files)} profiled files...")
 
         # Run analysis
         analysis_results = analysis_orchestrator.run_analysis(code_files)
@@ -339,15 +339,15 @@ class ProfilerOrchestra:
                         pattern_dist.items(), key=lambda x: x[1], reverse=True
                     )[:3]
                     print(
-                        f"   🏷️  Top patterns: {', '.join(f'{k}({v})' for k, v in top_patterns)}"
+                        f"   Top patterns: {', '.join(f'{k}({v})' for k, v in top_patterns)}"
                     )
 
                 # Show top issues
                 top_issues = analysis_report.get("top_issues", [])
                 if top_issues:
-                    print(f"   🔥 Priority issues:")
+                    print(f"   Priority issues:")
                     for i, issue in enumerate(top_issues[:3], 1):
-                        severity_emoji = {
+                        severity_prefix = {
                             "low": "[LOW]",
                             "medium": "[WARNING]",
                             "high": "[HIGH]",
@@ -357,7 +357,7 @@ class ProfilerOrchestra:
                             " [PERF]" if issue.get("performance_correlated") else ""
                         )
                         print(
-                            f"      {i}. {severity_emoji} {issue['pattern_type']}{correlated}"
+                            f"      {i}. {severity_prefix} {issue['pattern_type']}{correlated}"
                         )
             else:
                 print("   [OK] No significant patterns detected")

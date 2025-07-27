@@ -11,12 +11,12 @@ Pycroscope 1.0 combines **comprehensive performance profiling with intelligent a
 
 **Key Capabilities:**
 
-- 🔬 **Performance Profiling**: Line-by-line timing, call graphs, memory tracking
-- 🎯 **Scientific Computing Analysis**: 9+ specialized detectors for vectorization, array operations, linear algebra optimizations
-- 📊 **Integrated Reporting**: Single comprehensive report combining all findings
-- ⚡ **Production Ready**: 38+ patterns detected with fail-fast architecture and zero error masking
+- **Performance Profiling**: Line-by-line timing, call graphs, memory tracking
+- **Scientific Computing Analysis**: 9+ specialized detectors for vectorization, array operations, linear algebra optimizations
+- **Integrated Reporting**: Single comprehensive report combining all findings
+- **Production Ready**: 38+ patterns detected with fail-fast architecture and zero error masking
 
-## 🎯 Design Philosophy
+## Design Philosophy
 
 - **"One Way, Many Options"**: Clean, unified API with extensive configuration for both profiling and analysis
 - **Integrated Intelligence**: Performance profiling seamlessly combined with research-backed anti-pattern detection
@@ -25,7 +25,7 @@ Pycroscope 1.0 combines **comprehensive performance profiling with intelligent a
 - **Conflict-Free**: Thread isolation and conflict detection prevent interference with other profiling
 - **Principled Foundation**: Built on Pydantic V2, established profiling tools, and SOLID architectural principles
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -93,7 +93,7 @@ config = pycroscope.ProfileConfig().with_performance_focus()  # Algorithmic issu
 config = pycroscope.ProfileConfig().with_maintainability_focus()  # Code quality
 ```
 
-## 🏗️ Architecture
+## Architecture
 
 Pycroscope 1.0 is built around established profiling tools:
 
@@ -110,7 +110,7 @@ Pycroscope 1.0 is built around established profiling tools:
 - **ProfilerOrchestra**: Orchestrates multiple profilers without conflicts
 - **TraceMultiplexer**: Coordinates trace-based profilers to prevent conflicts
 
-## 📊 Profiling Tools Integration
+## Profiling Tools Integration
 
 | Tool            | Purpose                 | Overhead | Platform |
 | --------------- | ----------------------- | -------- | -------- |
@@ -118,7 +118,7 @@ Pycroscope 1.0 is built around established profiling tools:
 | `line_profiler` | Line-by-line timing     | Medium   | All      |
 | `psutil`        | Memory usage tracking   | Low      | All      |
 
-## 🛠️ Command Line Interface
+## Command Line Interface
 
 ```bash
 # Profile a Python script (all profilers enabled by default)
@@ -137,7 +137,7 @@ pycroscope profile my_script.py --output-dir ./my_results
 pycroscope list-sessions --sessions-dir ./profiling_results
 ```
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Run all tests
@@ -150,7 +150,7 @@ python -m pytest tests/integration/ -v
 python -m pytest tests/unit/ -v
 ```
 
-## 📋 Dependencies
+## Dependencies
 
 ### Required
 
@@ -167,9 +167,9 @@ python -m pytest tests/unit/ -v
 - `matplotlib>=3.5.0` - Professional charts and plots
 - `pandas>=1.3.0` - Data analysis and manipulation
 
-## 🎨 Features
+## Features
 
-### ✅ Core Features (Production Ready)
+### Core Features (Production Ready)
 
 - **Integrated Profiling & Analysis**: Performance profiling with automatic anti-pattern detection
 - **Multiple Profilers**: 3 specialized profilers with conflict resolution via TraceMultiplexer
@@ -192,7 +192,7 @@ python -m pytest tests/unit/ -v
 - **Comprehensive Reporting**: Single consolidated markdown report with profiling + analysis results
 - **Production Testing**: Test suite covering core functionality with strict state rules
 
-### 📊 Integrated Analysis Outputs
+### Integrated Analysis Outputs
 
 - **Performance Profiling**: Call graphs, line-by-line timing, memory usage charts
 - **Scientific Computing Analysis**: Vectorization opportunities, array operation optimizations, linear algebra improvements
@@ -203,14 +203,14 @@ python -m pytest tests/unit/ -v
 - **Actionable Insights**: Specific optimization suggestions with code examples and performance estimates
 - **Production-Ready Output**: 38+ patterns detected across scientific computing, complexity, and maintainability categories
 
-### 🚧 Development Areas
+### Development Areas
 
 - **Interactive Dashboards**: Web-based profiling interface (plotly, rich)
 - **Report Templates**: HTML/PDF report generation (jinja2)
 - **Comparison Tools**: Session-to-session performance comparison
 - **Enhanced Output**: Better terminal formatting (rich, tabulate)
 
-## 🔄 Example Output
+## Example Output
 
 After profiling, you'll find in your output directory:
 
@@ -227,17 +227,17 @@ profiling_results/
 **Sample Console Output:**
 
 ```
-🔍 Running pattern analysis on 2 profiled files...
-🎯 Pattern analysis complete - results integrated into comprehensive report
-   ⚠️  Found 38 patterns across 2 files
-   🏷️  Top patterns: scalar_array_operations(18), inefficient_array_concatenation(6), inefficient_broadcasting(5)
-   🔥 Priority issues:
-      1. 🚨 nested_loops
-      2. ⚠️ too_many_parameters
-      3. ⚠️ long_function
+Running pattern analysis on 2 profiled files...
+Pattern analysis complete - results integrated into comprehensive report
+   Found 38 patterns across 2 files
+   Top patterns: scalar_array_operations(18), inefficient_array_concatenation(6), inefficient_broadcasting(5)
+   Priority issues:
+      1. [CRITICAL] nested_loops
+      2. [MEDIUM] too_many_parameters
+      3. [MEDIUM] long_function
 ```
 
-## 🏆 Design Principles
+## Design Principles
 
 1. **Zero Tolerance for Missing Dependencies**: All dependencies properly declared, no try-catch import blocks
 2. **Fail-Fast Error Handling**: No try-catch blocks masking errors, immediate failure on issues
@@ -247,11 +247,11 @@ profiling_results/
 6. **Production-Ready Pattern Analysis**: 9+ scientific computing detectors with research-backed validation
 7. **Integrated Intelligence**: Pattern analysis as core feature, not extension
 
-## 📄 License
+## License
 
 MIT License - see LICENSE file for details.
 
-## 👨‍💻 Author
+## Author
 
 **Adam Murray** ([@Adiaslow](https://github.com/Adiaslow))
 

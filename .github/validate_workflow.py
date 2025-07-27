@@ -18,7 +18,7 @@ def validate_workflow_file():
     workflow_path = Path(".github/workflows/tests.yml")
 
     if not workflow_path.exists():
-        print("❌ Workflow file not found: .github/workflows/tests.yml")
+        print("ERROR: Workflow file not found: .github/workflows/tests.yml")
         return False
 
     try:
@@ -36,14 +36,14 @@ def validate_workflow_file():
 
         for job in required_jobs:
             if job not in workflow.get("jobs", {}):
-                print(f"❌ Missing required job: {job}")
+                print(f"ERROR: Missing required job: {job}")
                 return False
 
-        print("✅ Workflow YAML file is valid")
+        print("SUCCESS: Workflow YAML file is valid")
         return True
 
     except yaml.YAMLError as e:
-        print(f"❌ YAML syntax error in workflow file: {e}")
+        print(f"ERROR: YAML syntax error in workflow file: {e}")
         return False
 
 
@@ -53,7 +53,7 @@ def validate_test_runner():
         # Check if test runner exists
         runner_path = Path("tests/run_tests.py")
         if not runner_path.exists():
-            print("❌ Test runner not found: tests/run_tests.py")
+            print("ERROR: Test runner not found: tests/run_tests.py")
             return False
 
         # Check that it's a valid Python file by trying to parse it
@@ -62,18 +62,18 @@ def validate_test_runner():
 
         # Look for key indicators that it's the right test runner
         if "def main(" not in content:
-            print("❌ Test runner missing main function")
+            print("ERROR: Test runner missing main function")
             return False
 
         if "pytest" not in content:
-            print("❌ Test runner doesn't appear to use pytest")
+            print("ERROR: Test runner doesn't appear to use pytest")
             return False
 
-        print("✅ Test runner structure is correct")
+        print("SUCCESS: Test runner structure is correct")
         return True
 
     except Exception as e:
-        print(f"❌ Error validating test runner: {e}")
+        print(f"ERROR: Error validating test runner: {e}")
         return False
 
 
@@ -82,7 +82,7 @@ def validate_dependencies():
     try:
         # Check pyproject.toml exists
         if not Path("pyproject.toml").exists():
-            print("❌ pyproject.toml not found")
+            print("ERROR: pyproject.toml not found")
             return False
 
         # Check that source files exist
@@ -94,14 +94,14 @@ def validate_dependencies():
 
         for src_file in src_files:
             if not Path(src_file).exists():
-                print(f"❌ Missing source file: {src_file}")
+                print(f"ERROR: Missing source file: {src_file}")
                 return False
 
-        print("✅ Core source files are present")
+        print("SUCCESS: Core source files are present")
         return True
 
     except Exception as e:
-        print(f"❌ Error validating dependencies: {e}")
+        print(f"ERROR: Error validating dependencies: {e}")
         return False
 
 
@@ -111,7 +111,7 @@ def validate_coverage_config():
         # Check codecov.yml
         codecov_path = Path("codecov.yml")
         if not codecov_path.exists():
-            print("❌ codecov.yml not found")
+            print("ERROR: codecov.yml not found")
             return False
 
         with open(codecov_path, "r") as f:
@@ -126,14 +126,14 @@ def validate_coverage_config():
             .get("target")
         )
         if target != "50%":
-            print(f"❌ Coverage target should be 50%, found: {target}")
+            print(f"ERROR: Coverage target should be 50%, found: {target}")
             return False
 
-        print("✅ Coverage configuration is correct")
+        print("SUCCESS: Coverage configuration is correct")
         return True
 
     except Exception as e:
-        print(f"❌ Error validating coverage config: {e}")
+        print(f"ERROR: Error validating coverage config: {e}")
         return False
 
 
@@ -150,16 +150,16 @@ def validate_project_structure():
 
     for path in required_paths:
         if not Path(path).exists():
-            print(f"❌ Missing required path: {path}")
+            print(f"ERROR: Missing required path: {path}")
             return False
 
-    print("✅ Project structure is correct")
+            print("SUCCESS: Project structure is correct")
     return True
 
 
 def main():
     """Run all validations."""
-    print("🔍 Validating GitHub Actions workflow configuration...\n")
+    print("Validating GitHub Actions workflow configuration...\n")
 
     validations = [
         ("Project Structure", validate_project_structure),
@@ -172,16 +172,16 @@ def main():
     all_passed = True
 
     for name, validation_func in validations:
-        print(f"📋 Validating {name}...")
+        print(f"Validating {name}...")
         if not validation_func():
             all_passed = False
         print()
 
     if all_passed:
-        print("🎉 All validations passed! Workflow is ready for GitHub Actions.")
+        print("SUCCESS: All validations passed! Workflow is ready for GitHub Actions.")
         return 0
     else:
-        print("❌ Some validations failed. Please fix the issues before pushing.")
+        print("ERROR: Some validations failed. Please fix the issues before pushing.")
         return 1
 
 

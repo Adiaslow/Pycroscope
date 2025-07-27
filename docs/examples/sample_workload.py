@@ -131,7 +131,7 @@ def unused_helper_function():
 
 def cpu_intensive_calculation() -> float:
     """CPU-bound task - good for sampling profiler hotspot detection."""
-    print("🔥 Running CPU-intensive calculations...")
+    print("Running CPU-intensive calculations...")
 
     # Matrix multiplication simulation
     size = 200
@@ -153,7 +153,7 @@ def cpu_intensive_calculation() -> float:
 
 def memory_intensive_operations() -> List[Dict[str, Any]]:
     """Memory allocation patterns - good for memory profiler."""
-    print("💾 Running memory-intensive operations...")
+    print("Running memory-intensive operations...")
 
     # Large list allocation
     large_list = []
@@ -191,7 +191,7 @@ def memory_intensive_operations() -> List[Dict[str, Any]]:
 
 def file_io_operations() -> Dict[str, Any]:
     """File I/O operations - shows I/O patterns."""
-    print("📁 Running file I/O operations...")
+    print("Running file I/O operations...")
 
     # Create temporary files for I/O testing
     temp_dir = tempfile.mkdtemp()
@@ -234,7 +234,7 @@ def file_io_operations() -> Dict[str, Any]:
 
 def nested_function_calls() -> int:
     """Complex function call hierarchy - good for call profiler."""
-    print("🌳 Running nested function calls...")
+    print("Running nested function calls...")
 
     def level_1(n: int) -> int:
         if n <= 0:
@@ -264,7 +264,7 @@ def nested_function_calls() -> int:
 
 def data_processing_pipeline() -> Dict[str, float]:
     """Data processing with multiple stages - shows line-by-line execution."""
-    print("⚙️  Running data processing pipeline...")
+    print("Running data processing pipeline...")
 
     # Stage 1: Generate raw data
     raw_data = [random.random() * 1000 for _ in range(10000)]
@@ -299,7 +299,7 @@ def data_processing_pipeline() -> Dict[str, float]:
 
 def demonstrate_anti_patterns():
     """Demonstrate various anti-patterns for detection."""
-    print("🎯 Running anti-pattern demonstrations...")
+    print("Running anti-pattern demonstrations...")
 
     # Scientific computing anti-patterns
     import numpy as np
@@ -354,7 +354,7 @@ def demonstrate_anti_patterns():
 
 def mixed_workload() -> Dict[str, Any]:
     """Combined workload showing all patterns together."""
-    print("🚀 Running mixed workload demonstration...")
+    print("Running mixed workload demonstration...")
 
     results = {}
 
@@ -425,16 +425,16 @@ if __name__ == "__main__":
     overall_time = time.time() - overall_start
 
     print("-" * 60)
-    print("📊 WORKLOAD COMPLETED")
-    print(f"⏱️  Total execution time: {overall_time:.3f} seconds")
-    print(f"🔥 CPU work took: {final_results['cpu_time']:.3f}s")
-    print(f"💾 Memory work took: {final_results['memory_time']:.3f}s")
-    print(f"📁 I/O work took: {final_results['io_time']:.3f}s")
-    print(f"🌳 Function calls took: {final_results['call_time']:.3f}s")
-    print(f"⚙️  Data processing took: {final_results['processing_time']:.3f}s")
-    print(f"🎯 Anti-pattern demos took: {final_results['antipattern_time']:.3f}s")
-    print(f"🧮 Recursive fibonacci took: {final_results['fib_recursive_time']:.3f}s")
-    print(f"🔢 Iterative fibonacci took: {final_results['fib_iterative_time']:.3f}s")
-    print(f"✅ Memory objects created: {final_results['memory_objects_created']:,}")
-    print(f"📄 Files processed: {final_results['io_operations']['files_processed']}")
+    print("WORKLOAD COMPLETED")
+    print(f"Total execution time: {overall_time:.3f} seconds")
+    print(f"CPU work took: {final_results['cpu_time']:.3f}s")
+    print(f"Memory work took: {final_results['memory_time']:.3f}s")
+    print(f"I/O work took: {final_results['io_time']:.3f}s")
+    print(f"Function calls took: {final_results['call_time']:.3f}s")
+    print(f"Data processing took: {final_results['processing_time']:.3f}s")
+    print(f"Anti-pattern demos took: {final_results['antipattern_time']:.3f}s")
+    print(f"Recursive fibonacci took: {final_results['fib_recursive_time']:.3f}s")
+    print(f"Iterative fibonacci took: {final_results['fib_iterative_time']:.3f}s")
+    print(f"Memory objects created: {final_results['memory_objects_created']:,}")
+    print(f"Files processed: {final_results['io_operations']['files_processed']}")
     print("=" * 60)

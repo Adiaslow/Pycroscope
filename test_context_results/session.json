@@ -1,0 +1,998 @@
+{
+  "session_id": "d9eb9bab-c44e-4803-9057-1a95dc095652",
+  "config": {
+    "line_profiling": true,
+    "memory_profiling": true,
+    "call_profiling": true,
+    "output_dir": "test_context_results",
+    "session_name": null,
+    "save_raw_data": true,
+    "sampling_interval": 0.01,
+    "memory_precision": 3,
+    "max_call_depth": 50,
+    "generate_reports": true,
+    "create_visualizations": true,
+    "analyze_patterns": true,
+    "enabled_patterns": [
+      "PatternType.NESTED_LOOPS",
+      "PatternType.INEFFICIENT_DATA_STRUCTURE",
+      "PatternType.UNNECESSARY_COMPUTATION",
+      "PatternType.MEMORY_LEAK_PATTERN",
+      "PatternType.QUADRATIC_COMPLEXITY",
+      "PatternType.EXPONENTIAL_COMPLEXITY",
+      "PatternType.RECURSIVE_WITHOUT_MEMOIZATION",
+      "PatternType.DEAD_CODE",
+      "PatternType.UNUSED_IMPORTS",
+      "PatternType.DUPLICATE_CODE",
+      "PatternType.HIGH_CYCLOMATIC_COMPLEXITY",
+      "PatternType.LOW_MAINTAINABILITY_INDEX",
+      "PatternType.LONG_FUNCTION",
+      "PatternType.TOO_MANY_PARAMETERS",
+      "PatternType.MISSED_VECTORIZATION",
+      "PatternType.INEFFICIENT_ARRAY_OPERATIONS",
+      "PatternType.SUBOPTIMAL_MATRIX_OPERATIONS",
+      "PatternType.NON_CONTIGUOUS_MEMORY_ACCESS",
+      "PatternType.UNNECESSARY_ARRAY_COPY",
+      "PatternType.INEFFICIENT_BROADCASTING",
+      "PatternType.SCALAR_ARRAY_OPERATIONS",
+      "PatternType.WRONG_DTYPE_USAGE",
+      "PatternType.INEFFICIENT_ARRAY_CONCATENATION",
+      "PatternType.SUBOPTIMAL_LINEAR_ALGEBRA"
+    ],
+    "pattern_severity_threshold": "medium",
+    "pattern_confidence_threshold": 0.7,
+    "max_results_per_file": 50,
+    "correlate_patterns_with_profiling": true,
+    "include_suggestions": true,
+    "prioritize_hotspot_patterns": true,
+    "hotspot_correlation_threshold": 0.1,
+    "pattern_complexity_threshold": 10,
+    "pattern_maintainability_threshold": 20.0,
+    "max_function_lines": 50,
+    "max_function_parameters": 5,
+    "exclude_test_files": true,
+    "test_file_patterns": [
+      "*test*.py",
+      "*_test.py",
+      "test_*.py"
+    ],
+    "generate_detailed_analysis_report": true,
+    "save_intermediate_analysis_results": false,
+    "profiler_prefix": "pycroscope",
+    "use_thread_isolation": true,
+    "cleanup_on_exit": true,
+    "extra_config": {}
+  },
+  "start_time": "2025-07-27T14:17:06.148494",
+  "end_time": "2025-07-27T14:17:06.205195",
+  "duration": 0.056701,
+  "status": "completed",
+  "results": {
+    "line": {
+      "profiler_type": "line",
+      "data": {
+        "line_stats": {},
+        "function_profiles": {},
+        "total_lines": 0,
+        "total_hits": 0,
+        "total_time": 0.0,
+        "stats_output": "Timer unit: 1e-09 s\n\nTotal time: 0 s\nFile: /Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/trace_multiplexer.py\nFunction: register_trace_function at line 122\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   122                                           def register_trace_function(profiler_name: str, trace_func: Callable):\n   123                                               \"\"\"Register a trace function with the global multiplexer.\"\"\"\n   124                                               _trace_multiplexer.register_profiler(profiler_name, trace_func)\n\nTotal time: 0 s\nFile: /Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/trace_multiplexer.py\nFunction: unregister_trace_function at line 127\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   127                                           def unregister_trace_function(profiler_name: str):\n   128                                               \"\"\"Unregister a trace function from the global multiplexer.\"\"\"\n   129                                               _trace_multiplexer.unregister_profiler(profiler_name)\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/random.py\nFunction: Random.choices at line 454\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   454                                               def choices(self, population, weights=None, *, cum_weights=None, k=1):\n   455                                                   \"\"\"Return a k sized list of population elements chosen with replacement.\n   456                                           \n   457                                                   If the relative weights or cumulative weights are not specified,\n   458                                                   the selections are made with equal probability.\n   459                                           \n   460                                                   \"\"\"\n   461                                                   random = self.random\n   462                                                   n = len(population)\n   463                                                   if cum_weights is None:\n   464                                                       if weights is None:\n   465                                                           floor = _floor\n   466                                                           n += 0.0    # convert to float for a small speed improvement\n   467                                                           return [population[floor(random() * n)] for i in _repeat(None, k)]\n   468                                                       try:\n   469                                                           cum_weights = list(_accumulate(weights))\n   470                                                       except TypeError:\n   471                                                           if not isinstance(weights, int):\n   472                                                               raise\n   473                                                           k = weights\n   474                                                           raise TypeError(\n   475                                                               f'The number of choices must be a keyword argument: {k=}'\n   476                                                           ) from None\n   477                                                   elif weights is not None:\n   478                                                       raise TypeError('Cannot specify both weights and cumulative weights')\n   479                                                   if len(cum_weights) != n:\n   480                                                       raise ValueError('The number of weights does not match the population')\n   481                                                   total = cum_weights[-1] + 0.0   # convert to float\n   482                                                   if total <= 0.0:\n   483                                                       raise ValueError('Total of weights must be greater than zero')\n   484                                                   if not _isfinite(total):\n   485                                                       raise ValueError('Total of weights must be finite')\n   486                                                   bisect = _bisect\n   487                                                   hi = n - 1\n   488                                                   return [population[bisect(cum_weights, random() * total, 0, hi)]\n   489                                                           for i in _repeat(None, k)]\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tempfile.py\nFunction: _infer_return_type at line 85\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n    85                                           def _infer_return_type(*args):\n    86                                               \"\"\"Look at the type of all args and divine their implied return type.\"\"\"\n    87                                               return_type = None\n    88                                               for arg in args:\n    89                                                   if arg is None:\n    90                                                       continue\n    91                                           \n    92                                                   if isinstance(arg, _os.PathLike):\n    93                                                       arg = _os.fspath(arg)\n    94                                           \n    95                                                   if isinstance(arg, bytes):\n    96                                                       if return_type is str:\n    97                                                           raise TypeError(\"Can't mix bytes and non-bytes in \"\n    98                                                                           \"path components.\")\n    99                                                       return_type = bytes\n   100                                                   else:\n   101                                                       if return_type is bytes:\n   102                                                           raise TypeError(\"Can't mix bytes and non-bytes in \"\n   103                                                                           \"path components.\")\n   104                                                       return_type = str\n   105                                               if return_type is None:\n   106                                                   if tempdir is None or isinstance(tempdir, str):\n   107                                                       return str  # tempfile APIs return a str by default.\n   108                                                   else:\n   109                                                       # we could check for bytes but it'll fail later on anyway\n   110                                                       return bytes\n   111                                               return return_type\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tempfile.py\nFunction: _sanitize_params at line 114\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   114                                           def _sanitize_params(prefix, suffix, dir):\n   115                                               \"\"\"Common parameter processing for most APIs in this module.\"\"\"\n   116                                               output_type = _infer_return_type(prefix, suffix, dir)\n   117                                               if suffix is None:\n   118                                                   suffix = output_type()\n   119                                               if prefix is None:\n   120                                                   if output_type is str:\n   121                                                       prefix = template\n   122                                                   else:\n   123                                                       prefix = _os.fsencode(template)\n   124                                               if dir is None:\n   125                                                   if output_type is str:\n   126                                                       dir = gettempdir()\n   127                                                   else:\n   128                                                       dir = gettempdirb()\n   129                                               return prefix, suffix, dir, output_type\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tempfile.py\nFunction: _get_candidate_names at line 229\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   229                                           def _get_candidate_names():\n   230                                               \"\"\"Common setup sequence for all user-callable interfaces.\"\"\"\n   231                                           \n   232                                               global _name_sequence\n   233                                               if _name_sequence is None:\n   234                                                   _once_lock.acquire()\n   235                                                   try:\n   236                                                       if _name_sequence is None:\n   237                                                           _name_sequence = _RandomNameSequence()\n   238                                                   finally:\n   239                                                       _once_lock.release()\n   240                                               return _name_sequence\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tempfile.py\nFunction: _gettempdir at line 301\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   301                                           def _gettempdir():\n   302                                               \"\"\"Private accessor for tempfile.tempdir.\"\"\"\n   303                                               global tempdir\n   304                                               if tempdir is None:\n   305                                                   _once_lock.acquire()\n   306                                                   try:\n   307                                                       if tempdir is None:\n   308                                                           tempdir = _get_default_tempdir()\n   309                                                   finally:\n   310                                                       _once_lock.release()\n   311                                               return tempdir\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tempfile.py\nFunction: gettempdir at line 313\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   313                                           def gettempdir():\n   314                                               \"\"\"Returns tempfile.tempdir as str.\"\"\"\n   315                                               return _os.fsdecode(_gettempdir())\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tempfile.py\nFunction: mkdtemp at line 360\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   360                                           def mkdtemp(suffix=None, prefix=None, dir=None):\n   361                                               \"\"\"User-callable function to create and return a unique temporary\n   362                                               directory.  The return value is the pathname of the directory.\n   363                                           \n   364                                               Arguments are as for mkstemp, except that the 'text' argument is\n   365                                               not accepted.\n   366                                           \n   367                                               The directory is readable, writable, and searchable only by the\n   368                                               creating user.\n   369                                           \n   370                                               Caller is responsible for deleting the directory when done with it.\n   371                                               \"\"\"\n   372                                           \n   373                                               prefix, suffix, dir, output_type = _sanitize_params(prefix, suffix, dir)\n   374                                           \n   375                                               names = _get_candidate_names()\n   376                                               if output_type is bytes:\n   377                                                   names = map(_os.fsencode, names)\n   378                                           \n   379                                               for seq in range(TMP_MAX):\n   380                                                   name = next(names)\n   381                                                   file = _os.path.join(dir, prefix + name + suffix)\n   382                                                   _sys.audit(\"tempfile.mkdtemp\", file)\n   383                                                   try:\n   384                                                       _os.mkdir(file, 0o700)\n   385                                                   except FileExistsError:\n   386                                                       continue    # try again\n   387                                                   except PermissionError:\n   388                                                       # This exception is thrown when a directory with the chosen name\n   389                                                       # already exists on windows.\n   390                                                       if (_os.name == 'nt' and _os.path.isdir(dir) and\n   391                                                           _os.access(dir, _os.W_OK)):\n   392                                                           continue\n   393                                                       else:\n   394                                                           raise\n   395                                                   return _os.path.abspath(file)\n   396                                           \n   397                                               raise FileExistsError(_errno.EEXIST,\n   398                                                                     \"No usable temporary directory name found\")\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py\nFunction: RLock at line 124\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   124                                           def RLock(*args, **kwargs):\n   125                                               \"\"\"Factory function that returns a new reentrant lock.\n   126                                           \n   127                                               A reentrant lock must be released by the thread that acquired it. Once a\n   128                                               thread has acquired a reentrant lock, the same thread may acquire it again\n   129                                               without blocking; the thread must release it once for each time it has\n   130                                               acquired it.\n   131                                           \n   132                                               \"\"\"\n   133                                               if _CRLock is None:\n   134                                                   return _PyRLock(*args, **kwargs)\n   135                                               return _CRLock(*args, **kwargs)\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py\nFunction: _newname at line 839\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n   839                                           def _newname(name_template):\n   840                                               return name_template % _counter()\n\nTotal time: 0 s\nFile: /opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py\nFunction: _make_invoke_excepthook at line 1356\n\nLine #      Hits         Time  Per Hit   % Time  Line Contents\n==============================================================\n  1356                                           def _make_invoke_excepthook():\n  1357                                               # Create a local namespace to ensure that variables remain alive\n  1358                                               # when _invoke_excepthook() is called, even if it is called late during\n  1359                                               # Python shutdown. It is mostly needed for daemon threads.\n  1360                                           \n  1361                                               old_excepthook = excepthook\n  1362                                               old_sys_excepthook = _sys.excepthook\n  1363                                               if old_excepthook is None:\n  1364                                                   raise RuntimeError(\"threading.excepthook is None\")\n  1365                                               if old_sys_excepthook is None:\n  1366                                                   raise RuntimeError(\"sys.excepthook is None\")\n  1367                                           \n  1368                                               sys_exc_info = _sys.exc_info\n  1369                                               local_print = print\n  1370                                               local_sys = _sys\n  1371                                           \n  1372                                               def invoke_excepthook(thread):\n  1373                                                   global excepthook\n  1374                                                   try:\n  1375                                                       hook = excepthook\n  1376                                                       if hook is None:\n  1377                                                           hook = old_excepthook\n  1378                                           \n  1379                                                       args = ExceptHookArgs([*sys_exc_info(), thread])\n  1380                                           \n  1381                                                       hook(args)\n  1382                                                   except Exception as exc:\n  1383                                                       exc.__suppress_context__ = True\n  1384                                                       del exc\n  1385                                           \n  1386                                                       if local_sys is not None and local_sys.stderr is not None:\n  1387                                                           stderr = local_sys.stderr\n  1388                                                       else:\n  1389                                                           stderr = thread._stderr\n  1390                                           \n  1391                                                       local_print(\"Exception in threading.excepthook:\",\n  1392                                                                   file=stderr, flush=True)\n  1393                                           \n  1394                                                       if local_sys is not None and local_sys.excepthook is not None:\n  1395                                                           sys_excepthook = local_sys.excepthook\n  1396                                                       else:\n  1397                                                           sys_excepthook = old_sys_excepthook\n  1398                                           \n  1399                                                       sys_excepthook(*sys_exc_info())\n  1400                                                   finally:\n  1401                                                       # Break reference cycle (exception stored in a variable)\n  1402                                                       args = None\n  1403                                           \n  1404                                               return invoke_excepthook\n\n",
+        "duration": 0.002889249997679144,
+        "metadata": {
+          "profiler": "line_profiler",
+          "status": "completed",
+          "functions_profiled": 0,
+          "lines_profiled": 0,
+          "note": "Automatic tracing of all executed code"
+        }
+      },
+      "start_time": "2025-07-27T14:17:06.149075",
+      "end_time": "2025-07-27T14:17:06.151881",
+      "duration": 0.002806,
+      "success": true,
+      "error_message": null
+    },
+    "memory": {
+      "profiler_type": "memory",
+      "data": {
+        "samples": [
+          {
+            "timestamp": 1753651026.1507719,
+            "rss_mb": 692.25,
+            "vms_mb": 402362.28125,
+            "percent": 2.112579345703125
+          },
+          {
+            "timestamp": 1753651026.15105,
+            "rss_mb": 692.28125,
+            "vms_mb": 402378.34375,
+            "percent": 2.1126747131347656
+          },
+          {
+            "timestamp": 1753651026.167551,
+            "rss_mb": 692.375,
+            "vms_mb": 402378.34375,
+            "percent": 2.1129608154296875
+          },
+          {
+            "timestamp": 1753651026.1801631,
+            "rss_mb": 692.390625,
+            "vms_mb": 402378.34375,
+            "percent": 2.113008499145508
+          },
+          {
+            "timestamp": 1753651026.192001,
+            "rss_mb": 692.4375,
+            "vms_mb": 402378.34375,
+            "percent": 2.1131515502929688
+          },
+          {
+            "timestamp": 1753651026.204658,
+            "rss_mb": 692.40625,
+            "vms_mb": 402378.3125,
+            "percent": 2.113056182861328
+          }
+        ],
+        "peak_memory_mb": 692.4375,
+        "avg_memory_mb": 692.3567708333334,
+        "memory_delta_mb": 0.15625,
+        "sample_count": 6,
+        "initial_memory_mb": 692.25,
+        "final_memory_mb": 692.40625,
+        "duration": 0.05387629198958166,
+        "metadata": {
+          "profiler": "psutil",
+          "precision": 1,
+          "status": "completed",
+          "sampling_rate": "100 Hz"
+        }
+      },
+      "start_time": "2025-07-27T14:17:06.150728",
+      "end_time": "2025-07-27T14:17:06.192976",
+      "duration": 0.042248,
+      "success": true,
+      "error_message": null
+    },
+    "call": {
+      "profiler_type": "call",
+      "data": {
+        "total_calls": 7388,
+        "total_time": 0.36966346082044765,
+        "stats": {
+          "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py:0(stop)": {
+            "ncalls": 1,
+            "tottime": 0.0410232919966802,
+            "cumtime": 0.0410232919966802,
+            "percall": 0.0410232919966802,
+            "filename": "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py",
+            "function": "stop",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/orchestra.py:0(stop_profiling)": 1
+            },
+            "callees": {
+              "<frozen importlib._bootstrap>:0(parent)": 1,
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/trace_multiplexer.py:0(unregister_trace_function)": 1,
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/base.py:0(_mark_end)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(print_stats)": 1,
+              "<frozen genericpath>:0(exists)": 12,
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py:0(_extract_function_data)": 12,
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/base.py:0(duration)": 2
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(print_stats)": {
+            "ncalls": 1,
+            "tottime": 0.03998629198758863,
+            "cumtime": 0.03998629198758863,
+            "percall": 0.03998629198758863,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py",
+            "function": "print_stats",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py:0(stop)": 1
+            },
+            "callees": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_text)": 1
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_text)": {
+            "ncalls": 1,
+            "tottime": 0.039920833020005375,
+            "cumtime": 0.039920833020005375,
+            "percall": 0.039920833020005375,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py",
+            "function": "show_text",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(print_stats)": 1
+            },
+            "callees": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_config)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_func)": 12
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_func)": {
+            "ncalls": 12,
+            "tottime": 0.024411666061496362,
+            "cumtime": 0.024411666061496362,
+            "percall": 0.002034305505124697,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py",
+            "function": "show_func",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_text)": 12
+            },
+            "callees": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(<genexpr>)": 24,
+              "<frozen genericpath>:0(exists)": 24,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(clearcache)": 12,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(get_code_block)": 12,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(__hash__)": 12,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(__eq__)": 12
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(get_code_block)": {
+            "ncalls": 12,
+            "tottime": 0.02163620904320851,
+            "cumtime": 0.02163620904320851,
+            "percall": 0.0018030174202673759,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py",
+            "function": "get_code_block",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_func)": 12
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(getlines)": 12,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py:0(getblock)": 12,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(_generate_tokens_from_c_tokenizer)": 12
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py:0(getblock)": {
+            "ncalls": 12,
+            "tottime": 0.019385707972105592,
+            "cumtime": 0.019385707972105592,
+            "percall": 0.0016154756643421326,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py",
+            "function": "getblock",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(get_code_block)": 12
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py:0(__init__)": 12,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(generate_tokens)": 12,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(_generate_tokens_from_c_tokenizer)": 1258,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(tokeneater)": 1258
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_config)": {
+            "ncalls": 1,
+            "tottime": 0.01541362502030097,
+            "cumtime": 0.01541362502030097,
+            "percall": 0.01541362502030097,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py",
+            "function": "from_config",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_text)": 1
+            },
+            "callees": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_default)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(find_and_read_config_file)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(iter_configs)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(get_headers)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(get_subtable)": 10,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(merge)": 1,
+              "<string>:0(__init__)": 1
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(find_and_read_config_file)": {
+            "ncalls": 1,
+            "tottime": 0.014127083006314933,
+            "cumtime": 0.014127083006314933,
+            "percall": 0.014127083006314933,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py",
+            "function": "find_and_read_config_file",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_config)": 1
+            },
+            "callees": {
+              "<frozen _collections_abc>:0(get)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(cwd)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(absolute)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(iter_configs)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(open)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(load)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(load)": {
+            "ncalls": 1,
+            "tottime": 0.013673832989297807,
+            "cumtime": 0.013673832989297807,
+            "percall": 0.013673832989297807,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "load",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(find_and_read_config_file)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(loads)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(loads)": {
+            "ncalls": 1,
+            "tottime": 0.013654874986968935,
+            "cumtime": 0.013654874986968935,
+            "percall": 0.013654874986968935,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "loads",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(load)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(__init__)": 2,
+              "<string>:0(<lambda>)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(make_safe_parse_float)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": 117,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(finalize_pending)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(create_dict_rule)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_comment)": 52,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(key_value_rule)": 39
+            }
+          },
+          "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/memory_profiler.py:0(stop)": {
+            "ncalls": 1,
+            "tottime": 0.011762083013309166,
+            "cumtime": 0.011762083013309166,
+            "percall": 0.011762083013309166,
+            "filename": "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/memory_profiler.py",
+            "function": "stop",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/orchestra.py:0(stop_profiling)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(is_alive)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(join)": 1,
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/base.py:0(_mark_end)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/psutil/_common.py:0(wrapper)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/psutil/__init__.py:0(memory_percent)": 1,
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/base.py:0(duration)": 2
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(join)": {
+            "ncalls": 1,
+            "tottime": 0.011600625002756715,
+            "cumtime": 0.011600625002756715,
+            "percall": 0.011600625002756715,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py",
+            "function": "join",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/memory_profiler.py:0(stop)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(is_set)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(current_thread)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(_wait_for_tstate_lock)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(_wait_for_tstate_lock)": {
+            "ncalls": 2,
+            "tottime": 0.01159179100068286,
+            "cumtime": 0.01159179100068286,
+            "percall": 0.00579589550034143,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py",
+            "function": "_wait_for_tstate_lock",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(is_alive)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(join)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/threading.py:0(_stop)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(key_value_rule)": {
+            "ncalls": 39,
+            "tottime": 0.011311378155369312,
+            "cumtime": 0.011311378155369312,
+            "percall": 0.00029003533731716184,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "key_value_rule",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(loads)": 39
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_value_pair)": 39,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(<genexpr>)": 39,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(is_)": 39,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(get_or_create_nest)": 39,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(set)": 18
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_value_pair)": {
+            "ncalls": 41,
+            "tottime": 0.009926042926963419,
+            "cumtime": 0.009926042926963419,
+            "percall": 0.00024209860797471753,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_key_value_pair",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(key_value_rule)": 39,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_inline_table)": 2
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key)": 41,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": 41,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_value)": 41
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(tokeneater)": {
+            "ncalls": 1258,
+            "tottime": 0.008517300186213106,
+            "cumtime": 0.008517300186213106,
+            "percall": 6.7705088920612924e-06,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py",
+            "function": "tokeneater",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py:0(getblock)": 1258
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py:0(tokeneater)": 1258
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_array)": {
+            "ncalls": 17,
+            "tottime": 0.0070509990327991545,
+            "cumtime": 0.0070509990327991545,
+            "percall": 0.00041476464898818554,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_array",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_value)": 17
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_comments_and_array_ws)": 126,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_value)": 60
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(_generate_tokens_from_c_tokenizer)": {
+            "ncalls": 1270,
+            "tottime": 0.00694929194287397,
+            "cumtime": 0.00694929194287397,
+            "percall": 5.471883419585803e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py",
+            "function": "_generate_tokens_from_c_tokenizer",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py:0(getblock)": 1258,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(get_code_block)": 12
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/collections/__init__.py:0(_make)": 1258
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_value)": {
+            "ncalls": 101,
+            "tottime": 0.005718373955460265,
+            "cumtime": 0.005718373955460265,
+            "percall": 5.661756391544817e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_value",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_value_pair)": 41,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_array)": 60
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_array)": 17,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_one_line_basic_str)": 74,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_inline_table)": 2,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_re.py:0(match_to_number)": 3,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_literal_str)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_one_line_basic_str)": {
+            "ncalls": 75,
+            "tottime": 0.005355003988370299,
+            "cumtime": 0.005355003988370299,
+            "percall": 7.140005317827065e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_one_line_basic_str",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_value)": 74,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_part)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_basic_str)": 75
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_basic_str)": {
+            "ncalls": 75,
+            "tottime": 0.005133335886057466,
+            "cumtime": 0.005133335886057466,
+            "percall": 6.844447848076622e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_basic_str",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_one_line_basic_str)": 75
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py:0(tokeneater)": {
+            "ncalls": 1258,
+            "tottime": 0.004841682035475969,
+            "cumtime": 0.004841682035475969,
+            "percall": 3.848713859678831e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/inspect.py",
+            "function": "tokeneater",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(tokeneater)": 1258
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/collections/__init__.py:0(_make)": {
+            "ncalls": 1258,
+            "tottime": 0.003049348422791809,
+            "cumtime": 0.003049348422791809,
+            "percall": 2.423965359929896e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/collections/__init__.py",
+            "function": "_make",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(_generate_tokens_from_c_tokenizer)": 1258
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_comments_and_array_ws)": {
+            "ncalls": 126,
+            "tottime": 0.002115803014021367,
+            "cumtime": 0.002115803014021367,
+            "percall": 1.679208741286799e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "skip_comments_and_array_ws",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_array)": 126
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": 183,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_comment)": 183
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": {
+            "ncalls": 516,
+            "tottime": 0.002096766955219209,
+            "cumtime": 0.002096766955219209,
+            "percall": 4.063501851200018e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "skip_chars",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(loads)": 117,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(create_dict_rule)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_part)": 70,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key)": 88,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_value_pair)": 41,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_comments_and_array_ws)": 183,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_inline_table)": 4
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(getlines)": {
+            "ncalls": 12,
+            "tottime": 0.00207558402325958,
+            "cumtime": 0.00207558402325958,
+            "percall": 0.0001729653352716317,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py",
+            "function": "getlines",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(get_code_block)": 12
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(updatecache)": 12
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(updatecache)": {
+            "ncalls": 12,
+            "tottime": 0.00202320798416622,
+            "cumtime": 0.00202320798416622,
+            "percall": 0.00016860066534718499,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py",
+            "function": "updatecache",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(getlines)": 12
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(open)": 12,
+              "<frozen codecs>:0(decode)": 75
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key)": {
+            "ncalls": 54,
+            "tottime": 0.0018212990835309029,
+            "cumtime": 0.0018212990835309029,
+            "percall": 3.372776080612783e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_key",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(create_dict_rule)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_value_pair)": 41
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_part)": 71,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": 88
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(create_dict_rule)": {
+            "ncalls": 13,
+            "tottime": 0.0012376669910736382,
+            "cumtime": 0.0012376669910736382,
+            "percall": 9.520515315951063e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "create_dict_rule",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(loads)": 13
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(is_)": 26,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(set)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(get_or_create_nest)": 13
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_part)": {
+            "ncalls": 71,
+            "tottime": 0.0010957068006973714,
+            "cumtime": 0.0010957068006973714,
+            "percall": 1.5432490150667203e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_key_part",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key)": 71
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": 70,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_one_line_basic_str)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(open)": {
+            "ncalls": 12,
+            "tottime": 0.0008418319921474904,
+            "cumtime": 0.0008418319921474904,
+            "percall": 7.015266601229087e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py",
+            "function": "open",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(updatecache)": 12
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(detect_encoding)": 12,
+              "<frozen codecs>:0(__init__)": 12
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_default)": {
+            "ncalls": 1,
+            "tottime": 0.0008415000047534704,
+            "cumtime": 0.0008415000047534704,
+            "percall": 0.0008415000047534704,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py",
+            "function": "from_default",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_config)": 1
+            },
+            "callees": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(copy)": 1
+            }
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(copy)": {
+            "ncalls": 1,
+            "tottime": 0.0008373750024475157,
+            "cumtime": 0.0008373750024475157,
+            "percall": 0.0008373750024475157,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py",
+            "function": "copy",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_default)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(deepcopy)": 1,
+              "<string>:0(__init__)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_comment)": {
+            "ncalls": 235,
+            "tottime": 0.0006854657840449363,
+            "cumtime": 0.0006854657840449363,
+            "percall": 2.916875676786963e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "skip_comment",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(loads)": 52,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_comments_and_array_ws)": 183
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_until)": 2
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(_deepcopy_dict)": {
+            "ncalls": 7,
+            "tottime": 0.0005928329774178565,
+            "cumtime": 0.0005928329774178565,
+            "percall": 8.469042534540807e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py",
+            "function": "_deepcopy_dict",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(deepcopy)": 7
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(deepcopy)": 82
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(deepcopy)": {
+            "ncalls": 86,
+            "tottime": 0.0005825409025419503,
+            "cumtime": 0.0005825409025419503,
+            "percall": 6.7737314249063995e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py",
+            "function": "deepcopy",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(copy)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(_deepcopy_dict)": 82,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(_deepcopy_list)": 3
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(_deepcopy_dict)": 7,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(_deepcopy_atomic)": 76,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(_deepcopy_list)": 3,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/copy.py:0(_keep_alive)": 10
+            }
+          },
+          "/Users/Adam/Pycroscope/test_integration.py:0(context_workload)": {
+            "ncalls": 1,
+            "tottime": 0.0005515409866347909,
+            "cumtime": 0.0005515409866347909,
+            "percall": 0.0005515409866347909,
+            "filename": "/Users/Adam/Pycroscope/test_integration.py",
+            "function": "context_workload",
+            "line": 0,
+            "callers": {},
+            "callees": {
+              "/Users/Adam/Pycroscope/test_integration.py:0(inefficient_nested_loops)": 1,
+              "/Users/Adam/Pycroscope/test_integration.py:0(complex_function)": 1
+            }
+          },
+          "/Users/Adam/Pycroscope/test_integration.py:0(inefficient_nested_loops)": {
+            "ncalls": 1,
+            "tottime": 0.0005236249999143183,
+            "cumtime": 0.0005236249999143183,
+            "percall": 0.0005236249999143183,
+            "filename": "/Users/Adam/Pycroscope/test_integration.py",
+            "function": "inefficient_nested_loops",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/test_integration.py:0(context_workload)": 1
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(is_)": {
+            "ncalls": 67,
+            "tottime": 0.00044149981113150716,
+            "cumtime": 0.00044149981113150716,
+            "percall": 6.589549419873241e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "is_",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(create_dict_rule)": 26,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(key_value_rule)": 39,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_inline_table)": 2
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(get_or_create_nest)": {
+            "ncalls": 54,
+            "tottime": 0.0004133719194214791,
+            "cumtime": 0.0004133719194214791,
+            "percall": 7.655035544842206e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "get_or_create_nest",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(create_dict_rule)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(key_value_rule)": 39,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_inline_table)": 2
+            },
+            "callees": {}
+          },
+          "<frozen genericpath>:0(exists)": {
+            "ncalls": 36,
+            "tottime": 0.0003936249122489244,
+            "cumtime": 0.0003936249122489244,
+            "percall": 1.09340253402479e-05,
+            "filename": "<frozen genericpath>",
+            "function": "exists",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_func)": 24,
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py:0(stop)": 12
+            },
+            "callees": {}
+          },
+          "<frozen codecs>:0(decode)": {
+            "ncalls": 75,
+            "tottime": 0.0002760010538622737,
+            "cumtime": 0.0002760010538622737,
+            "percall": 3.6800140514969828e-06,
+            "filename": "<frozen codecs>",
+            "function": "decode",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(updatecache)": 75
+            },
+            "callees": {}
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(iter_configs)": {
+            "ncalls": 2,
+            "tottime": 0.0002721250057220459,
+            "cumtime": 0.0002721250057220459,
+            "percall": 0.00013606250286102295,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py",
+            "function": "iter_configs",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(find_and_read_config_file)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_config)": 1
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(parents)": 1,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(__truediv__)": 2,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(is_file)": 2
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(detect_encoding)": {
+            "ncalls": 12,
+            "tottime": 0.0002530849596951157,
+            "cumtime": 0.0002530849596951157,
+            "percall": 2.1090413307926308e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py",
+            "function": "detect_encoding",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(open)": 12
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(read_or_stop)": 12,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tokenize.py:0(find_cookie)": 12
+            }
+          },
+          "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py:0(_extract_function_data)": {
+            "ncalls": 12,
+            "tottime": 0.00023149899789132178,
+            "cumtime": 0.00023149899789132178,
+            "percall": 1.9291583157610148e-05,
+            "filename": "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py",
+            "function": "_extract_function_data",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/src/pycroscope/infrastructure/profilers/line_profiler.py:0(stop)": 12
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(set)": {
+            "ncalls": 31,
+            "tottime": 0.000213418883504346,
+            "cumtime": 0.000213418883504346,
+            "percall": 6.88448011304342e-06,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "set",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(create_dict_rule)": 13,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(key_value_rule)": 18
+            },
+            "callees": {}
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_inline_table)": {
+            "ncalls": 2,
+            "tottime": 0.000206666998565197,
+            "cumtime": 0.000206666998565197,
+            "percall": 0.0001033334992825985,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py",
+            "function": "parse_inline_table",
+            "line": 0,
+            "callers": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_value)": 2
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(__init__)": 4,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(skip_chars)": 4,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(parse_key_value_pair)": 2,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(is_)": 2,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/tomllib/_parser.py:0(get_or_create_nest)": 2
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(is_file)": {
+            "ncalls": 2,
+            "tottime": 0.0001552909961901605,
+            "cumtime": 0.0001552909961901605,
+            "percall": 7.764549809508026e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py",
+            "function": "is_file",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(iter_configs)": 2
+            },
+            "callees": {
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(stat)": 2,
+              "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/pathlib.py:0(_ignore_error)": 1
+            }
+          },
+          "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py:0(clearcache)": {
+            "ncalls": 12,
+            "tottime": 0.00014879106311127543,
+            "cumtime": 0.00014879106311127543,
+            "percall": 1.2399255259272953e-05,
+            "filename": "/opt/homebrew/Caskroom/miniconda/base/lib/python3.12/linecache.py",
+            "function": "clearcache",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/line_profiler.py:0(show_func)": 12
+            },
+            "callees": {}
+          },
+          "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(get_headers)": {
+            "ncalls": 7,
+            "tottime": 0.0001445010129828006,
+            "cumtime": 0.0001445010129828006,
+            "percall": 2.06430018546858e-05,
+            "filename": "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py",
+            "function": "get_headers",
+            "line": 0,
+            "callers": {
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(from_config)": 1,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(get_headers)": 6
+            },
+            "callees": {
+              "<frozen abc>:0(__instancecheck__)": 41,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(get_headers)": 6,
+              "/Users/Adam/Pycroscope/venv/lib/python3.12/site-packages/line_profiler/toml_config.py:0(<genexpr>)": 2
+            }
+          }
+        },
+        "stats_summary": "Custom call profiler tracked 7388 function calls in 0.369663 seconds",
+        "sort_key": "cumulative",
+        "profiler_type": "custom_call_profiler"
+      },
+      "start_time": "2025-07-27T14:17:06.151198",
+      "end_time": "2025-07-27T14:17:06.204778",
+      "duration": 0.05358,
+      "success": true,
+      "error_message": null
+    }
+  }
+}

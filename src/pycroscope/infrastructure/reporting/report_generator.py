@@ -74,7 +74,7 @@ class ReportGenerator:
         """Write comprehensive markdown report to file."""
         with open(report_path, "w", encoding="utf-8") as file_handle:
             # Header
-            file_handle.write("# 🔍 Pycroscope Profiling Analysis Report\n\n")
+            file_handle.write("# Pycroscope Profiling Analysis Report\n\n")
             file_handle.write(
                 f"**Generated:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
             )
@@ -104,7 +104,7 @@ class ReportGenerator:
             file_handle.write("\n")
 
             # Configuration section
-            file_handle.write("## ⚙️ Configuration\n\n")
+            file_handle.write("## Configuration\n\n")
             config_data = self.session.config.model_dump()
             file_handle.write("| Setting | Value |\n")
             file_handle.write("|---------|-------|\n")
@@ -152,7 +152,7 @@ class ReportGenerator:
         self, file_handle, profiler_name: str, data: Dict[str, Any]
     ) -> None:
         """Write detailed analysis for specific profiler."""
-        file_handle.write(f"## 📈 {profiler_name.title()} Profiler Analysis\n\n")
+        file_handle.write(f"## {profiler_name.title()} Profiler Analysis\n\n")
 
         if profiler_name == "call":
             self._write_call_profiler_analysis(file_handle, data)
@@ -243,7 +243,7 @@ class ReportGenerator:
         avg_memory = data.get("avg_memory_mb", 0)
         memory_delta = data.get("memory_delta_mb", 0)
 
-        file_handle.write("### 🧠 Memory Usage Statistics\n\n")
+        file_handle.write("### Memory Usage Statistics\n\n")
         file_handle.write("| Metric | Value |\n")
         file_handle.write("|--------|-------|\n")
         file_handle.write(f"| Peak Memory Usage | {peak_memory:.2f} MB |\n")
@@ -284,7 +284,7 @@ class ReportGenerator:
         line_data = line_result.data
         content = []
 
-        content.append("## 📝 Line Profiler Analysis")
+        content.append("## Line Profiler Analysis")
         content.append("")
 
         if "function_profiles" in line_data and line_data["function_profiles"]:
@@ -345,7 +345,7 @@ class ReportGenerator:
 
         elif "line_stats" in line_data and line_data["line_stats"]:
             line_stats = line_data["line_stats"]
-            content.append(f"### 🔥 Hottest Lines")
+            content.append(f"### Hottest Lines")
             content.append("")
 
             # Get top 20 lines by total time
@@ -411,7 +411,7 @@ class ReportGenerator:
             return
 
         file_handle.write(
-            f"🔍 **Analysis Summary:** {total_patterns} patterns detected across {total_files} files\n\n"
+            f"**Analysis Summary:** {total_patterns} patterns detected across {total_files} files\n\n"
         )
 
         # Pattern distribution
@@ -431,7 +431,7 @@ class ReportGenerator:
         # Severity distribution
         severity_dist = summary.get("severity_distribution", {})
         if severity_dist:
-            file_handle.write("### 🚨 Severity Breakdown\n\n")
+            file_handle.write("### Severity Breakdown\n\n")
             file_handle.write("| Severity | Count |\n")
             file_handle.write("|----------|-------|\n")
             for severity, count in sorted(
@@ -441,23 +441,23 @@ class ReportGenerator:
                 ),
                 reverse=True,
             ):
-                severity_emoji = {
-                    "critical": "💥",
-                    "high": "🚨",
-                    "medium": "⚠️",
-                    "low": "📝",
-                }.get(severity, "⚠️")
+                severity_prefix = {
+                    "critical": "[CRITICAL]",
+                    "high": "[HIGH]",
+                    "medium": "[MEDIUM]",
+                    "low": "[LOW]",
+                }.get(severity, "[MEDIUM]")
                 file_handle.write(
-                    f"| {severity_emoji} {severity.title()} | {count} |\n"
+                    f"| {severity_prefix} {severity.title()} | {count} |\n"
                 )
             file_handle.write("\n")
 
         # Top issues
         top_issues = pattern_analysis_results.get("top_issues", [])
         if top_issues:
-            file_handle.write("### 🔥 Priority Issues\n\n")
+            file_handle.write("### Priority Issues\n\n")
             for i, issue in enumerate(top_issues[:10], 1):  # Show top 10
-                severity_emoji = {
+                severity_prefix = {
                     "critical": "[CRITICAL]",
                     "high": "[HIGH]",
                     "medium": "[WARNING]",
@@ -466,7 +466,7 @@ class ReportGenerator:
                 correlated = " [PERF]" if issue.get("performance_correlated") else ""
 
                 file_handle.write(
-                    f"#### {i}. {severity_emoji} {issue.get('pattern_type', 'Unknown').replace('_', ' ').title()}{correlated}\n\n"
+                    f"#### {i}. {severity_prefix} {issue.get('pattern_type', 'Unknown').replace('_', ' ').title()}{correlated}\n\n"
                 )
                 file_handle.write(f"- **File:** `{issue.get('file', 'Unknown')}`\n")
                 file_handle.write(
@@ -493,7 +493,7 @@ class ReportGenerator:
         # Recommendations
         recommendations = pattern_analysis_results.get("recommendations", [])
         if recommendations:
-            file_handle.write("### 💡 Recommendations\n\n")
+            file_handle.write("### Recommendations\n\n")
             for i, recommendation in enumerate(recommendations, 1):
                 file_handle.write(f"{i}. {recommendation}\n")
             file_handle.write("\n")

@@ -69,8 +69,8 @@ jobs:
 
       - name: Verify installation
         run: |
-          python -c "import pycroscope; print('✅ Pycroscope installed successfully')"
-          python -c "from pycroscope.core.config import ProfileConfig; print('✅ Core modules accessible')"
+          python -c "import pycroscope; print('Pycroscope installed successfully')"
+          python -c "from pycroscope.core.config import ProfileConfig; print('Core modules accessible')"
 
       - name: Run unit tests with coverage
         run: |
@@ -130,22 +130,22 @@ jobs:
 
       - name: Validate SOLID principles compliance
         run: |
-          echo "✅ Running architecture validation..."
+          echo "Running architecture validation..."
           python tests/run_tests.py core
-          echo "✅ Core architecture tests passed - SOLID principles validated"
+          echo "Core architecture tests passed - SOLID principles validated"
 
       - name: Validate exception handling (fail-fast)
         run: |
-          echo "✅ Validating fail-fast exception handling..."
-          python tests/run_tests.py unit --tb=short | grep -E "(exception|error)" || echo "✅ No unexpected exception handling"
+          echo "Validating fail-fast exception handling..."
+                      python tests/run_tests.py unit --tb=short | grep -E "(exception|error)" || echo "No unexpected exception handling"
 
       - name: Validate dependency injection
         run: |
-          echo "✅ Validating dependency injection container..."
+          echo "Validating dependency injection container..."
           python -c "
           from pycroscope.core.container import get_container
           container = get_container()
-          print('✅ DI container working correctly')
+          print('DI container working correctly')
           "
 
   security:
@@ -229,7 +229,7 @@ jobs:
 
       - name: Run performance validation
         run: |
-          echo "✅ Running basic performance validation..."
+          echo "Running basic performance validation..."
           python -c "
           import time
           from pycroscope.application.services import ProfilingService
@@ -239,13 +239,13 @@ jobs:
 
           # Test that service initialization is fast
           assert time.time() - start < 1.0, 'Service initialization too slow'
-          print('✅ ProfilingService initialization performance OK')
+          print('ProfilingService initialization performance OK')
 
           # Test that configuration creation is fast
           start = time.time()
           config = service.config_service.create_config()
           assert time.time() - start < 0.1, 'Config creation too slow'
-          print('✅ Configuration creation performance OK')
+          print('Configuration creation performance OK')
           "
 
   release-check:
@@ -278,7 +278,7 @@ jobs:
       - name: Validate package installation
         run: |
           python -m pip install dist/*.whl
-          python -c "import pycroscope; print('✅ Package installs correctly')"
+          python -c "import pycroscope; print('Package installs correctly')"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

@@ -69,8 +69,8 @@ def test_basic_integration():
         return len(result1), result2
 
     result = workload_with_patterns()
-    print(f"✅ Workload completed: {result}")
-    print("📊 Check ./test_results/ for profiling data and pattern analysis reports")
+    print(f"Workload completed: {result}")
+    print("Check ./test_results/ for profiling data and pattern analysis reports")
 
 
 def test_context_manager():
@@ -89,8 +89,8 @@ def test_context_manager():
         return result1, result2
 
     result = context_workload()
-    print(f"✅ Context test completed with {len(result[0])} results")
-    print("📊 Check ./test_context_results/ for integrated analysis results")
+    print(f"Context test completed with {len(result[0])} results")
+    print("Check ./test_context_results/ for integrated analysis results")
 
 
 def test_focused_analysis():
@@ -108,7 +108,7 @@ def test_focused_analysis():
 
 def main():
     """Run integration tests."""
-    print("🚀 PYCROSCOPE 1.0 INTEGRATED PATTERN ANALYSIS TEST")
+    print("PYCROSCOPE 1.0 INTEGRATED PATTERN ANALYSIS TEST")
     print("=" * 60)
     print("Testing pattern analysis as a core feature (enabled by default)")
     print()
@@ -119,27 +119,27 @@ def main():
         test_focused_analysis()
 
         print("\n" + "=" * 60)
-        print("✅ ALL INTEGRATION TESTS PASSED!")
+        print("ALL INTEGRATION TESTS PASSED!")
         print("=" * 60)
         print()
-        print("📊 Key Results:")
+        print("Key Results:")
         print("  • Pattern analysis runs by default with profiling")
         print("  • Anti-patterns are automatically detected and reported")
         print("  • Results are integrated into standard output")
         print("  • No additional setup or configuration required")
         print()
-        print("📁 Generated Output:")
+        print("Generated Output:")
         print("  • ./test_results/")
         print("  • ./test_context_results/")
         print()
-        print("🔍 Pattern Analysis Features Demonstrated:")
+        print("Pattern Analysis Features Demonstrated:")
         print("  • Nested loop detection (O(n²) complexity)")
         print("  • High cyclomatic complexity detection")
         print("  • Too many parameters detection")
         print("  • Integrated reporting with profiling data")
 
     except Exception as e:
-        print(f"❌ Integration test failed: {e}")
+        print(f"Integration test failed: {e}")
         import traceback
 
         traceback.print_exc()

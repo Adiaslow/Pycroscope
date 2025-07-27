@@ -42,7 +42,7 @@ def run_sample_workload():
     # Import the sample workload (replace this with your own imports)
     from sample_workload import mixed_workload
 
-    print("🎯 Executing workload to be profiled...")
+    print("Executing workload to be profiled...")
     print("   (Replace this section with your own code)")
     print()
 
@@ -68,22 +68,22 @@ def main():
     # PROFILING CONFIGURATION
     # Pycroscope 1.0 includes pattern analysis by default!
     # Users can adjust these settings based on their needs:
-    print("📊 Profiling Configuration (Pattern Analysis Enabled by Default):")
-    print("   ✅ line_profiling: Detailed line-by-line execution timing")
-    print("   ✅ call_profiling: Function call timing and hierarchy")
-    print("   ✅ memory_profiling: Memory usage tracking over time")
-    print("   🎯 analyze_patterns: Anti-pattern detection (NEW!)")
-    print("   📊 generate_reports: Comprehensive reports with analysis")
-    print("   📈 create_visualizations: Charts and graphs")
+    print("Profiling Configuration (Pattern Analysis Enabled by Default):")
+    print("   [ENABLED] line_profiling: Detailed line-by-line execution timing")
+    print("   [ENABLED] call_profiling: Function call timing and hierarchy")
+    print("   [ENABLED] memory_profiling: Memory usage tracking over time")
+    print("   [NEW] analyze_patterns: Anti-pattern detection")
+    print("   [ENABLED] generate_reports: Comprehensive reports with analysis")
+    print("   [ENABLED] create_visualizations: Charts and graphs")
     print()
 
     # CREATE OUTPUT DIRECTORY
     output_dir.mkdir(exist_ok=True)
-    print(f"📁 Output directory: {output_dir.absolute()}")
+    print(f"Output directory: {output_dir.absolute()}")
     print()
 
     # RUN PROFILING WITH INTEGRATED PATTERN ANALYSIS
-    print("🚀 Starting comprehensive profiling session...")
+    print("Starting comprehensive profiling session...")
     print("   • Performance profiling: Measuring execution speed and memory")
     print("   • Pattern analysis: Detecting code quality issues")
     print("   • Hotspot correlation: Linking patterns to performance impact")
@@ -105,7 +105,7 @@ def main():
             workload_results = run_sample_workload()
 
             print()
-            print("✅ Code execution completed!")
+            print("Code execution completed!")
             return workload_results
 
         # Run the profiling session
@@ -115,9 +115,9 @@ def main():
 
         # RESULTS SUMMARY
         print("-" * 70)
-        print("📈 PROFILING RESULTS")
-        print(f"⏱️  Total profiling time: {session_time:.3f} seconds")
-        print(f"📁 Session output directory: {output_dir}")
+        print("PROFILING RESULTS")
+        print(f"Total profiling time: {session_time:.3f} seconds")
+        print(f"Session output directory: {output_dir}")
         print()
 
         # Check generated outputs
@@ -125,40 +125,40 @@ def main():
         generated_files = [f for f in all_files if f.is_file()]
 
         if not generated_files:
-            print("⚠️  Warning: No output files were generated")
+            print("WARNING: No output files were generated")
         else:
-            print("📄 Generated Files:")
+            print("Generated Files:")
             for generated_file in sorted(generated_files):
                 if "pattern_analysis" in generated_file.name:
-                    print(f"   🎯 {generated_file.name} (Pattern Analysis)")
+                    print(f"   [ANALYSIS] {generated_file.name} (Pattern Analysis)")
                 elif "integrated" in generated_file.name:
-                    print(f"   📊 {generated_file.name} (Combined Analysis)")
+                    print(f"   [REPORT] {generated_file.name} (Combined Analysis)")
                 elif generated_file.suffix == ".json":
-                    print(f"   📋 {generated_file.name} (Data)")
+                    print(f"   [DATA] {generated_file.name} (Data)")
                 elif generated_file.suffix == ".md":
-                    print(f"   📄 {generated_file.name} (Report)")
+                    print(f"   [REPORT] {generated_file.name} (Report)")
                 elif generated_file.suffix == ".png":
-                    print(f"   📈 {generated_file.name} (Chart)")
+                    print(f"   [CHART] {generated_file.name} (Chart)")
                 else:
-                    print(f"   📄 {generated_file.name}")
+                    print(f"   [FILE] {generated_file.name}")
 
         print()
-        print("🎯 Your Code Results:")
+        print("Your Code Results:")
         if workload_results:
-            print("   ✅ Workload completed successfully")
+            print("   [SUCCESS] Workload completed successfully")
             if isinstance(workload_results, dict):
                 for key, value in workload_results.items():
                     if isinstance(value, (int, float)):
                         if "time" in key:
-                            print(f"   ⏱️  {key}: {value:.3f}s")
+                            print(f"   [TIME] {key}: {value:.3f}s")
                         else:
-                            print(f"   📊 {key}: {value}")
+                            print(f"   [DATA] {key}: {value}")
                     elif isinstance(value, dict):
-                        print(f"   📋 {key}: {len(value)} items")
+                        print(f"   [LIST] {key}: {len(value)} items")
                     else:
-                        print(f"   📄 {key}: {value}")
+                        print(f"   [OTHER] {key}: {value}")
         else:
-            print("   ⚠️  No results returned from workload")
+            print("   [WARNING] No results returned from workload")
 
         # Show pattern analysis insights if available
         pattern_report_path = output_dir / "pattern_analysis_report.json"
@@ -166,7 +166,7 @@ def main():
 
         if pattern_report_path.exists():
             print()
-            print("🎯 PATTERN ANALYSIS INSIGHTS:")
+            print("PATTERN ANALYSIS INSIGHTS:")
             try:
                 import json
 
@@ -178,13 +178,13 @@ def main():
 
                 if total_patterns > 0:
                     print(
-                        f"   ⚠️  Found {total_patterns} code patterns across {summary.get('total_files_analyzed', 0)} files"
+                        f"   [WARNING] Found {total_patterns} code patterns across {summary.get('total_files_analyzed', 0)} files"
                     )
 
                     # Show pattern distribution
                     pattern_dist = summary.get("pattern_distribution", {})
                     if pattern_dist:
-                        print("   🏷️  Pattern types detected:")
+                        print("   Pattern types detected:")
                         for pattern_type, count in sorted(
                             pattern_dist.items(), key=lambda x: x[1], reverse=True
                         ):
@@ -193,59 +193,63 @@ def main():
                     # Show top issues
                     top_issues = pattern_data.get("top_issues", [])
                     if top_issues:
-                        print("   🔥 Top priority issues:")
+                        print("   [PRIORITY] Top priority issues:")
                         for i, issue in enumerate(top_issues[:3], 1):
-                            severity_emoji = {
-                                "low": "📝",
-                                "medium": "⚠️",
-                                "high": "🚨",
-                                "critical": "💥",
-                            }.get(issue.get("severity", "medium"), "⚠️")
+                            severity_prefix = {
+                                "low": "[LOW]",
+                                "medium": "[MEDIUM]",
+                                "high": "[HIGH]",
+                                "critical": "[CRITICAL]",
+                            }.get(issue.get("severity", "medium"), "[MEDIUM]")
                             correlated = (
-                                " 🎯" if issue.get("performance_correlated") else ""
+                                " [PERF-CORRELATED]"
+                                if issue.get("performance_correlated")
+                                else ""
                             )
                             print(
-                                f"      {i}. {severity_emoji} {issue.get('pattern_type', 'Unknown')}{correlated}"
+                                f"      {i}. {severity_prefix} {issue.get('pattern_type', 'Unknown')}{correlated}"
                             )
 
                     # Show recommendations
                     recommendations = pattern_data.get("recommendations", [])
                     if recommendations:
-                        print("   💡 Key recommendations:")
+                        print("   [RECOMMENDATIONS] Key recommendations:")
                         for i, rec in enumerate(recommendations[:2], 1):
                             print(f"      {i}. {rec}")
                 else:
-                    print("   ✅ No significant code patterns detected - good job!")
+                    print(
+                        "   [SUCCESS] No significant code patterns detected - good job!"
+                    )
 
             except Exception as e:
-                print(f"   ⚠️  Could not parse pattern analysis results: {e}")
+                print(f"   [ERROR] Could not parse pattern analysis results: {e}")
 
         print()
         print("=" * 70)
-        print("🎉 COMPREHENSIVE ANALYSIS COMPLETE!")
+        print("COMPREHENSIVE ANALYSIS COMPLETE!")
         print()
-        print("💡 WHAT YOU GET WITH PYCROSCOPE 1.0:")
-        print("   🔥 Performance hotspot identification")
-        print("   📊 Detailed execution timing and memory usage")
-        print("   🎯 Anti-pattern detection (NEW!)")
-        print("   🔗 Correlation between patterns and performance issues")
-        print("   📈 Beautiful visualizations and comprehensive reports")
+        print("WHAT YOU GET WITH PYCROSCOPE 1.0:")
+        print("   [FEATURE] Performance hotspot identification")
+        print("   [FEATURE] Detailed execution timing and memory usage")
+        print("   [NEW] Anti-pattern detection")
+        print("   [FEATURE] Correlation between patterns and performance issues")
+        print("   [FEATURE] Beautiful visualizations and comprehensive reports")
         print()
-        print("📁 NEXT STEPS:")
+        print("NEXT STEPS:")
         print(f"   1. Open the '{output_dir}' directory to explore results")
         print("   2. Review pattern_analysis_report.json for code quality insights")
         print("   3. Check integrated_analysis_report.json for combined findings")
         print("   4. View .png chart files to visualize performance data")
         print("   5. Replace sample_workload with your own code to profile")
         print()
-        print("🎯 PATTERN ANALYSIS FEATURES:")
+        print("PATTERN ANALYSIS FEATURES:")
         print("   • Detects nested loops and O(n²) complexity issues")
         print("   • Identifies functions with high complexity or too many parameters")
         print("   • Finds dead code and unused imports")
         print("   • Highlights inefficient data structure usage")
         print("   • Prioritizes issues found in performance hotspots")
         print()
-        print("🛠️  CUSTOMIZATION:")
+        print("CUSTOMIZATION:")
         print("   - Modify run_sample_workload() to execute your own code")
         print("   - Use @pycroscope.profile() decorator on specific functions")
         print("   - Adjust pattern detection thresholds in ProfileConfig")
@@ -258,9 +262,9 @@ def main():
 
     except Exception as e:
         print()
-        print("❌ PROFILING FAILED!")
+        print("PROFILING FAILED!")
         print()
-        print("🔧 Full error details:")
+        print("Full error details:")
         # Re-raise the exception to show the full traceback and let the program fail
         raise
 
