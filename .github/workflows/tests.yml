@@ -82,13 +82,14 @@ jobs:
 
       - name: Run complete test suite with coverage
         run: |
-          python tests/run_tests.py all --cov-report=xml --cov-report=html --cov-fail-under=50
+          pytest --cov=src/pycroscope --cov-branch --cov-report=xml --cov-report=html --cov-fail-under=50 --verbose
 
       - name: Upload coverage to Codecov
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
-          file: ./coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: Adiaslow/Pycroscope
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: false

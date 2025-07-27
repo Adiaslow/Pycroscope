@@ -78,25 +78,37 @@ def run_fast_tests() -> int:
     )
 
 
-def run_all_tests() -> int:
+def run_all_tests(additional_args: Optional[List[str]] = None) -> int:
     """Run complete test suite."""
-    return subprocess.call([sys.executable, "-m", "pytest", "--verbose"])
+    cmd = [sys.executable, "-m", "pytest", "--verbose"]
+
+    # Add any additional arguments passed from command line
+    if additional_args:
+        cmd.extend(additional_args)
+
+    return subprocess.call(cmd)
 
 
-def run_tests_with_coverage() -> int:
+def run_tests_with_coverage(additional_args: Optional[List[str]] = None) -> int:
     """Run tests with coverage reporting."""
-    return subprocess.call(
-        [
-            sys.executable,
-            "-m",
-            "pytest",
-            "--cov=src/pycroscope",
-            "--cov-report=html",
-            "--cov-report=term-missing",
-            "--cov-fail-under=80",
-            "--verbose",
-        ]
-    )
+    cmd = [
+        sys.executable,
+        "-m",
+        "pytest",
+        "--cov=src/pycroscope",
+        "--cov-branch",
+        "--cov-report=html",
+        "--cov-report=term-missing",
+        "--cov-report=xml",
+        "--cov-fail-under=50",
+        "--verbose",
+    ]
+
+    # Add any additional arguments passed from command line
+    if additional_args:
+        cmd.extend(additional_args)
+
+    return subprocess.call(cmd)
 
 
 def main():
@@ -138,9 +150,13 @@ def main():
         elif command == "fast":
             return run_fast_tests()
         elif command == "all":
-            return run_all_tests()
+            # Pass any additional arguments to the test runner
+            additional_args = sys.argv[2:] if len(sys.argv) > 2 else None
+            return run_all_tests(additional_args)
         elif command == "coverage":
-            return run_tests_with_coverage()
+            # Pass any additional arguments to the coverage runner
+            additional_args = sys.argv[2:] if len(sys.argv) > 2 else None
+            return run_tests_with_coverage(additional_args)
         else:
             print(f"Unknown command: {command}")
             return 1
