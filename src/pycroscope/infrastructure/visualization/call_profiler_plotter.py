@@ -59,7 +59,8 @@ class CallProfilerPlotter(ProfilerPlotter):
             # 2. Call Tree Visualization
             call_tree_fig = self._plot_call_tree(stats_dict)
             call_tree_path = output_dir / "call_tree.png"
-            StyleManager.save_figure(call_tree_fig, call_tree_path)
+            # Use higher DPI and quality settings for call tree to ensure details are clear
+            StyleManager.save_figure(call_tree_fig, call_tree_path, dpi=450)
             plots["call_tree"] = call_tree_path
 
             # 3. Flame Graph
@@ -193,10 +194,7 @@ class CallProfilerPlotter(ProfilerPlotter):
                 "This indicates invalid or incomplete call relationship data."
             )
 
-        # Create the tree visualization
-        fig, ax = plt.subplots(figsize=(16, 12))
-
-        # Calculate tree layout positions
+        # Pre-calculate layout to determine appropriate figure size
         tree_positions = self._calculate_tree_layout(call_graph, root_nodes, max_depth)
 
         if not tree_positions:
@@ -205,25 +203,67 @@ class CallProfilerPlotter(ProfilerPlotter):
                 "This indicates a problem with the tree layout algorithm."
             )
 
+        # Calculate dynamic figure size based on tree dimensions
+        xs = [pos[0] for pos in tree_positions.values()]
+        ys = [pos[1] for pos in tree_positions.values()]
+
+        x_range = max(xs) - min(xs) if len(xs) > 1 else 10.0
+        y_range = max(ys) - min(ys) if len(ys) > 1 else 5.0
+
+        # Calculate node density to determine sizing factors
+        node_count = len(tree_positions)
+        tree_density = node_count / (
+            (x_range * y_range) if x_range * y_range > 0 else 1
+        )
+
+        # Adjust base size factors based on node density and tree dimensions
+        # Use more dramatic scaling to ensure the difference is noticeable
+        # The wider or deeper the tree, the larger the figure
+        x_factor = 1.5  # Much larger horizontal scaling
+        y_factor = 2.0  # Much larger vertical scaling
+
+        # Scale factors by number of nodes (more nodes = more space needed)
+        node_scale = 0.5 * max(1.0, min(3.0, node_count / 10))
+        x_factor *= node_scale
+        y_factor *= node_scale
+
+        # Calculate dynamic width and height with adjusted constraints
+        width = max(
+            min(x_range * x_factor, 40), 20
+        )  # Between 20-40 inches (larger range)
+        height = max(
+            min(y_range * y_factor, 30), 15
+        )  # Between 15-30 inches (larger range)
+
+        # Print diagnostic info about figure size calculations
+        print(
+            f"[DEBUG] Call tree: {node_count} nodes, dimensions: {width:.1f}x{height:.1f} inches"
+        )
+
+        # Create the tree visualization with dynamic size
+        fig, ax = plt.subplots(figsize=(width, height))
+
+        # We already calculated tree_positions for sizing, no need to recalculate
+
         # Draw the tree
         self._draw_call_tree(ax, call_graph, tree_positions, stats_dict)
 
-        # Customize the plot with clearer labeling
+        # Customize the plot with clearer labeling - position title at top
         ax.set_title(
             "Call Tree - Function Call Hierarchy",
             fontweight="bold",
             fontsize=14,
-            pad=20,
+            pad=5,  # Reduced padding
         )
         ax.set_xlabel("Call Flow Structure →", fontsize=12)
         ax.set_ylabel("Call Stack Depth ↓", fontsize=12)
 
-        # Add subtitle with useful information
+        # Add subtitle with useful information in upper margin
         total_functions = len(call_graph)
         displayed_functions = len(tree_positions)
         ax.annotate(
             f"Displaying {displayed_functions} of {total_functions} functions",
-            xy=(0.5, 0.97),
+            xy=(0.5, 0.98),  # Adjusted to be closer to top
             xycoords="figure fraction",
             ha="center",
             va="top",
@@ -247,7 +287,9 @@ class CallProfilerPlotter(ProfilerPlotter):
             fontsize=9,
         )
 
+        # Let matplotlib's tight_layout handle the spacing automatically
         plt.tight_layout()
+
         return fig
 
     def _build_tree_from_call_graph(
@@ -284,7 +326,20 @@ class CallProfilerPlotter(ProfilerPlotter):
         """Find root nodes (functions with few or no callers)."""
         candidates = []
 
-        # First, try to find functions with no callers (true entry points)
+        # First, try to find a main function or __main__ as the true entry point
+        main_candidates = []
+        for func_name in call_graph:
+            cleaned_name = self._clean_tree_function_name(func_name).lower()
+            if "main" in cleaned_name or "__main__" in cleaned_name:
+                main_candidates.append((func_name, call_graph[func_name]["cumtime"]))
+
+        if main_candidates:
+            # Sort main candidates by cumtime and return the top one
+            main_candidates.sort(key=lambda x: x[1], reverse=True)
+            # Just pick the top 1-2 main candidates to avoid overcrowding
+            return [name for name, _ in main_candidates[:2]]
+
+        # Next, try to find functions with no callers (true entry points)
         entry_points = []
         for func_name, data in call_graph.items():
             num_callers = len(data["callers"])
@@ -296,15 +351,16 @@ class CallProfilerPlotter(ProfilerPlotter):
         # If we found entry points, use them
         if entry_points:
             entry_points.sort(key=lambda x: x[1], reverse=True)
-            return [name for name, _ in entry_points[:5]]
+            # Only take the top 3 to avoid too many trees
+            return [name for name, _ in entry_points[:3]]
 
-        # Otherwise, find functions with minimal callers
+        # Otherwise, find functions with minimal callers and significant time
         for func_name, data in call_graph.items():
             num_callers = len(data["callers"])
             cumtime = data["cumtime"]
 
-            # Consider as root if few callers (regardless of execution time for fast functions)
-            if num_callers <= 1:
+            # Consider as root if few callers and significant time
+            if num_callers <= 1 and cumtime > 0:
                 candidates.append((func_name, cumtime))
 
         if not candidates:
@@ -314,9 +370,9 @@ class CallProfilerPlotter(ProfilerPlotter):
                 if len(data["callers"]) == min_callers:
                     candidates.append((func_name, data["cumtime"]))
 
-        # Sort by cumulative time and take top candidates
+        # Sort by cumulative time and take top candidates, limiting to 3 for clarity
         candidates.sort(key=lambda x: x[1], reverse=True)
-        return [name for name, _ in candidates[:5]]  # Top 5 roots
+        return [name for name, _ in candidates[:3]]
 
     def _calculate_tree_layout(
         self, call_graph: Dict[str, Dict], root_nodes: List[str], max_depth: int
@@ -341,10 +397,9 @@ class CallProfilerPlotter(ProfilerPlotter):
 
             root_widths.append(width)
 
-        # Space roots horizontally with proper spacing
-        total_width = sum(root_widths) + 4.0 * (
-            len(root_nodes) - 1
-        )  # 4.0 is spacing between root trees
+        # Space roots horizontally with generous spacing
+        root_spacing = 8.0  # Increase spacing between root trees
+        total_width = sum(root_widths) + root_spacing * (len(root_nodes) - 1)
         start_x = -total_width / 2
 
         # Now do the actual layout
@@ -359,7 +414,7 @@ class CallProfilerPlotter(ProfilerPlotter):
             positions.update(root_positions)
 
             # Move to next root position
-            start_x += root_width + 4.0
+            start_x += root_width + root_spacing
 
         return positions
 
@@ -374,9 +429,16 @@ class CallProfilerPlotter(ProfilerPlotter):
         visited: set,
     ) -> Dict[str, tuple]:
         """Recursively layout a subtree with improved hierarchical spacing."""
-        if depth >= max_depth or node in visited or node not in call_graph:
+        # Early termination conditions
+        if depth >= max_depth or node not in call_graph:
             return {}
 
+        # Handle cycles - if we've seen this node in this branch before, don't recurse further
+        if node in visited:
+            # Still add the position for this node, but don't process children
+            return {node: (x_pos, y_base + depth)}
+
+        # Mark as visited for this branch
         visited.add(node)
         positions = {node: (x_pos, y_base + depth)}
 
@@ -389,15 +451,16 @@ class CallProfilerPlotter(ProfilerPlotter):
 
         # Limit number of children based on depth to avoid overcrowding
         # Allow more children at lower depths, fewer at deeper levels
-        max_children = max(8 - depth, 3)  # Gradually reduce from 8 to 3
+        max_children = max(
+            10 - depth * 2, 3
+        )  # More aggressively reduce children at deeper levels
         children = children[:max_children]
 
         if children:
-            # Calculate width needed for this subtree based on number of children
-            # Use an adaptive spacing that increases with depth to prevent overlap
-            child_spacing = max(
-                3.0 - depth * 0.3, 1.0
-            )  # Decrease spacing with depth, but keep minimum
+            # Use larger spacing for shallower levels to improve clarity
+            base_spacing = 5.0  # Base spacing value
+            # Decrease spacing with depth but maintain a reasonable minimum
+            child_spacing = max(base_spacing - depth * 0.6, 2.0)
 
             # Create a list to hold child subtree widths
             child_subtrees = []
@@ -417,15 +480,19 @@ class CallProfilerPlotter(ProfilerPlotter):
                         if len(x_values) > 1
                         else child_spacing
                     )
+                    # Ensure minimum width based on depth
+                    width = max(width, child_spacing)
                 else:
                     width = child_spacing
 
                 child_subtrees.append((child, width))
 
             # Calculate total width needed and starting position
-            total_width = sum(width for _, width in child_subtrees) + child_spacing * (
-                len(child_subtrees) - 1
-            )
+            # Add extra spacing between children to prevent overlap
+            spacing_factor = 1.2  # Increase overall spacing
+            total_width = sum(
+                width for _, width in child_subtrees
+            ) + child_spacing * spacing_factor * (len(child_subtrees) - 1)
             start_x = x_pos - total_width / 2
 
             # Second pass: actually position the children
@@ -441,7 +508,8 @@ class CallProfilerPlotter(ProfilerPlotter):
                     visited.copy(),  # Use copy to allow different branches
                 )
                 positions.update(child_positions)
-                current_x += width + child_spacing
+                # Add extra space between siblings
+                current_x += width + (child_spacing * spacing_factor)
 
         return positions
 
@@ -577,16 +645,14 @@ class CallProfilerPlotter(ProfilerPlotter):
             x_range = max(xs) - min(xs) if len(xs) > 1 else 10.0
             y_range = max(ys) - min(ys) if len(ys) > 1 else 5.0
 
-            # Add proportional padding - more for wider trees
-            x_padding = max(x_range * 0.1, 2.0)
-            y_padding = max(y_range * 0.15, 1.5)
+            # No artificial padding - let nodes extend to the edges of the plot
+            # This maximizes the available space for the tree
+            ax.set_xlim(min(xs), max(xs))
+            ax.set_ylim(min(ys), max(ys))
 
-            # Set limits with padding
-            ax.set_xlim(min(xs) - x_padding, max(xs) + x_padding)
-            ax.set_ylim(min(ys) - y_padding, max(ys) + y_padding)
-
-            # Set equal aspect for nicer spacing
-            ax.set_aspect("auto")  # Actually better than 'equal' for call trees
+            # Use equal aspect to keep circles circular, but let matplotlib handle the scaling
+            # This ensures nodes maintain their shape regardless of figure dimensions
+            ax.set_aspect("equal", adjustable="datalim")
 
         # Remove ticks and add grid for better readability
         ax.set_xticks([])

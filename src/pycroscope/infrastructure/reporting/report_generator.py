@@ -456,7 +456,8 @@ class ReportGenerator:
         top_issues = pattern_analysis_results.get("top_issues", [])
         if top_issues:
             file_handle.write("### Priority Issues\n\n")
-            for i, issue in enumerate(top_issues[:10], 1):  # Show top 10
+            # Show all issues, no limit
+            for i, issue in enumerate(top_issues, 1):
                 severity_prefix = {
                     "critical": "[CRITICAL]",
                     "high": "[HIGH]",

@@ -161,8 +161,18 @@ class StyleManager:
 
         # Apply comprehensive style settings directly to the figure
         # This ensures consistent styling regardless of the global state
-        fig.set_figheight(8)
-        fig.set_figwidth(12)
+
+        # Get the original figure size to check if it's been customized
+        orig_width, orig_height = fig.get_size_inches()
+
+        # Only set default size if the figure doesn't already have a custom size
+        # (Custom size is detected by checking if dimensions are significantly different from defaults)
+        if (
+            abs(orig_width - 6.4) < 0.1 and abs(orig_height - 4.8) < 0.1
+        ):  # Default matplotlib size
+            fig.set_figheight(8)
+            fig.set_figwidth(12)
+
         fig.set_facecolor("white")
 
         for ax in fig.get_axes():

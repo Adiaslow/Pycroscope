@@ -265,7 +265,7 @@ class PerformanceAnalysisOrchestrator(AnalysisOrchestrator):
         return counts
 
     def _get_top_issues(
-        self, results: Dict[str, List[AnalysisResult]], limit: int = 10
+        self, results: Dict[str, List[AnalysisResult]], limit: int = 1000
     ) -> List[Dict[str, Any]]:
         """Get top issues across all files."""
         all_results = []
