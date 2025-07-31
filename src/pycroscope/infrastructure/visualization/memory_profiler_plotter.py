@@ -172,11 +172,15 @@ class MemoryProfilerPlotter(ProfilerPlotter):
                 )
                 cumulative_position += bin_increments
 
+        # Define consistent colors
+        mem_increase_color = "crimson"
+        mem_decrease_color = "forestgreen"
+
         # Plot candlestick-style bars
         for bin_info in bin_data:
             bar_bottom = bin_info["cumulative_start"]
             bar_height = bin_info["increment"]
-            bar_color = "red" if bar_height > 0 else "green"
+            bar_color = mem_increase_color if bar_height > 0 else mem_decrease_color
             bar_alpha = 0.8
 
             # Create the bar starting from cumulative position
@@ -191,9 +195,9 @@ class MemoryProfilerPlotter(ProfilerPlotter):
                 linewidth=0.5,
             )
 
-        # Add legend entries manually since we're using custom plotting
-        ax2.bar([], [], color="red", alpha=0.8, label="Memory Increase")
-        ax2.bar([], [], color="green", alpha=0.8, label="Memory Decrease")
+        # Add legend entries with the consistent colors
+        ax2.bar([], [], color=mem_increase_color, alpha=0.8, label="Memory Increase")
+        ax2.bar([], [], color=mem_decrease_color, alpha=0.8, label="Memory Decrease")
 
         ax2.axhline(y=0, color="black", linestyle="-", alpha=0.8, linewidth=1)
         ax2.set_xlabel("Time (seconds)")

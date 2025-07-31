@@ -104,8 +104,26 @@ class StyleManager:
         For backward compatibility, this can still be called directly,
         but it will return the context manager without applying it.
         """
-        # Return the context manager instead of modifying global state
-        return plt.style.context(StyleManager.get_style_dict())
+        # Use a combination of style and rc_context to ensure all styles are applied properly
+        # This provides stronger isolation from global state
+        style_dict = StyleManager.get_style_dict()
+
+        # Create a custom context manager that combines style context and explicit rcParams
+        class CombinedStyleContext:
+            def __enter__(self):
+                self.style_context = plt.style.context(style_dict)
+                self.style_context.__enter__()
+                # Set additional critical parameters that might not be captured by style context
+                self.original_params = plt.rcParams.copy()
+                plt.rcParams.update(style_dict)
+                return self
+
+            def __exit__(self, exc_type, exc_val, exc_tb):
+                # Restore original parameters
+                plt.rcParams.update(self.original_params)
+                return self.style_context.__exit__(exc_type, exc_val, exc_tb)
+
+        return CombinedStyleContext()
 
     @staticmethod
     def get_color_palette() -> List[str]:
@@ -141,11 +159,36 @@ class StyleManager:
         }
         default_kwargs.update(kwargs)
 
-        # Apply style settings directly to the figure to ensure consistent output
+        # Apply comprehensive style settings directly to the figure
+        # This ensures consistent styling regardless of the global state
+        fig.set_figheight(8)
+        fig.set_figwidth(12)
+        fig.set_facecolor("white")
+
         for ax in fig.get_axes():
+            # Apply font styling
+            for text in ax.get_xticklabels() + ax.get_yticklabels():
+                text.set_fontsize(9)
+
+            # Title and label styling
+            if ax.get_title():
+                ax.title.set_fontsize(13)
+            if ax.get_xlabel():
+                ax.xaxis.label.set_fontsize(11)
+            if ax.get_ylabel():
+                ax.yaxis.label.set_fontsize(11)
+
+            # Grid and spines
             ax.grid(True, alpha=0.3)
             ax.spines["top"].set_visible(False)
             ax.spines["right"].set_visible(False)
+            ax.set_facecolor("white")
+
+            # Legend styling if present
+            legend = ax.get_legend()
+            if legend:
+                for text in legend.get_texts():
+                    text.set_fontsize(10)
 
         fig.savefig(filepath, **default_kwargs)
         plt.close(fig)

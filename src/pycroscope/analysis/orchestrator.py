@@ -204,11 +204,10 @@ class PerformanceAnalysisOrchestrator(AnalysisOrchestrator):
             if self.config.should_report_result(r.severity, r.confidence)
         ]
 
-        # Limit results per file
-        if len(results) > self.config.max_results_per_file:
-            results = self.prioritize_findings(results)[
-                : self.config.max_results_per_file
-            ]
+        # Don't limit results per file - show all patterns
+        # Sort by priority but don't truncate
+        if results:
+            results = self.prioritize_findings(results)
 
         return results
 

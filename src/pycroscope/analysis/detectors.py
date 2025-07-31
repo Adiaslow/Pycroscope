@@ -723,6 +723,7 @@ class ScientificComputingDetector:
             PatternType.WRONG_DTYPE_USAGE,
             PatternType.INEFFICIENT_ARRAY_CONCATENATION,
             PatternType.SUBOPTIMAL_LINEAR_ALGEBRA,
+            PatternType.MISSING_NUMBA_OPPORTUNITY,
             # Additional patterns available for implementation:
             # PatternType.NON_CONTIGUOUS_MEMORY_ACCESS,
             # PatternType.INEFFICIENT_MEMORY_LAYOUT,
@@ -778,6 +779,7 @@ class ScientificComputingDetector:
         results.extend(self._detect_wrong_dtype_usage(tree, file_path))
         results.extend(self._detect_inefficient_concatenation(tree, file_path))
         results.extend(self._detect_suboptimal_linear_algebra(tree, file_path))
+        results.extend(self._detect_numba_opportunities(tree, file_path))
 
         # TODO: Implement additional pattern detectors based on external tools:
         # - perflint patterns (unnecessary list cast, loop invariants, etc.)
@@ -1072,18 +1074,22 @@ class ScientificComputingDetector:
                     results.append(
                         AnalysisResult(
                             pattern_type=PatternType.MISSING_NUMBA_OPPORTUNITY,
-                            file_path=file_path,
-                            line_number=node.lineno,
-                            column=node.col_offset,
-                            message="Computational loop could benefit from Numba JIT compilation",
                             severity="low",
                             confidence=0.6,
+                            description="Computational loop could benefit from Numba JIT compilation",
+                            location={
+                                "file": str(file_path),
+                                "line": node.lineno,
+                                "column": node.col_offset,
+                            },
                             suggestion="Consider using @numba.jit decorator for performance improvement",
-                            code_context=(
-                                ast.unparse(node)
-                                if hasattr(ast, "unparse")
-                                else str(node)
-                            ),
+                            metrics={
+                                "code_context": (
+                                    ast.unparse(node)
+                                    if hasattr(ast, "unparse")
+                                    else str(node)
+                                )
+                            },
                         )
                     )
                 self.generic_visit(node)
@@ -1124,18 +1130,22 @@ class ScientificComputingDetector:
                     results.append(
                         AnalysisResult(
                             pattern_type=PatternType.WRONG_DTYPE_USAGE,
-                            file_path=file_path,
-                            line_number=node.lineno,
-                            column=node.col_offset,
-                            message="Consider using float32 instead of float64 if precision allows",
                             severity="low",
                             confidence=0.4,
+                            description="Consider using float32 instead of float64 if precision allows",
+                            location={
+                                "file": str(file_path),
+                                "line": node.lineno,
+                                "column": node.col_offset,
+                            },
                             suggestion="Use float32 for better memory usage and performance if precision is sufficient",
-                            code_context=(
-                                ast.unparse(node)
-                                if hasattr(ast, "unparse")
-                                else str(node)
-                            ),
+                            metrics={
+                                "code_context": (
+                                    ast.unparse(node)
+                                    if hasattr(ast, "unparse")
+                                    else str(node)
+                                )
+                            },
                         )
                     )
 
@@ -1202,18 +1212,22 @@ class ScientificComputingDetector:
                     results.append(
                         AnalysisResult(
                             pattern_type=PatternType.SUBOPTIMAL_LINEAR_ALGEBRA,
-                            file_path=file_path,
-                            line_number=node.lineno,
-                            column=node.col_offset,
-                            message="Matrix inversion detected - consider using solve() for linear systems",
                             severity="medium",
                             confidence=0.7,
+                            description="Matrix inversion detected - consider using solve() for linear systems",
+                            location={
+                                "file": str(file_path),
+                                "line": node.lineno,
+                                "column": node.col_offset,
+                            },
                             suggestion="Use np.linalg.solve() instead of matrix inversion for solving linear systems",
-                            code_context=(
-                                ast.unparse(node)
-                                if hasattr(ast, "unparse")
-                                else str(node)
-                            ),
+                            metrics={
+                                "code_context": (
+                                    ast.unparse(node)
+                                    if hasattr(ast, "unparse")
+                                    else str(node)
+                                )
+                            },
                         )
                     )
 

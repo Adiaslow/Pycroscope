@@ -47,6 +47,7 @@ class PatternType(Enum):
     WRONG_DTYPE_USAGE = "wrong_dtype_usage"
     INEFFICIENT_ARRAY_CONCATENATION = "inefficient_array_concatenation"
     SUBOPTIMAL_LINEAR_ALGEBRA = "suboptimal_linear_algebra"
+    MISSING_NUMBA_OPPORTUNITY = "missing_numba_opportunity"
 
 
 class ProfileConfig(BaseModel):

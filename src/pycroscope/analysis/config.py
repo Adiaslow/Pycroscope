@@ -23,11 +23,29 @@ class AnalysisConfig(BaseModel):
     # Pattern detection settings
     enabled_patterns: List[PatternType] = Field(
         default_factory=lambda: [
+            # Performance Anti-Patterns
             PatternType.NESTED_LOOPS,
+            PatternType.INEFFICIENT_DATA_STRUCTURE,
+            PatternType.UNNECESSARY_COMPUTATION,
+            # Algorithmic Complexity Issues
             PatternType.QUADRATIC_COMPLEXITY,
+            PatternType.EXPONENTIAL_COMPLEXITY,
+            PatternType.RECURSIVE_WITHOUT_MEMOIZATION,
+            # Code Quality Issues
             PatternType.HIGH_CYCLOMATIC_COMPLEXITY,
             PatternType.DEAD_CODE,
             PatternType.UNUSED_IMPORTS,
+            # Scientific Computing Anti-Patterns
+            PatternType.MISSED_VECTORIZATION,
+            PatternType.INEFFICIENT_ARRAY_OPERATIONS,
+            PatternType.SUBOPTIMAL_MATRIX_OPERATIONS,
+            PatternType.UNNECESSARY_ARRAY_COPY,
+            PatternType.INEFFICIENT_BROADCASTING,
+            PatternType.SCALAR_ARRAY_OPERATIONS,
+            PatternType.WRONG_DTYPE_USAGE,
+            PatternType.INEFFICIENT_ARRAY_CONCATENATION,
+            PatternType.SUBOPTIMAL_LINEAR_ALGEBRA,
+            PatternType.MISSING_NUMBA_OPPORTUNITY,
         ],
         description="List of pattern types to detect",
     )

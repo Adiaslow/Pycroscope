@@ -50,6 +50,7 @@ class PatternType(Enum):
     SUBOPTIMAL_LINEAR_ALGEBRA = "suboptimal_linear_algebra"
     INEFFICIENT_MEMORY_LAYOUT = "inefficient_memory_layout"
     SUBOPTIMAL_ALGORITHM_CHOICE = "suboptimal_algorithm_choice"
+    MISSING_NUMBA_OPPORTUNITY = "missing_numba_opportunity"
 
     # General Performance Anti-Patterns (from perflint and others)
     UNNECESSARY_LIST_CAST = "unnecessary_list_cast"

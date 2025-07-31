@@ -151,16 +151,16 @@ class CallProfilerPlotter(ProfilerPlotter):
                 fontweight="bold",
             )
 
-        # Add summary statistics
+        # Add summary statistics - positioned in top right
         total_time = top_funcs[metric].sum()
         total_functions = len(df)
         ax.text(
-            0.02,
+            0.98,
             0.98,
             f"Total Functions: {total_functions:,}\nTop {len(top_funcs)} Total: {total_time:.3f}s",
             transform=ax.transAxes,
             va="top",
-            ha="left",
+            ha="right",
             bbox=dict(boxstyle="round,pad=0.3", facecolor="lightgray", alpha=0.7),
             fontsize=9,
         )
@@ -208,24 +208,41 @@ class CallProfilerPlotter(ProfilerPlotter):
         # Draw the tree
         self._draw_call_tree(ax, call_graph, tree_positions, stats_dict)
 
-        # Customize the plot
+        # Customize the plot with clearer labeling
         ax.set_title(
-            "Call Tree - Function Call Relationships", fontweight="bold", pad=20
+            "Call Tree - Function Call Hierarchy",
+            fontweight="bold",
+            fontsize=14,
+            pad=20,
         )
-        ax.set_xlabel("Call Flow →", fontsize=12)
+        ax.set_xlabel("Call Flow Structure →", fontsize=12)
         ax.set_ylabel("Call Stack Depth ↓", fontsize=12)
 
-        # Add legend
+        # Add subtitle with useful information
+        total_functions = len(call_graph)
+        displayed_functions = len(tree_positions)
+        ax.annotate(
+            f"Displaying {displayed_functions} of {total_functions} functions",
+            xy=(0.5, 0.97),
+            xycoords="figure fraction",
+            ha="center",
+            va="top",
+            fontsize=9,
+            style="italic",
+            color="#555555",
+        )
+
+        # Add legend - positioned in bottom right
         ax.text(
-            0.02,
             0.98,
+            0.02,
             "Nodes = Functions\n"
             "Edges = Calls\n"
             "Size ∝ Cumulative time\n"
             "Color = Execution intensity",
             transform=ax.transAxes,
-            va="top",
-            ha="left",
+            va="bottom",
+            ha="right",
             bbox=dict(boxstyle="round,pad=0.5", facecolor="lightgreen", alpha=0.8),
             fontsize=9,
         )
@@ -304,20 +321,45 @@ class CallProfilerPlotter(ProfilerPlotter):
     def _calculate_tree_layout(
         self, call_graph: Dict[str, Dict], root_nodes: List[str], max_depth: int
     ) -> Dict[str, tuple]:
-        """Calculate positions for tree layout using hierarchical positioning."""
+        """Calculate positions for tree layout with improved horizontal spacing."""
         positions = {}
-        y_offset = 0
 
-        for root in root_nodes:
+        # First get an estimate of how much horizontal space each root needs
+        root_widths = []
+        for i, root in enumerate(root_nodes):
+            # Do a dry run layout to determine width needed
+            temp_positions = self._layout_subtree(
+                call_graph, root, 0, 0, 0, max_depth, set()
+            )
+
+            if temp_positions:
+                x_values = [pos[0] for pos in temp_positions.values()]
+                width = max(x_values) - min(x_values) if len(x_values) > 1 else 4.0
+                width = max(width, 4.0)  # Ensure minimum width
+            else:
+                width = 4.0
+
+            root_widths.append(width)
+
+        # Space roots horizontally with proper spacing
+        total_width = sum(root_widths) + 4.0 * (
+            len(root_nodes) - 1
+        )  # 4.0 is spacing between root trees
+        start_x = -total_width / 2
+
+        # Now do the actual layout
+        for i, root in enumerate(root_nodes):
+            root_width = root_widths[i]
+            root_x = start_x + root_width / 2  # Center the root in its space
+
+            # Layout this subtree with its own vertical space (all start at y=0)
             root_positions = self._layout_subtree(
-                call_graph, root, 0, 0, y_offset, max_depth, set()
+                call_graph, root, 0, root_x, 0, max_depth, set()
             )
             positions.update(root_positions)
 
-            # Calculate height of this subtree for next root positioning
-            if root_positions:
-                max_y = max(pos[1] for pos in root_positions.values())
-                y_offset = max_y + 2  # Gap between different root trees
+            # Move to next root position
+            start_x += root_width + 4.0
 
         return positions
 
@@ -331,7 +373,7 @@ class CallProfilerPlotter(ProfilerPlotter):
         max_depth: int,
         visited: set,
     ) -> Dict[str, tuple]:
-        """Recursively layout a subtree with proper spacing."""
+        """Recursively layout a subtree with improved hierarchical spacing."""
         if depth >= max_depth or node in visited or node not in call_graph:
             return {}
 
@@ -340,29 +382,66 @@ class CallProfilerPlotter(ProfilerPlotter):
 
         # Get children (callees) and sort by cumulative time
         children = list(call_graph[node]["callees"])
-        children = [child for child in children if child in call_graph]
+        children = [
+            child for child in children if child in call_graph and child not in visited
+        ]
         children.sort(key=lambda c: call_graph[c]["cumtime"], reverse=True)
 
-        # Limit number of children to avoid overcrowding
-        children = children[:4]
+        # Limit number of children based on depth to avoid overcrowding
+        # Allow more children at lower depths, fewer at deeper levels
+        max_children = max(8 - depth, 3)  # Gradually reduce from 8 to 3
+        children = children[:max_children]
 
         if children:
-            # Space children horizontally
-            child_spacing = 2.0
-            start_x = x_pos - (len(children) - 1) * child_spacing / 2
+            # Calculate width needed for this subtree based on number of children
+            # Use an adaptive spacing that increases with depth to prevent overlap
+            child_spacing = max(
+                3.0 - depth * 0.3, 1.0
+            )  # Decrease spacing with depth, but keep minimum
 
-            for i, child in enumerate(children):
-                child_x = start_x + i * child_spacing
+            # Create a list to hold child subtree widths
+            child_subtrees = []
+
+            # First pass: calculate width needed for each child's subtree
+            for child in children:
+                # Create a temporary copy of visited to simulate layout without changing positions
+                temp_visited = visited.copy()
+                temp_positions = self._layout_subtree(
+                    call_graph, child, depth + 1, 0, y_base, max_depth, temp_visited
+                )
+
+                if temp_positions:
+                    x_values = [pos[0] for pos in temp_positions.values()]
+                    width = (
+                        max(x_values) - min(x_values)
+                        if len(x_values) > 1
+                        else child_spacing
+                    )
+                else:
+                    width = child_spacing
+
+                child_subtrees.append((child, width))
+
+            # Calculate total width needed and starting position
+            total_width = sum(width for _, width in child_subtrees) + child_spacing * (
+                len(child_subtrees) - 1
+            )
+            start_x = x_pos - total_width / 2
+
+            # Second pass: actually position the children
+            current_x = start_x
+            for child, width in child_subtrees:
                 child_positions = self._layout_subtree(
                     call_graph,
                     child,
                     depth + 1,
-                    child_x,
+                    current_x + width / 2,  # Center the child in its allocated space
                     y_base,
                     max_depth,
                     visited.copy(),  # Use copy to allow different branches
                 )
                 positions.update(child_positions)
+                current_x += width + child_spacing
 
         return positions
 
@@ -431,13 +510,29 @@ class CallProfilerPlotter(ProfilerPlotter):
             color_idx = int(size_factor * (len(colors) - 1))
             color = colors[color_idx]
 
-            # Draw node
-            circle = Circle((x, y), radius=0.3, color=color, alpha=0.8, zorder=2)
+            # Scale node size more consistently
+            node_size_base = 0.25  # Base size
+            node_size_var = 0.25  # Variable part based on time
+            node_size = node_size_base + node_size_var * size_factor
+
+            # Draw node with improved appearance
+            circle = Circle(
+                (x, y),
+                radius=node_size,
+                color=color,
+                alpha=0.8,
+                zorder=2,
+                edgecolor="black",
+                linewidth=0.5,
+            )
             ax.add_patch(circle)
 
-            # Add function name label
-            display_name = node_name[:15] + "..." if len(node_name) > 15 else node_name
-            ax.text(
+            # Add function name label with better sizing and background
+            display_name = self._clean_tree_function_name(node_name)
+            if len(display_name) > 18:
+                display_name = display_name[:16] + "..."
+
+            text_box = ax.text(
                 x,
                 y,
                 display_name,
@@ -446,31 +541,57 @@ class CallProfilerPlotter(ProfilerPlotter):
                 fontsize=8,
                 fontweight="bold",
                 zorder=3,
+                bbox=dict(
+                    boxstyle="round,pad=0.2",
+                    facecolor="white",
+                    alpha=0.7,
+                    edgecolor="none",
+                ),
             )
 
-            # Add timing info below node
+            # Add timing info below node with better visibility
             ax.text(
                 x,
-                y - 0.5,
+                y - node_size - 0.2,
                 f"{cumtime:.3f}s",
                 ha="center",
                 va="center",
-                fontsize=6,
-                style="italic",
+                fontsize=7,
+                color="#444444",
+                weight="bold",
+                bbox=dict(
+                    boxstyle="round,pad=0.1",
+                    facecolor="white",
+                    alpha=0.5,
+                    edgecolor="none",
+                ),
                 zorder=3,
             )
 
-        # Set axis limits with padding
+        # Set axis limits with proper padding and aspect ratio
         if positions:
             xs = [pos[0] for pos in positions.values()]
             ys = [pos[1] for pos in positions.values()]
-            padding = 1.0
-            ax.set_xlim(min(xs) - padding, max(xs) + padding)
-            ax.set_ylim(min(ys) - padding, max(ys) + padding)
 
-        # Remove ticks for cleaner appearance
+            # Calculate better padding based on the size of the tree
+            x_range = max(xs) - min(xs) if len(xs) > 1 else 10.0
+            y_range = max(ys) - min(ys) if len(ys) > 1 else 5.0
+
+            # Add proportional padding - more for wider trees
+            x_padding = max(x_range * 0.1, 2.0)
+            y_padding = max(y_range * 0.15, 1.5)
+
+            # Set limits with padding
+            ax.set_xlim(min(xs) - x_padding, max(xs) + x_padding)
+            ax.set_ylim(min(ys) - y_padding, max(ys) + y_padding)
+
+            # Set equal aspect for nicer spacing
+            ax.set_aspect("auto")  # Actually better than 'equal' for call trees
+
+        # Remove ticks and add grid for better readability
         ax.set_xticks([])
         ax.set_yticks([])
+        ax.grid(False)  # Turn off grid for cleaner appearance
 
     def _clean_tree_function_name(self, func_id: str) -> str:
         """Clean function name for tree display."""
@@ -530,9 +651,9 @@ class CallProfilerPlotter(ProfilerPlotter):
         )
         ax.set_ylim(0, max_depth + 0.5)
 
-        # Add explanatory text
+        # Add explanatory text - positioned in top right
         ax.text(
-            0.02,
+            0.98,
             0.98,
             "Width ∝ Cumulative time in call path\n"
             "Height = Call stack depth\n"
@@ -540,7 +661,7 @@ class CallProfilerPlotter(ProfilerPlotter):
             "Top = Leaf functions",
             transform=ax.transAxes,
             va="top",
-            ha="left",
+            ha="right",
             bbox=dict(boxstyle="round,pad=0.5", facecolor="lightblue", alpha=0.8),
             fontsize=9,
         )
