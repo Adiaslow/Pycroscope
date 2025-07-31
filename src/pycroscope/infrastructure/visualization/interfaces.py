@@ -64,31 +64,48 @@ class StyleManager:
     """
     Manages consistent professional styling across all visualizations.
 
-    Implements the Single Responsibility Principle for visual styling.
+    Implements the Single Responsibility Principle for visual styling,
+    with proper isolation from the target application's matplotlib configuration.
     """
 
     @staticmethod
-    def apply_professional_style() -> None:
-        """Apply consistent professional styling to matplotlib."""
-        plt.rcParams.update(
-            {
-                "figure.figsize": (12, 8),
-                "font.family": "sans-serif",
-                "font.size": 10,
-                "axes.labelsize": 11,
-                "axes.titlesize": 13,
-                "figure.titlesize": 14,
-                "xtick.labelsize": 9,
-                "ytick.labelsize": 9,
-                "legend.fontsize": 10,
-                "axes.grid": True,
-                "grid.alpha": 0.3,
-                "axes.spines.top": False,
-                "axes.spines.right": False,
-                "figure.facecolor": "white",
-                "axes.facecolor": "white",
-            }
-        )
+    def get_style_dict() -> dict:
+        """Get professional style settings dictionary."""
+        return {
+            "figure.figsize": (12, 8),
+            "font.family": "sans-serif",
+            "font.size": 10,
+            "axes.labelsize": 11,
+            "axes.titlesize": 13,
+            "figure.titlesize": 14,
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 9,
+            "legend.fontsize": 10,
+            "axes.grid": True,
+            "grid.alpha": 0.3,
+            "axes.spines.top": False,
+            "axes.spines.right": False,
+            "figure.facecolor": "white",
+            "axes.facecolor": "white",
+        }
+
+    @staticmethod
+    def apply_professional_style():
+        """
+        Get a context manager for professional styling.
+
+        This method now returns a context manager to isolate styling
+        changes from the global matplotlib state.
+
+        Usage:
+            with StyleManager.apply_professional_style():
+                # Create plots here
+
+        For backward compatibility, this can still be called directly,
+        but it will return the context manager without applying it.
+        """
+        # Return the context manager instead of modifying global state
+        return plt.style.context(StyleManager.get_style_dict())
 
     @staticmethod
     def get_color_palette() -> List[str]:
@@ -123,6 +140,12 @@ class StyleManager:
             "edgecolor": "none",
         }
         default_kwargs.update(kwargs)
+
+        # Apply style settings directly to the figure to ensure consistent output
+        for ax in fig.get_axes():
+            ax.grid(True, alpha=0.3)
+            ax.spines["top"].set_visible(False)
+            ax.spines["right"].set_visible(False)
 
         fig.savefig(filepath, **default_kwargs)
         plt.close(fig)

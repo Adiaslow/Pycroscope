@@ -35,8 +35,6 @@ class MemoryProfilerPlotter(ProfilerPlotter):
         self, profiler_data: Dict[str, Any], output_dir: Path
     ) -> Dict[str, Path]:
         """Generate all memory profiler visualizations."""
-        StyleManager.apply_professional_style()
-
         if not self.can_plot(profiler_data):
             raise RuntimeError(
                 f"Cannot generate memory profiler plots: Invalid data structure. "
@@ -45,11 +43,13 @@ class MemoryProfilerPlotter(ProfilerPlotter):
 
         plots = {}
 
-        # Memory Timeline
-        timeline_fig = self._plot_memory_timeline(profiler_data)
-        timeline_path = output_dir / "memory_timeline.png"
-        StyleManager.save_figure(timeline_fig, timeline_path)
-        plots["memory_timeline"] = timeline_path
+        # Use style context manager to isolate styling
+        with StyleManager.apply_professional_style():
+            # Memory Timeline
+            timeline_fig = self._plot_memory_timeline(profiler_data)
+            timeline_path = output_dir / "memory_timeline.png"
+            StyleManager.save_figure(timeline_fig, timeline_path)
+            plots["memory_timeline"] = timeline_path
 
         return plots
 

@@ -35,8 +35,6 @@ class LineProfilerPlotter(ProfilerPlotter):
         self, profiler_data: Dict[str, Any], output_dir: Path
     ) -> Dict[str, Path]:
         """Generate all line profiler visualizations."""
-        StyleManager.apply_professional_style()
-
         if not self.can_plot(profiler_data):
             raise RuntimeError(
                 f"Cannot generate line profiler plots: Invalid data structure. "
@@ -45,11 +43,13 @@ class LineProfilerPlotter(ProfilerPlotter):
 
         plots = {}
 
-        # Line-by-Line Heatmap
-        heatmap_fig = self._plot_line_heatmap(profiler_data)
-        heatmap_path = output_dir / "line_heatmap.png"
-        StyleManager.save_figure(heatmap_fig, heatmap_path)
-        plots["line_heatmap"] = heatmap_path
+        # Use style context manager to isolate styling
+        with StyleManager.apply_professional_style():
+            # Line-by-Line Heatmap
+            heatmap_fig = self._plot_line_heatmap(profiler_data)
+            heatmap_path = output_dir / "line_heatmap.png"
+            StyleManager.save_figure(heatmap_fig, heatmap_path)
+            plots["line_heatmap"] = heatmap_path
 
         return plots
 

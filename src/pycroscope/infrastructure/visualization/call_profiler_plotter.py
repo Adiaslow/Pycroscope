@@ -39,8 +39,6 @@ class CallProfilerPlotter(ProfilerPlotter):
         self, profiler_data: Dict[str, Any], output_dir: Path
     ) -> Dict[str, Path]:
         """Generate all call profiler visualizations."""
-        StyleManager.apply_professional_style()
-
         if not self.can_plot(profiler_data):
             raise RuntimeError(
                 f"Cannot generate call profiler plots: Invalid data structure. "
@@ -50,23 +48,25 @@ class CallProfilerPlotter(ProfilerPlotter):
         stats_dict = profiler_data["stats"]
         plots = {}
 
-        # 1. Top Functions Bar Chart
-        top_functions_fig = self._plot_top_functions(stats_dict)
-        top_functions_path = output_dir / "call_top_functions.png"
-        StyleManager.save_figure(top_functions_fig, top_functions_path)
-        plots["top_functions"] = top_functions_path
+        # Use the style context manager to isolate styling from global state
+        with StyleManager.apply_professional_style():
+            # 1. Top Functions Bar Chart
+            top_functions_fig = self._plot_top_functions(stats_dict)
+            top_functions_path = output_dir / "call_top_functions.png"
+            StyleManager.save_figure(top_functions_fig, top_functions_path)
+            plots["top_functions"] = top_functions_path
 
-        # 2. Call Tree Visualization
-        call_tree_fig = self._plot_call_tree(stats_dict)
-        call_tree_path = output_dir / "call_tree.png"
-        StyleManager.save_figure(call_tree_fig, call_tree_path)
-        plots["call_tree"] = call_tree_path
+            # 2. Call Tree Visualization
+            call_tree_fig = self._plot_call_tree(stats_dict)
+            call_tree_path = output_dir / "call_tree.png"
+            StyleManager.save_figure(call_tree_fig, call_tree_path)
+            plots["call_tree"] = call_tree_path
 
-        # 3. Flame Graph
-        flame_graph_fig = self._plot_flame_graph(stats_dict)
-        flame_graph_path = output_dir / "flame_graph.png"
-        StyleManager.save_figure(flame_graph_fig, flame_graph_path)
-        plots["flame_graph"] = flame_graph_path
+            # 3. Flame Graph
+            flame_graph_fig = self._plot_flame_graph(stats_dict)
+            flame_graph_path = output_dir / "flame_graph.png"
+            StyleManager.save_figure(flame_graph_fig, flame_graph_path)
+            plots["flame_graph"] = flame_graph_path
 
         return plots
 
@@ -582,6 +582,26 @@ class CallProfilerPlotter(ProfilerPlotter):
             if len(callers) == 0 and cumtime > 0:
                 entry_points.append(func_name)
 
+        # If no entry points found, try to find functions with minimal callers
+        if not entry_points:
+            # Find functions with the fewest callers as potential entry points
+            min_callers = float("inf")
+            potential_entries = []
+
+            for func_name, data in call_graph.items():
+                callers = data.get("callers", {})
+                cumtime = data.get("cumtime", 0)
+
+                if cumtime > 0:
+                    num_callers = len(callers)
+                    if num_callers < min_callers:
+                        min_callers = num_callers
+                        potential_entries = [func_name]
+                    elif num_callers == min_callers:
+                        potential_entries.append(func_name)
+
+            entry_points = potential_entries
+
         # For each entry point, traverse all possible call paths to leaves
         for entry_func in entry_points:
             self._traverse_all_paths(call_graph, entry_func, [], all_paths)
@@ -610,7 +630,8 @@ class CallProfilerPlotter(ProfilerPlotter):
             path_cumtime = sum(
                 call_graph.get(func, {}).get("tottime", 0) for func in new_path
             )
-            result_paths.append({"path": new_path, "cumtime": path_cumtime})
+            if path_cumtime > 0:  # Only add paths with actual time
+                result_paths.append({"path": new_path, "cumtime": path_cumtime})
         else:
             # Continue traversing to all callees
             for callee_func in callees.keys():
@@ -618,6 +639,16 @@ class CallProfilerPlotter(ProfilerPlotter):
                     self._traverse_all_paths(
                         call_graph, callee_func, new_path, result_paths
                     )
+
+            # Also add the current path as a leaf if it has significant time
+            # This handles cases where callees might not be in our call graph
+            func_cumtime = func_data.get("cumtime", 0)
+            if func_cumtime > 0:
+                path_cumtime = sum(
+                    call_graph.get(func, {}).get("tottime", 0) for func in new_path
+                )
+                if path_cumtime > 0:
+                    result_paths.append({"path": new_path, "cumtime": path_cumtime})
 
     def _render_flame_graph(
         self, ax, flame_stacks: List[Dict[str, Any]], total_time: float

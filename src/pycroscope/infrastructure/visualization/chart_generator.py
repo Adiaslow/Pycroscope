@@ -67,9 +67,7 @@ class ChartGenerator:
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Apply professional styling
-        StyleManager.apply_professional_style()
-
+        # Style is now applied in each plotter with proper isolation
         generated_charts = {}
 
         # Generate charts for each profiler type with available data
@@ -125,8 +123,7 @@ class ChartGenerator:
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
 
-        StyleManager.apply_professional_style()
-
+        # Style is now applied in each plotter with proper isolation
         generated_charts = {}
 
         for profiler_type in profiler_types:
